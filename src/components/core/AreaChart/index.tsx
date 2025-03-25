@@ -1,33 +1,30 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from "react";
 import {
   ColorType,
   createChart,
   CrosshairMode,
   LineStyle,
-} from 'lightweight-charts';
-import { AreaChartProps } from './props';
-import styles from './styles.module.scss';
-import { useTranslation } from 'react-i18next';
+} from "lightweight-charts";
+import { AreaChartProps } from "./props";
+import styles from "./styles.module.scss";
+import useTranslation from "next-translate/useTranslation";
 
 export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation('common');
+  const { t, lang: language } = useTranslation("common");
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const documentStyles = getComputedStyle(document.body);
   const primaryColor = documentStyles
-    .getPropertyValue('--primary-color')
+    .getPropertyValue("--primary-color")
     .trim();
   const textPrimaryColor = documentStyles
-    .getPropertyValue('--text-primary-color')
+    .getPropertyValue("--text-primary-color")
     .trim();
   const containerColor = documentStyles
-    .getPropertyValue('--background-paper-color')
+    .getPropertyValue("--background-paper-color")
     .trim();
 
   function convertHexToRGBA(hexCode: string, opacity = 1) {
-    let hex = hexCode.replace('#', '');
+    let hex = hexCode.replace("#", "");
 
     if (hex.length === 3) {
       hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
@@ -53,7 +50,7 @@ export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
   }, [data]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !chartContainerRef.current) return;
+    if (typeof window === "undefined" || !chartContainerRef.current) return;
 
     const chart = createChart(chartContainerRef.current as HTMLElement, {
       handleScale: {
@@ -65,11 +62,11 @@ export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
         locale: language,
         timeFormatter: (time: number) => {
           return Intl.DateTimeFormat(language, {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
             hour12: false,
           }).format(new Date(time * 1000));
         },
@@ -118,7 +115,7 @@ export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
     };
 
     chart.timeScale().fitContent();
-    chart.priceScale('right').applyOptions({
+    chart.priceScale("right").applyOptions({
       autoScale: true,
       scaleMargins: {
         top: 0.1,
@@ -142,7 +139,7 @@ export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
       lineColor: convertHexToRGBA(primaryColor),
       lineWidth: 2,
       priceFormat: {
-        type: 'price',
+        type: "price",
         precision: currency ? 2 : 8,
         minMove: 0.00000001,
       },
@@ -159,10 +156,10 @@ export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
       axisLabelVisible: true,
     });
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
 
       chart.remove();
     };
@@ -176,7 +173,7 @@ export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
   ]);
 
   if (isLoading) {
-    return <div className={styles['chart-skeleton']} />;
+    return <div className={styles["chart-skeleton"]} />;
   }
 
   return <div ref={chartContainerRef} />;
