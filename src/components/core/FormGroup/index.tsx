@@ -1,10 +1,10 @@
-import { JSX, PropsWithChildren } from 'react';
-import styles from './styles.module.scss';
-import { FormGroupProps } from './props';
-import { useTranslation } from 'react-i18next';
-import FormGroupSkeletonLabel from './Skeleton/Label';
-import FormGroupSkeletonDescription from './Skeleton/Description';
-import { ErrorChip } from '../ErrorChip';
+import { JSX, PropsWithChildren } from "react";
+import styles from "./styles.module.scss";
+import { FormGroupProps } from "./props";
+import useTranslation from "next-translate/useTranslation";
+import FormGroupSkeletonLabel from "./Skeleton/Label";
+import FormGroupSkeletonDescription from "./Skeleton/Description";
+import { ErrorChip } from "../ErrorChip";
 /**
  * FormGroup Component
  * A form group component that wraps form elements with optional label, description and loading states
@@ -27,7 +27,7 @@ import { ErrorChip } from '../ErrorChip';
 export function FormGroup({
   label,
   children,
-  className = '',
+  className = "",
   description,
   loading,
   isLoading,
@@ -39,7 +39,7 @@ export function FormGroup({
   refetch,
   secondary,
 }: PropsWithChildren<FormGroupProps>): JSX.Element {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   if (error) {
     return <ErrorChip action={refetch} />;
@@ -47,26 +47,30 @@ export function FormGroup({
 
   return (
     <div
-      className={`${styles.container} ${alignCenter ? styles['container--align-center'] : ''} ${className}`}
+      className={`${styles.container} ${
+        alignCenter ? styles["container--align-center"] : ""
+      } ${className}`}
     >
       {isLoading ? (
         <FormGroupSkeletonLabel loading={loading} />
       ) : (
         label && (
           <label
-            className={`${styles.container__label} ${action ? styles['container__label--action'] : ''} ${secondary ? styles['container__label--secondary'] : ''}`}
+            className={`${styles.container__label} ${
+              action ? styles["container__label--action"] : ""
+            } ${secondary ? styles["container__label--secondary"] : ""}`}
           >
             {label} {action ? action : null}
             {optional && !optionalLabel && (
               <span
-                className={`${styles.container__label} ${styles['container__label--secondary']}`}
+                className={`${styles.container__label} ${styles["container__label--secondary"]}`}
               >
-                ({t('optional_label')})
+                ({t("optional_label")})
               </span>
             )}
             {optional && optionalLabel && (
               <span
-                className={`${styles.container__label} ${styles['container__label--secondary']}`}
+                className={`${styles.container__label} ${styles["container__label--secondary"]}`}
               >
                 {optionalLabel}
               </span>
@@ -78,7 +82,7 @@ export function FormGroup({
         <FormGroupSkeletonDescription loading={loading} />
       ) : (
         description && (
-          <label className={styles['container__description']}>
+          <label className={styles["container__description"]}>
             {description}
           </label>
         )

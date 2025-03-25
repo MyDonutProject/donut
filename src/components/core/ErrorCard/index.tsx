@@ -1,7 +1,7 @@
-import { ErrorCardProps } from './props';
-import styles from './styles.module.scss';
-import { Button } from '../Button';
-import { useTranslation } from 'react-i18next';
+import { ErrorCardProps } from "./props";
+import styles from "./styles.module.scss";
+import { Button } from "../Button";
+import useTranslation from "next-translate/useTranslation";
 
 /**
  * ErrorCard Component
@@ -21,11 +21,13 @@ export function ErrorCard({
   customBackground,
   isDefaultColor,
 }: ErrorCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
     <div
-      className={`${styles.container} ${isDefaultColor ? styles['container--default-color'] : ''}`}
+      className={`${styles.container} ${
+        isDefaultColor ? styles["container--default-color"] : ""
+      }`}
       style={{
         backgroundColor: customBackground,
       }}
@@ -33,17 +35,17 @@ export function ErrorCard({
       <div className={styles.container__spacer} />
 
       <div
-        className={`${styles.container__row} ${styles['container__row--around']}`}
+        className={`${styles.container__row} ${styles["container__row--around"]}`}
       >
         <div className={styles.container__swoosh}>
           <i className="fad fa-exclamation-triangle" />
         </div>
-        <h6 className={styles.container__title}>{t('error_title')}</h6>
+        <h6 className={styles.container__title}>{t("error_title")}</h6>
       </div>
 
       <div className={styles.container__spacer} />
 
-      <p className={styles.container__description}>{t('error_description')}</p>
+      <p className={styles.container__description}>{t("error_description")}</p>
 
       <div className={styles.container__spacer} />
 
@@ -68,7 +70,7 @@ export function ErrorCard({
         onClick={refetch}
         type="button"
       >
-        {t('error_button')}
+        {t("error_button")}
       </Button>
     </div>
   );

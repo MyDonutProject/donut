@@ -1,8 +1,7 @@
 export enum NotificationRowType {
-  Toasty = 'Toasty',
-  Row = 'Row',
+  Toasty = "Toasty",
+  Row = "Row",
 }
-import { TransProps } from 'react-i18next';
 
 export interface BaseContentProps {
   icon: string;

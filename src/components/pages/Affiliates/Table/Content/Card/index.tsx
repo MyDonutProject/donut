@@ -1,6 +1,6 @@
-import styles from './styles.module.scss';
-import { AffiliatesCardProps } from './props';
-import { useTranslation } from 'react-i18next';
+import styles from "./styles.module.scss";
+import { AffiliatesCardProps } from "./props";
+import useTranslation from "next-translate/useTranslation";
 
 export default function AffiliatesCard({
   name,
@@ -9,7 +9,7 @@ export default function AffiliatesCard({
   address,
   position,
 }: AffiliatesCardProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   return (
     <div className={styles.card}>
       <img
