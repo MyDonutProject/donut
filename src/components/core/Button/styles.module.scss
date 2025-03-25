@@ -1,0 +1,169 @@
+.button {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  height: $box-height;
+  cursor: pointer;
+  pointer-events: all;
+  color: $primary-contrast-text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 8px;
+  padding: 0 16px;
+  background-color: $primary-color;
+  border-radius: $border-radius;
+  text-align: center;
+  transition: all 0.25s ease-in-out;
+  font-size: 14px;
+  font-weight: 600;
+
+  &:hover {
+    background-color: $secondary-color;
+  }
+
+  &:disabled:not(.button--isLinkButton) {
+    pointer-events: none;
+    background-color: $card-color;
+    color: $text-secondary;
+
+    @include lighen(20%);
+  }
+
+  &--secondary {
+    background-color: $card-color;
+    color: $text-primary;
+
+    &:disabled {
+      background-color: $card-color;
+      color: $text-secondary;
+      opacity: 1;
+    }
+
+    &:hover {
+      @include lighen(30%);
+      background-color: $card-color;
+    }
+  }
+
+  &--isLinkButton {
+    all: unset;
+    color: $primary-color;
+    transition: color;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+    cursor: pointer;
+    padding-block: 8px;
+    border-width: 0;
+    background-color: unset;
+    transition: color 0.3s;
+    position: relative;
+
+    &::after {
+      content: '';
+      bottom: 0;
+      position: absolute;
+      height: 1px;
+      background-color: $secondary-color;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    &:hover {
+      border-width: 100%;
+      background-color: unset !important;
+      color: $secondary-color;
+
+      &::after {
+        width: 100%;
+      }
+    }
+  }
+
+  &--isActive {
+    background-color: $card-color;
+  }
+
+  &--useMaxContent {
+    width: max-content;
+  }
+
+  &--isSmall {
+    height: 40px;
+    font-size: 12px;
+    padding: 0 16px;
+
+    @include media-tablet {
+      font-size: 12px;
+      padding: 0 16px;
+    }
+  }
+
+  &--isTiny {
+    height: 30px;
+    font-size: 12px;
+  }
+
+  &--dotted {
+    background-color: $background-paper;
+    border: 1px dashed $divider-color;
+    color: $text-primary;
+    height: $box-height;
+    min-height: $box-height;
+
+    &:hover {
+      background-color: $card-color;
+    }
+  }
+
+  &--isErrorButton {
+    @include useErrorBg;
+
+    &:hover {
+      @include usePaperBg;
+    }
+  }
+
+  &__spinner {
+    position: absolute !important;
+    right: 16px;
+  }
+
+  &:active {
+    transition: all 0.25s ease-in-out;
+    scale: 0.95;
+  }
+
+  &__skeleton,
+  &__skeleton-default {
+    width: 100%;
+    height: $box-height;
+    border-radius: $border-radius;
+
+    &--isSmall {
+      height: 40px;
+      min-height: 40px;
+    }
+  }
+
+  &__skeleton {
+    @include skeleton($secondary: true);
+  }
+
+  &--transparent {
+    background-color: unset !important;
+
+    &:hover {
+      background-color: unset !important;
+    }
+  }
+
+  &__skeleton-default {
+    @include skeleton();
+  }
+}

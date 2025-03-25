@@ -1,0 +1,14 @@
+.image {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.button {
+  &__skeleton {
+    width: 120px;
+    height: $box-height;
+  }
+}

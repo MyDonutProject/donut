@@ -1,0 +1,45 @@
+.image {
+  width: 100%;
+  max-width: 100px;
+  border-radius: $border-radius;
+  overflow: hidden;
+  position: absolute;
+  object-fit: cover;
+
+  &--0 {
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+
+    @include media-tablet {
+      max-width: 80px;
+    }
+  }
+
+  &--1 {
+    right: 70px;
+    top: 0;
+    max-width: 50px;
+    filter: blur(1px);
+    z-index: 1;
+
+    @include media-tablet {
+      max-width: 40px;
+      right: 50px;
+    }
+  }
+
+  &--2 {
+    right: 100px;
+    bottom: 10%;
+    max-width: 30px;
+    filter: blur(1px);
+    z-index: 0;
+
+    @include media-tablet {
+      max-width: 20px;
+      right: 60px;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: $border-radius;
+  background-color: $background-default;
+  box-shadow: 2px 2px 30px $divider-color;
+
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  &__value {
+    font-size: 32px;
+    font-weight: 700;
+    color: $primary-color;
+  }
+}

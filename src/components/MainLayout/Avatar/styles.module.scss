@@ -1,0 +1,55 @@
+.container {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: calc($spacing-unit * 2);
+  cursor: pointer;
+
+  &__username {
+    font-size: 10px;
+    font-weight: 600;
+    color: $text-secondary;
+  }
+
+  &__role {
+    font-size: 12px;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  &__column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: calc($spacing-unit / 2);
+  }
+
+  &__chevron {
+    font-size: 16px;
+    pointer-events: none;
+    transform: rotateX(0deg);
+    transition: ease 0.25s;
+    color: $text-secondary;
+
+    &--open {
+      transform: rotateX(180deg);
+    }
+  }
+
+  &:hover {
+    .container__chevron {
+      color: $text-primary;
+    }
+  }
+}
+
+.tooltip-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: $background-paper;
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: $border-radius;
+}

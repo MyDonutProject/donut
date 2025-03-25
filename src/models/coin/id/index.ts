@@ -1,0 +1,44 @@
+export namespace CoinID {
+  export const USD = 1n;
+  export const EUR = 2n;
+  export const CAD = 3n;
+  export const BRL = 4n;
+  export const JPY = 5n;
+  export const ARS = 6n;
+  export const CNY = 7n;
+  export const INR = 8n;
+  export const IDR = 9n;
+  export const KRW = 10n;
+  export const CHF = 11n;
+  export const MXN = 12n;
+  export const DKK = 13n;
+  export const NZD = 14n;
+  export const PHP = 15n;
+  export const RUB = 16n;
+  export const PEN = 17n;
+  export const AUD = 18n;
+  export const PLN = 19n;
+  export const VND = 20n;
+  export const TRY = 21n;
+  export const COP = 22n;
+  export const CLP = 23n;
+  export const BTC = 24n;
+  export const ETH = 25n;
+  export const USDT = 26n;
+  export const FDUSD = 27n;
+  export const USDC = 28n;
+  export const BNB = 29n;
+  export const SHIB = 30n;
+  export const DOGE = 31n;
+  export const XRP = 32n;
+  export const POL = 33n;
+  export const TRX = 34n;
+  export const SOL = 35n;
+  export const AXS = 36n;
+  export const TON = 37n;
+  export const ZAR = 38n;
+  export const NGN = 39n;
+  export const SGD = 40n;
+}
+
+export type CoinIDType = (typeof CoinID)[keyof typeof CoinID];

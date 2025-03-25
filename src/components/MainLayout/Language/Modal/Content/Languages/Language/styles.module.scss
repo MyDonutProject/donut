@@ -1,0 +1,34 @@
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0px 16px;
+  border-radius: $border-radius;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  transition: background-color 0.25s ease-in-out;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  &__image {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+
+  &:hover,
+  &--selected {
+    background-color: $card-color;
+  }
+}

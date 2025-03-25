@@ -1,0 +1,27 @@
+User-agent: *
+
+Allow: /
+Disallow: /account
+Disallow: /verification
+Disallow: /bonus-history
+Disallow: /deposit-history
+Disallow: /game-history
+Disallow: /copy-history
+Disallow: /wallet
+Disallow: /withdraw-history
+Disallow: /bonus
+Disallow: /gamblers
+Disallow: /vip-club
+Disallow: /affiliates
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /

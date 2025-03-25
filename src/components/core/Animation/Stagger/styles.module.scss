@@ -1,0 +1,85 @@
+.container {
+  width: 100%;
+  display: flex;
+  transition: all 0.25s;
+
+  &--column {
+    flex-direction: column;
+  }
+
+  &--row {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  &__children {
+    all: unset;
+
+    &--column {
+      width: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: inherit;
+    }
+
+    &--row {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+    }
+
+    &--stagger-up {
+      animation: staggerUp 0.25s both;
+    }
+    &--stagger-down {
+      animation: staggerDown 0.25s both;
+    }
+    &--stagger-left {
+      animation: staggerLeft 0.25s both;
+    }
+    &--stagger-right {
+      animation: staggerRight 0.25s both;
+    }
+  }
+}
+
+@keyframes staggerUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+@keyframes staggerDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+@keyframes staggerLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+@keyframes staggerRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}

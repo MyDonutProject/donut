@@ -1,0 +1,88 @@
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 180px;
+  gap: 16px;
+  border-radius: $border-radius;
+  background-color: $background-paper;
+  box-shadow: 2px 2px 30px $divider-color;
+  position: relative;
+  background-color: $primary-color;
+
+  &::after {
+    --size: 30px;
+    --R: calc(var(--size) * 1.28);
+
+    content: '';
+    width: 100%;
+    height: 70px;
+    background-color: $secondary-color;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 0;
+    border-radius: $border-radius;
+    background: $secondary-color;
+    mask:
+      radial-gradient(
+          var(--R) at 50% calc(1.8 * var(--size)),
+          $secondary-color 99%,
+          transparent 101%
+        )
+        calc(50% - 2 * var(--size)) 0 / calc(4 * var(--size)) 100%,
+      radial-gradient(
+          var(--R) at 50% calc(-0.8 * var(--size)),
+          #0000 99%,
+          #000 101%
+        )
+        50% var(--size) / calc(4 * var(--size)) 100% repeat-x;
+  }
+
+  &__content {
+    width: 100%;
+    max-width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    padding-block: 32px;
+
+    @include media-tablet {
+      max-width: 100%;
+    }
+
+    &__title {
+      font-size: 24px;
+      font-weight: 600;
+      position: relative;
+      z-index: 2;
+      color: $primary-contrast-text;
+    }
+
+    &__input {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  &__image {
+    width: 100%;
+    max-width: 30%;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
+
+  &__button {
+    position: absolute;
+    max-height: calc($box-height * 0.7);
+    right: 8px;
+    z-index: 3;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}

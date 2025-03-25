@@ -1,0 +1,77 @@
+$dark-primary-color: var(--dark-primaryColor-main);
+$dark-primary-contrast-color: var(--dark-primaryColor-contrastText);
+$dark-primary-ghost-color: var(--dark-primaryColor-ghost);
+
+$dark-secondary-color: var(--dark-secondaryColor-main);
+$dark-secondary-contrast-color: var(--dark-secondaryColor-contrastText);
+
+$dark-background-default-color: var(--dark-background-default);
+$dark-background-paper-color: var(--dark-background-paper);
+
+$dark-text-primary-color: var(--dark-text-primary);
+$dark-text-secondary-color: var(--dark-text-secondary);
+$dark-text-disabled-color: var(--dark-text-disabled);
+
+$dark-warning-contrast-color: var(--dark-warning-contrastText);
+$dark-warning-color: var(--dark-warning-main);
+
+$dark-success-contrast-color: var(--dark-success-contrastText);
+$dark-success-color: var(--dark-success-main);
+
+$dark-error-contrast-color: var(--dark-error-contrastText);
+$dark-error-color: var(--dark-error-main);
+
+$dark-severity-color: var(--dark-severity-main);
+
+$dark-customBar-color: var(--dark-customBar-primary);
+$dark-divider-color: #c2c2c226;
+
+$dark-card-color: var(--dark-card-main);
+
+$dark-mission-uncrossable-primary-color: var(--dark-missionUncrossable-primary);
+$dark-mission-uncrossable-secondary-color: var(
+  --dark-missionUncrossable-secondary
+);
+$dark-mission-uncrossable-shadow-color: var(--dark-missionUncrossable-shadow);
+
+$dark-roulette-black: var(--dark-roulette-black);
+$dark-roulette-red: var(--dark-roulette-red);
+
+@mixin dark-theme {
+  --primary-color: #{$dark-primary-color};
+  --primary-contrast-color: #{$dark-primary-contrast-color};
+  --primary-ghost-color: #{$dark-primary-ghost-color};
+
+  --secondary-color: #{$dark-secondary-color};
+  --secondary-contrast-color: #{$dark-secondary-contrast-color};
+
+  --background-default-color: #{$dark-background-default-color};
+  --background-paper-color: #{$dark-background-paper-color};
+
+  --text-primary-color: #{$dark-text-primary-color};
+  --text-secondary-color: #{$dark-text-secondary-color};
+  --text-disabled-color: #{$dark-text-disabled-color};
+
+  --success-color: #{$dark-success-color};
+  --success-contrast-color: #{$dark-success-contrast-color};
+
+  --warning-color: #{$dark-warning-color};
+  --warning-contrast-color: #{$dark-warning-contrast-color};
+
+  --error-color: #{$dark-error-color};
+  --error-contrast-color: #{$dark-error-contrast-color};
+
+  --severity-color: #{$dark-severity-color};
+
+  --card-color: #{$dark-card-color};
+
+  --customBar-color: #{$dark-error-color};
+  --divider-color: #{$dark-divider-color};
+
+  --missionUncrossable-primary-color: #{$dark-mission-uncrossable-primary-color};
+  --missionUncrossable-secondary-color: #{$dark-mission-uncrossable-secondary-color};
+  --missionUncrossable-shadow-color: #{$dark-mission-uncrossable-shadow-color};
+
+  --roulette-black: #{$dark-roulette-black};
+  --roulette-red: #{$dark-roulette-red};
+}

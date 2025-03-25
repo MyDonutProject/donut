@@ -1,0 +1,23 @@
+.box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  flex-shrink: 0;
+  background: $background-default;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+
+  & i {
+    font-size: 14px;
+    color: $primary-color;
+  }
+
+  &--error {
+    & i {
+      color: $error-color;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5 !important;
+  margin-top: 10px;
+  flex-direction: column;
+  border-radius: $border-radius;
+  background-color: $background-default;
+  border: 1px solid $divider-color;
+  max-height: 300px;
+  overflow-y: auto;
+
+  &--popLayout {
+    position: fixed;
+    width: 100%;
+  }
+
+  &--card-bg {
+    background-color: $background-paper;
+  }
+
+  &--inverted {
+    max-height: 180px;
+    bottom: 120%;
+
+    @include media-tablet {
+      bottom: 120%;
+      max-height: 200px;
+    }
+  }
+
+  @include hide-scrollbar;
+
+  &__option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 1rem;
+    font-size: 13px;
+    line-height: 15px;
+    font-weight: 400;
+    color: $text-secondary;
+    transition: all 0.25s ease-in-out;
+
+    &:hover,
+    &--selected {
+      background-color: $primary-ghost-color;
+      color: $text-primary;
+    }
+  }
+}

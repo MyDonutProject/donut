@@ -1,0 +1,158 @@
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1254px;
+
+// Spacing
+$spacing-unit: 8px;
+
+// Define mixins for media queries
+@mixin media-phone {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin media-tablet {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin media-desktop {
+  @media (max-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin media-large-desktop {
+  @media (max-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+@mixin hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    display: none !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    display: none !important;
+  }
+}
+
+@mixin lighen($percentage: 0%) {
+  filter: brightness(calc(100%) + $percentage);
+}
+
+@mixin darken($percentage: 0%) {
+  filter: brightness(calc(100%) - $percentage);
+}
+
+@mixin useErrorBg {
+  background-color: $error-color;
+  color: $error-contrast-color;
+}
+
+@mixin useWarningBg {
+  background-color: $warning-color;
+  color: $warning-contrast-color;
+}
+
+@mixin useSuccessBg {
+  background-color: $success-color;
+  color: $success-contrast-color;
+}
+
+@mixin usePrimaryBg {
+  background-color: $primary-color;
+  color: $text-primary;
+}
+
+@mixin useSecondaryBg {
+  background-color: $secondary-color;
+  color: $text-primary;
+}
+
+@mixin usePaperBg {
+  background-color: $background-paper;
+  color: $text-primary;
+}
+
+@mixin useDefaultBg {
+  background-color: $background-default;
+  color: $text-primary;
+}
+
+@mixin inputShape {
+  position: relative;
+  overflow: hidden;
+  border-radius: 80px;
+
+  & input {
+    border-radius: 80px;
+    height: calc($box-height * 1.5);
+    border: 1px solid $primary-contrast-text;
+    padding: 32px !important;
+    font-size: 16px;
+    font-weight: 500;
+    color: $primary-contrast-text;
+    z-index: 2;
+    background-color: unset;
+    position: relative;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid $primary-contrast-text;
+    width: 100%;
+    height: 100%;
+    background: $primary-contrast-text;
+    opacity: 0.4;
+    filter: blur(2px);
+    border-radius: 80px;
+    z-index: -1;
+  }
+}
+
+@mixin button-shape {
+  position: relative;
+  overflow: hidden;
+  border-radius: 80px;
+
+  & input {
+    border-radius: 80px;
+    height: calc($box-height * 1.5);
+    border: 1px solid $primary-contrast-text;
+    padding: 32px !important;
+    font-size: 16px;
+    font-weight: 500;
+    color: $primary-contrast-text;
+    z-index: 2;
+    background-color: unset;
+    position: relative;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid $primary-contrast-text;
+    width: 100%;
+    height: 100%;
+    background: $primary-contrast-text;
+    opacity: 0.4;
+    filter: blur(2px);
+    border-radius: 80px;
+    z-index: -1;
+  }
+}

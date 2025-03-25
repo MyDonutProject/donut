@@ -1,0 +1,39 @@
+.container {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-unit;
+  background: $background-paper;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 15;
+  transition: all 0.3s ease-in-out;
+
+  &--navigation {
+    background: $primary-color;
+  }
+
+  &__wrapper {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: calc($spacing-unit * 2);
+  }
+
+  &__logo {
+    height: 30px;
+    cursor: pointer;
+  }
+}

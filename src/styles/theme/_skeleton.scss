@@ -1,0 +1,49 @@
+%skeleton-placeholder {
+  position: relative;
+  overflow: hidden !important;
+  background-color: var(--background-paper-color);
+
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden !important;
+    transform: translateX(-100%);
+    content: '';
+    background: linear-gradient(0.25turn, transparent, var(--background-default-color), transparent);
+    pointer-events: none;
+    opacity: 0.8;
+    animation: skeleton-animation 2s infinite;
+  }
+
+  @keyframes skeleton-animation {
+    0% {
+      transform: translateX(-100%);
+    }
+    30% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+%skeleton-placeholder-secondary {
+  background-color: var(--background-default-color);
+
+  &::after {
+    background: linear-gradient(0.25turn, transparent, var(--background-paper-color), transparent);
+  }
+}
+
+@mixin skeleton($secondary: false) {
+  @extend %skeleton-placeholder;
+  border-radius: $border-radius;
+
+  @if $secondary == true {
+    @extend %skeleton-placeholder-secondary;
+  }
+}

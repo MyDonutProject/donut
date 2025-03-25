@@ -1,0 +1,68 @@
+.container {
+  width: 100%;
+  height: fit-content;
+  position: unset;
+  will-change: transform, opacity;
+
+  @include hide-scrollbar;
+
+  &--fadeInDown {
+    animation: fadeInDown 0.5s forwards;
+  }
+
+  &--fadeInLeft {
+    animation: fadeInLeft 0.5s forwards;
+  }
+
+  &--fadeInRight {
+    animation: fadeInRight 0.5s forwards;
+  }
+
+  &--fadeInUp {
+    animation: fadeInUp 0.5s forwards;
+  }
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

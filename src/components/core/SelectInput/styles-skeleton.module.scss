@@ -1,0 +1,15 @@
+.text,
+.chevron {
+  @include skeleton($secondary: true);
+}
+
+.text {
+  width: 20%;
+  height: 14px;
+}
+
+.chevron {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}

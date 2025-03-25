@@ -1,0 +1,25 @@
+.button {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: $border-radius;
+  background-color: $card-color;
+  font-size: 16px;
+  padding: 8px;
+  color: $text-secondary;
+  z-index: 9;
+  transition:
+    filter 0.25s ease-in-out,
+    color 0.25s ease-in-out;
+  @include lighen(40%);
+
+  &:hover {
+    @include lighen(50%);
+    color: $text-primary;
+  }
+}

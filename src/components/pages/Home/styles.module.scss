@@ -1,0 +1,119 @@
+.container {
+  width: 100%;
+  min-height: 100dvh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: max(24px, 8dvh);
+  overflow: unset;
+  position: relative;
+
+  @include media-tablet {
+    min-height: calc(100dvh + 180px);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: max(24px, 8dvh);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -40px;
+    width: 100dvw;
+    min-height: 100dvh;
+    height: 100%;
+    transform: translate(-50%, 0%);
+
+    background: linear-gradient(
+      180deg,
+      $secondary-color 0%,
+      $primary-color 100%
+    );
+    z-index: -1;
+
+    @include media-tablet {
+      height: 100%;
+    }
+  }
+
+  &__title {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    font-size: 50px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $primary-contrast-text;
+
+    & strong {
+      font-family: 'Changa One', sans-serif;
+      font-size: 130px;
+      line-height: 80px;
+    }
+
+    @include media-tablet {
+      font-size: 30px;
+
+      & strong {
+        font-size: 70px;
+        line-height: 50px;
+      }
+    }
+  }
+
+  &__detail {
+    width: 100%;
+    max-width: 100px;
+    height: max-content;
+    position: absolute;
+    z-index: -1;
+
+    &--1 {
+      max-width: min(250px, 30dvw);
+      left: calc(-30dvw + 150px);
+      top: 50%;
+      transform: translateY(-50%) rotate(-30deg);
+      filter: blur(2px);
+
+      @include media-tablet {
+        top: 200px;
+      }
+    }
+
+    &--2 {
+      max-width: min(100px, 10dvw);
+      left: calc(30dvw + -180px);
+      top: 10px;
+
+      @include media-tablet {
+        display: none;
+      }
+    }
+
+    &--3 {
+      top: min(5dvw, 30%);
+      right: calc(10dvw + 180px);
+      filter: blur(2px);
+
+      @include media-tablet {
+        display: none;
+      }
+    }
+
+    &--4 {
+      right: calc(-30dvw + min(350px, 20dvw));
+      max-width: min(350px, 50dvw);
+      top: min(5dvw, 50%);
+      transform: rotate(-25deg) translateY(-min(5dvw, 50%));
+      
+    }
+  }
+}

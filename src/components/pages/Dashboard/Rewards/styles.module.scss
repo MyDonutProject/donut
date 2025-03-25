@@ -1,0 +1,18 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: $border-radius;
+  background-color: $background-paper;
+  position: relative;
+  box-shadow: 2px 15px 10px $divider-color;
+
+  &__content {
+    padding: 16px;
+    padding-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+}

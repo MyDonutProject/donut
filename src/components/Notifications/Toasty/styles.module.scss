@@ -1,0 +1,40 @@
+.container {
+  position: fixed;
+  right: 20px;
+  bottom: calc(5vh - 5px);
+  z-index: 999999999;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+
+  @include media-phone {
+    right: 0;
+  }
+
+  .wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex-direction: column;
+    gap: $spacing-unit;
+
+    .slide {
+      position: relative;
+      animation-name: fadeIn;
+      animation-timing-function: ease;
+      animation-duration: 0.3s;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          right: -100%;
+        }
+        to {
+          opacity: 1;
+          right: 8px;
+        }
+      }
+    }
+  }
+}

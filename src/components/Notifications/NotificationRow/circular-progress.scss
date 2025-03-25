@@ -1,0 +1,10 @@
+.CircularProgressbar {
+  &-path {
+    stroke: $primary-color !important;
+    transition: all 1s;
+  }
+
+  &-trail {
+    stroke: $primary-ghost-color !important;
+  }
+}

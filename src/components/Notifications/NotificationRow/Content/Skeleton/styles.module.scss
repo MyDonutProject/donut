@@ -1,0 +1,24 @@
+.icon-skeleton {
+  @include skeleton();
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.title-skeleton {
+  @include skeleton($secondary: true);
+  width: 120px;
+  height: 16px;
+}
+
+.description-skeleton {
+  @include skeleton($secondary: true);
+  width: 120px;
+  height: 14px;
+}
+
+.date-skeleton {
+  @include skeleton($secondary: true);
+  width: 80px;
+  height: 12px;
+}

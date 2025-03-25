@@ -1,0 +1,32 @@
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 15px;
+  font-weight: 400;
+  color: $text-secondary;
+  transition: all 0.25s ease-in-out;
+
+  &:hover,
+  &--selected {
+    background-color: $primary-ghost-color;
+    color: $text-primary;
+  }
+
+  &__image {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+
+  &__label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

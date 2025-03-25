@@ -1,0 +1,42 @@
+.overlay {
+  position: fixed;
+  z-index: 99999999;
+  left: 0px;
+  top: 0px;
+  width: 100dvw;
+  height: 100%;
+  max-height: 100dvh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: unset;
+  will-change: transform;
+
+  &--v2 {
+    @include media-tablet {
+      align-items: flex-end;
+    }
+  }
+
+  @include media-phone {
+    height: 100%;
+    max-height: 100%;
+    overflow-y: visible;
+  }
+
+  @media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+    & {
+      max-height: 100dvh;
+    }
+  }
+
+  &--enter {
+    animation: enter 0.25s ease-in forwards;
+  }
+
+  &--exit {
+    animation: enter 0.25s ease-out forwards;
+  }
+}

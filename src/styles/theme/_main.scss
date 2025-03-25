@@ -1,0 +1,47 @@
+@use 'sass:color';
+
+@import 'common';
+@import 'light-theme';
+@import 'dark-theme';
+@import 'skeleton';
+
+$primary-color: var(--primary-color);
+$primary-contrast-text: var(--primary-contrast-color);
+$primary-ghost-color: var(--primary-ghost-color);
+
+$secondary-color: var(--secondary-color);
+$secondary-contrast-text: var(--secondary-contrast-color);
+
+$background-default: var(--background-default-color);
+$background-paper: var(--background-paper-color);
+
+$text-primary: var(--text-primary-color);
+$text-secondary: var(--text-secondary-color);
+$text-disabled: var(--text-secondary-color);
+
+$success-color: var(--success-color);
+$success-contrast-color: var(--success-contrast-color);
+
+$error-color: var(--error-color);
+$error-contrast-color: var(--error-contrast-color);
+
+$warning-color: var(--warning-color);
+$warning-contrast-color: var(--warning-contrast-color);
+
+$severity: var(--severity-color);
+
+$custom-bar: var(--customBar-color);
+$divider-color: var(--divider-color);
+
+$card-color: var(--card-color);
+
+$mission-uncrossable-primary: var(--missionUncrossable-primary-color);
+$mission-uncrossable-secondary: var(--missionUncrossable-secondary-color);
+$mission-uncrossable-shadow: var(--missionUncrossable-shadow-color);
+
+$roulette-black: var(--roulette-black);
+$roulette-red: var(--roulette-red);
+
+$font-family: var(--fontFamily-name);
+$border-radius: var(--shape-borderRadius);
+$box-height: var(--shape-boxHeight);

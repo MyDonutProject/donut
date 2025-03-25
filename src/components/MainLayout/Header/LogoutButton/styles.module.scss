@@ -1,0 +1,31 @@
+.button {
+  all: unset;
+  box-sizing: border-box;
+  padding: 0 12px;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $background-paper;
+  cursor: pointer;
+  border-radius: $border-radius;
+  opacity: 1;
+  transition: opacity 0.25s ease-in-out;
+
+  i {
+    font-size: 16px;
+    color: $text-secondary;
+    transition: color 0.25s ease-in-out;
+  }
+
+  &--disabled {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  &:hover {
+    i {
+      color: $primary-color;
+    }
+  }
+}

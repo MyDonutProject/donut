@@ -1,0 +1,15 @@
+.photo-container {
+  min-width: 32px;
+}
+
+.username-skeleton {
+  @include skeleton($secondary: true);
+  width: 70px;
+  height: 14px;
+}
+
+.role-skeleton {
+  @include skeleton($secondary: true);
+  width: 100px;
+  height: 16px;
+}

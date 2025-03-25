@@ -1,0 +1,76 @@
+.container {
+  width: 100%;
+  max-width: 200px;
+  background-color: $background-paper;
+  border-radius: $border-radius;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  padding: 12px;
+  height: 40px;
+  transition: opacity 0.25s ease-in-out;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &--cardBg {
+    background-color: $background-default;
+  }
+
+  &__spacer {
+    margin-top: 12px;
+  }
+
+  &__title-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__swoosh {
+    width: 100%;
+    border-radius: $border-radius;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    background-size: 100%;
+    transition: all 0.5s ease-in-out;
+    top: 0;
+    left: 0;
+    z-index: 10;
+
+    &:hover {
+      background-color: transparent;
+      transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+    }
+    & i {
+      font-size: 20px;
+      color: $primary-color;
+    }
+  }
+
+  &__divider {
+    height: auto;
+    margin-left: 8px;
+    border-right: 1px solid $text-primary;
+  }
+
+  &__message {
+    font-size: 12px;
+    color: $secondary-color;
+  }
+}

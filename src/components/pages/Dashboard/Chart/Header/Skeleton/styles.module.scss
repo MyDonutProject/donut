@@ -1,0 +1,24 @@
+.title,
+.pair,
+.result {
+  @include skeleton($secondary: true);
+}
+
+.spacer {
+  margin-top: 8px;
+}
+
+.title {
+  width: 120px;
+  height: 48px;
+}
+
+.pair {
+  width: 100px;
+  height: 24px;
+}
+
+.result {
+  width: 100px;
+  height: 24px;
+}

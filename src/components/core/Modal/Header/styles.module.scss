@@ -1,0 +1,144 @@
+.container {
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 24px;
+  background-color: $card-color;
+  z-index: 12;
+  position: relative;
+  border-radius: $border-radius $border-radius 0 0;
+
+  &--no-padding {
+    padding: 0px !important;
+  }
+
+  &--small-mobile-padding {
+    @include media-tablet {
+      padding-inline: 16px;
+
+      .container__back-button {
+        left: 16px;
+      }
+
+      .container__close {
+        right: 16px;
+      }
+    }
+  }
+
+  &--small-padding {
+    padding-inline: 16px;
+
+    .container__back-button {
+      left: 16px;
+    }
+
+    .container__close {
+      right: 16px;
+    }
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: $text-primary;
+    z-index: 3;
+
+    &--v2 {
+      margin-top: 16px;
+      font-size: 18px;
+    }
+  }
+
+  &__back-button {
+    position: absolute;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: $card-color;
+    @include lighen(40%);
+
+    &:hover {
+      background-color: $card-color;
+    }
+  }
+
+  &__close {
+    z-index: 9;
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 3;
+  }
+
+  &--v2 {
+    position: relative;
+    background: unset;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0;
+      z-index: 2;
+      width: 100%;
+      height: 70px;
+      background: $divider-color;
+      @include lighen(40%);
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 70%,
+        80% 70%,
+        70% 100%,
+        30% 100%,
+        20% 70%,
+        0 70%
+      );
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0;
+      z-index: 2;
+      width: 100%;
+      height: 70px;
+      background: radial-gradient(
+        ellipse at bottom center,
+        $text-primary -150%,
+        $card-color 30%
+      );
+      @include lighen(2%);
+      clip-path: polygon(
+        0px 0px,
+        100% 0px,
+        100% calc(70% - 2px),
+        calc(80% - 2px) calc(70% - 2px),
+        calc(70% - 2px) calc(100% - 2px),
+        calc(30% + 2px) calc(100% - 2px),
+        calc(20% + 2px) calc(70% - 2px),
+        0px calc(70% - 2px)
+      );
+    }
+  }
+}
+
+.title-skeleton {
+  @include skeleton($secondary: true);
+  width: 120px;
+  height: 18px;
+}

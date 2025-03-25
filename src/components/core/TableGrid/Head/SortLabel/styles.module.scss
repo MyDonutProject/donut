@@ -1,0 +1,23 @@
+.cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  &--disabled {
+    cursor: default;
+  }
+
+  &__icon {
+    font-size: 14px;
+    color: $text-secondary;
+    transition: transform 0.3s;
+
+    &--desc {
+      transform: rotate(180deg);
+    }
+
+    &--asc {
+      transform: rotate(0deg);
+    }
+  }
+}

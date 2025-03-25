@@ -1,0 +1,31 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+
+  &__description {
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    color: $text-primary;
+
+    @include media-tablet {
+      display: none;
+    }
+  }
+
+  &__highlight {
+    font-size: 34px;
+    color: $text-primary;
+    text-align: center;
+    & strong {
+      font-weight: 900;
+    }
+
+    @include media-tablet {
+      font-size: 24px;
+    }
+  }
+}

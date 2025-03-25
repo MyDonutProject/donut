@@ -1,0 +1,5 @@
+.chart-skeleton {
+  @include skeleton();
+  width: 100%;
+  height: 350px;
+}
