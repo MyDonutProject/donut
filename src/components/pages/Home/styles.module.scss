@@ -21,7 +21,7 @@
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 50%;
     top: -40px;
@@ -46,7 +46,7 @@
     width: 100%;
     max-width: 400px;
     text-align: center;
-    font-size: 50px;
+    font-size: 60px;
     font-weight: 700;
     display: flex;
     flex-direction: column;
@@ -54,9 +54,9 @@
     color: $primary-contrast-text;
 
     & strong {
-      font-family: 'Changa One', sans-serif;
-      font-size: 130px;
-      line-height: 80px;
+      font-family: "Changa One", sans-serif;
+      font-size: 150px;
+      line-height: 130px;
     }
 
     @include media-tablet {
@@ -90,7 +90,7 @@
 
     &--2 {
       max-width: min(100px, 10dvw);
-      left: calc(30dvw + -180px);
+      left: calc(10dvw + -180px);
       top: 10px;
 
       @include media-tablet {
@@ -100,7 +100,7 @@
 
     &--3 {
       top: min(5dvw, 30%);
-      right: calc(10dvw + 180px);
+      right: calc(-5dvw + 180px);
       filter: blur(2px);
 
       @include media-tablet {
@@ -113,7 +113,6 @@
       max-width: min(350px, 50dvw);
       top: min(5dvw, 50%);
       transform: rotate(-25deg) translateY(-min(5dvw, 50%));
-      
     }
   }
 }
