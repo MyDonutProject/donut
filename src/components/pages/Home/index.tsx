@@ -1,28 +1,29 @@
-import styles from './styles.module.scss';
+import styles from "./styles.module.scss";
 
-  import HomeContractAddress from './Address';
-import BuyHere from './BuyHere';
-import CommunityDriven from './CommunityDriven';
-import HomeSection from './Section';
-import Table from './Table';
-import { useMemo } from 'react';
-import { Image } from '@/components/core/Image';
-import { StaggerAnimation } from '@/components/core/Animation/Stagger';
-import TransText from 'next-translate/Trans';
+import { StaggerAnimation } from "@/components/core/Animation/Stagger";
+import { Image } from "@/components/core/Image";
+import TransText from "next-translate/Trans";
+import { useMemo } from "react";
+import BuyHere from "./BuyHere";
+import CommunityDriven from "./CommunityDriven";
+import HomeSection from "./Section";
+import Table from "./Table";
 
 export default function Home() {
   const Images = useMemo(
     () =>
       Array.from({ length: 4 }, (_, index) => (
         <Image
-          src={'/donut/assets/donut.png'}
-          className={`${styles.container__detail} ${styles[`container__detail--${index + 1}`]}`}
+          src={"/donut/assets/donut.png"}
+          className={`${styles.container__detail} ${
+            styles[`container__detail--${index + 1}`]
+          }`}
           alt={`donut-${index + 1}`}
           fetchPriority="low"
           loading="lazy"
         />
       )),
-    [],
+    []
   );
 
   return (
@@ -43,7 +44,7 @@ export default function Home() {
               }}
             />
           </h1>
-          <HomeContractAddress />
+          {/* <HomeContractAddress /> */}
           <BuyHere />
           <CommunityDriven />
           {/* <ConnectWalletButton /> */}
