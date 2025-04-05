@@ -4,12 +4,14 @@ import useBlockies from "@/hooks/blockies/useBlockies";
 import useIsHomePage from "@/hooks/layout/useIsHomePage";
 import { formatLargeString } from "@/utils/formatLargeString";
 import useTranslation from "next-translate/useTranslation";
+import { useRouter } from "next/router";
 import styles from "./styles.module.scss";
 
 export default function HeaderButton() {
   const { handleOpenAuthModal, isConnected, isSkeleton, address, status } =
     useAccount();
   const { isHomePage } = useIsHomePage();
+  const { query } = useRouter();
 
   const blockies = useBlockies(address, {
     size: 4,
@@ -21,7 +23,7 @@ export default function HeaderButton() {
     return (
       <Button
         useMaxContent
-        // onClick={handleOpenAuthModal}
+        onClick={query?.easter ? handleOpenAuthModal : undefined}
       >
         {t("comming_soon")}
         {/* {t('connect_wallet')} */}
