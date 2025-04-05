@@ -23,7 +23,7 @@ export default function HeaderButton() {
     return (
       <Button
         useMaxContent
-        onClick={query?.easter ? handleOpenAuthModal : undefined}
+        onClick={!!query?.easter ? handleOpenAuthModal : undefined}
       >
         {t("comming_soon")}
         {/* {t('connect_wallet')} */}
