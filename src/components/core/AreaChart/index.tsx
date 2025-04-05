@@ -1,27 +1,21 @@
-import { useCallback, useEffect, useRef } from "react";
+import { getComputedColor } from "@/utils/theme/colors";
 import {
   ColorType,
   createChart,
   CrosshairMode,
   LineStyle,
 } from "lightweight-charts";
+import useTranslation from "next-translate/useTranslation";
+import { useCallback, useEffect, useRef } from "react";
 import { AreaChartProps } from "./props";
 import styles from "./styles.module.scss";
-import useTranslation from "next-translate/useTranslation";
 
 export function AreaChart({ data, isLoading, currency }: AreaChartProps) {
   const { t, lang: language } = useTranslation("common");
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
-  const documentStyles = getComputedStyle(document.body);
-  const primaryColor = documentStyles
-    .getPropertyValue("--primary-color")
-    .trim();
-  const textPrimaryColor = documentStyles
-    .getPropertyValue("--text-primary-color")
-    .trim();
-  const containerColor = documentStyles
-    .getPropertyValue("--background-paper-color")
-    .trim();
+  const primaryColor = getComputedColor("--primary-color").trim();
+  const textPrimaryColor = getComputedColor("--text-primary-color").trim();
+  const containerColor = getComputedColor("--background-paper-color").trim();
 
   function convertHexToRGBA(hexCode: string, opacity = 1) {
     let hex = hexCode.replace("#", "");

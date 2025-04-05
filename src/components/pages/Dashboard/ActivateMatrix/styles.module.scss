@@ -1,0 +1,113 @@
+@keyframes up {
+  0%,
+  100% {
+    color: $text-primary;
+  }
+
+  50% {
+    color: $success-color;
+  }
+}
+
+@keyframes down {
+  0%,
+  100% {
+    color: $text-primary;
+  }
+
+  50% {
+    color: $error-color;
+  }
+}
+
+@mixin animation($direction: "up") {
+  @if $direction == "up" {
+    animation: up 1s ease-in-out;
+  }
+
+  @if $direction == "down" {
+    animation: down 1s ease-in-out;
+  }
+}
+
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-height: 180px;
+  gap: 16px;
+  border-radius: $border-radius;
+  box-shadow: 2px 2px 30px $divider-color;
+  position: relative;
+  background-color: $background-paper;
+  padding: 32px;
+  padding-right: 16px;
+
+  &__content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @include media-tablet {
+      max-width: 100%;
+    }
+  }
+
+  &__row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    &__label {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    &__value {
+      font-size: 16px;
+      color: $text-secondary;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  &__chip {
+    width: max-content;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 16px;
+    background-color: $background-paper;
+    box-shadow: 2px 2px 30px $divider-color;
+
+    &__image {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    & span {
+      font-size: 16px;
+      font-weight: 900;
+      color: $text-primary;
+    }
+  }
+
+  &__input {
+    padding-left: 100px;
+    font-size: 16px;
+    font-weight: 900;
+    color: $text-primary;
+  }
+}

@@ -1,13 +1,17 @@
-import useTranslation from 'next-translate/useTranslation';
-import styles from './styles.module.scss';
-import { Image } from '@/components/core/Image';
+import { Image } from "@/components/core/Image";
+import useTranslation from "next-translate/useTranslation";
+import styles from "./styles.module.scss";
 
 export default function BuyHere() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.container__title}>{t('buy_here')}</h2>
+    <a
+      href="https://app.meteora.ag/pools#stake2earnpools"
+      target="_blank"
+      className={styles.container}
+    >
+      <h2 className={styles.container__title}>{t("buy_here")}</h2>
       <Image
         src="/donut/assets/m3m3.png"
         alt="buy-here"
@@ -15,6 +19,6 @@ export default function BuyHere() {
         fetchPriority="low"
         loading="lazy"
       />
-    </div>
+    </a>
   );
 }

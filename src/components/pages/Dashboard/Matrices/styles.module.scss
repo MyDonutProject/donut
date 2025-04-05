@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-
   border-radius: $border-radius;
   background-color: $background-paper;
   box-shadow: 2px 2px 30px $divider-color;
@@ -24,10 +23,16 @@
       gap: 16px;
       padding: 16px;
       border-radius: $border-radius;
-      background-color: $background-default;
+      background-color: $background-paper;
+      border: 2px solid $primary-color;
       cursor: pointer;
       min-width: 180px;
       flex: 1;
+
+      &--disabled {
+        border: 2px dashed $primary-color;
+        pointer-events: none;
+      }
 
       &--owner {
         min-width: 600px;

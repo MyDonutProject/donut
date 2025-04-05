@@ -1,10 +1,10 @@
 /* eslint-disable react/no-danger */
-import { FocusEvent, ForwardedRef, useEffect, useRef, useState } from 'react';
-import { InputProps } from './props';
-import { FieldValues } from 'react-hook-form';
-import styles from './styles.module.scss';
-import { fixedForwardRef } from '@/utils/forward-ref';
-import { useToggle } from '@/hooks/useToggle';
+import { useToggle } from "@/hooks/useToggle";
+import { fixedForwardRef } from "@/utils/forward-ref";
+import { FocusEvent, ForwardedRef, useEffect, useRef, useState } from "react";
+import { FieldValues } from "react-hook-form";
+import { InputProps } from "./props";
+import styles from "./styles.module.scss";
 /**
  * Input Component
  * A highly customizable input component that supports various input types including text, password, checkbox, radio, switch, range and textarea.
@@ -83,7 +83,7 @@ function InputComponent<T extends FieldValues>(
     hasPaddingRight,
     hasPaddingLeft,
     focusOnMount,
-    className = '',
+    className = "",
     customIcon,
     rightIcon,
     type,
@@ -91,7 +91,7 @@ function InputComponent<T extends FieldValues>(
     secondarySkeleton = true,
     ...props
   }: InputProps<T>,
-  ref: ForwardedRef<HTMLInputElement>,
+  ref: ForwardedRef<HTMLInputElement>
 ) {
   const [openTooltip, setOpenTooltip] = useState<boolean>(false);
   const [isEditing, toggleIsEditing] = useToggle(true);
@@ -105,7 +105,7 @@ function InputComponent<T extends FieldValues>(
    * @param {FocusEvent} e - Focus event
    */
   function handleFocus(
-    e: FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>,
+    e: FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>
   ) {
     onFocus?.(e);
     setOpenTooltip(false);
@@ -131,10 +131,10 @@ function InputComponent<T extends FieldValues>(
    */
   function getType(): string {
     switch (type) {
-      case 'switch':
-        return 'checkbox';
-      case 'password':
-        return showPassword ? 'text' : 'password';
+      case "switch":
+        return "checkbox";
+      case "password":
+        return showPassword ? "text" : "password";
       default:
         return type;
     }
@@ -147,7 +147,7 @@ function InputComponent<T extends FieldValues>(
   function resetSearchValue(): void {
     if (inputRef?.current) {
       inputRef.current.focus();
-      inputRef.current.value = '';
+      inputRef.current.value = "";
     }
 
     onErase?.();
@@ -182,7 +182,11 @@ function InputComponent<T extends FieldValues>(
   if (isLoading) {
     return (
       <div
-        className={`${styles.skeleton} ${secondarySkeleton && !isContainerColor ? styles['skeleton--secondary'] : styles['skeleton--default']} ${!!type ? styles[`skeleton--${type}`] : ''}`}
+        className={`${styles.skeleton} ${
+          secondarySkeleton && !isContainerColor
+            ? styles["skeleton--secondary"]
+            : styles["skeleton--default"]
+        } ${!!type ? styles[`skeleton--${type}`] : ""}`}
       />
     );
   }
@@ -190,13 +194,21 @@ function InputComponent<T extends FieldValues>(
   if (useTextArea) {
     return (
       <div
-        className={`${styles.container} ${!!type ? styles[`container--${type}`] : ''} ${className ? className : ''}`}
+        className={`${styles.container} ${
+          !!type ? styles[`container--${type}`] : ""
+        } ${className ? className : ""}`}
       >
         <div
-          className={`${styles.container__relative} ${!!type ? styles[`container__relative--${type}`] : ''}`}
+          className={`${styles.container__relative} ${
+            !!type ? styles[`container__relative--${type}`] : ""
+          }`}
         >
           <div
-            className={`${styles.container__formated_value} ${!isEditing && useTextArea ? styles['container__formated_value--hidden'] : ''}`}
+            className={`${styles.container__formated_value} ${
+              !isEditing && useTextArea
+                ? styles["container__formated_value--hidden"]
+                : ""
+            }`}
             onClick={() => toggleIsEditing()}
             dangerouslySetInnerHTML={{
               //@ts-ignore
@@ -208,7 +220,21 @@ function InputComponent<T extends FieldValues>(
           />
           <textarea
             readOnly={readOnly}
-            className={`${styles.container__input} ${isEditing && useTextArea ? styles['container__input--hidden'] : ''} ${styles['container__input--text-area']} ${hasPaddingRight ? styles['container__input--figure--right'] : ''} ${hasPaddingLeft ? styles['container__input--padding-left'] : ''} ${isContainerColor ? styles['container__input--container-color'] : ''} ${isCardColor ? styles['container__input--card-color'] : ''} ${isError && openTooltip ? styles['container__input--error'] : ''} ${!!type ? styles[`container__input--${type}`] : ''} ${className}`}
+            className={`${styles.container__input} ${
+              isEditing && useTextArea ? styles["container__input--hidden"] : ""
+            } ${styles["container__input--text-area"]} ${
+              hasPaddingRight ? styles["container__input--figure--right"] : ""
+            } ${
+              hasPaddingLeft ? styles["container__input--padding-left"] : ""
+            } ${
+              isContainerColor
+                ? styles["container__input--container-color"]
+                : ""
+            } ${isCardColor ? styles["container__input--card-color"] : ""} ${
+              isError && openTooltip ? styles["container__input--error"] : ""
+            } ${
+              !!type ? styles[`container__input--${type}`] : ""
+            } ${className}`}
             ref={ref}
             onBlur={handleBlur}
             onFocus={handleFocus}
@@ -219,8 +245,8 @@ function InputComponent<T extends FieldValues>(
             type={getType()}
             style={{
               //@ts-ignore
-              '--position':
-                type == 'range'
+              "--position":
+                type == "range"
                   ? `${(Number(props?.value ?? 0) / Number(props?.max)) * 100}%`
                   : undefined,
             }}
@@ -229,7 +255,7 @@ function InputComponent<T extends FieldValues>(
               name &&
               register?.(name, {
                 ...registerOptions,
-                onBlur: e => {
+                onBlur: (e) => {
                   registerOptions?.onBlur?.(e);
                   handleBlur(e);
                 },
@@ -238,7 +264,9 @@ function InputComponent<T extends FieldValues>(
           />
           {icon && !showSpinner && (
             <i
-              className={`${styles.container__figure} ${hasPaddingRight ? styles['container__figure--right'] : ''} ${icon}`}
+              className={`${styles.container__figure} ${
+                hasPaddingRight ? styles["container__figure--right"] : ""
+              } ${icon}`}
             />
           )}
           {customIcon && !showSpinner && customIcon}
@@ -248,14 +276,14 @@ function InputComponent<T extends FieldValues>(
             (Array.isArray(errorMessage) ? (
               errorMessage.map((error, i) => (
                 <span
-                  className={styles['container__input-error']}
+                  className={styles["container__input-error"]}
                   key={`error-message-${i}`}
                 >
                   *{error}
                 </span>
               ))
             ) : (
-              <span className={styles['container__input-error']}>
+              <span className={styles["container__input-error"]}>
                 *{errorMessage}
               </span>
             ))}
@@ -266,14 +294,26 @@ function InputComponent<T extends FieldValues>(
 
   return (
     <div
-      className={`${styles.container} ${!!type ? styles[`container--${type}`] : ''} ${className ? className : ''}`}
+      className={`${styles.container} ${
+        !!type ? styles[`container--${type}`] : ""
+      } `}
     >
       <div
-        className={`${styles.container__relative} ${!!type ? styles[`container__relative--${type}`] : ''}`}
+        className={`${styles.container__relative} ${
+          !!type ? styles[`container__relative--${type}`] : ""
+        }`}
       >
         <input
           readOnly={readOnly}
-          className={`${styles.container__input} ${!!icon || !!customIcon ? styles['container__input--figure'] : ''} ${hasPaddingRight ? styles['container__input--figure--right'] : ''} ${hasPaddingLeft ? styles['container__input--padding-left'] : ''} ${isContainerColor ? styles['container__input--container-color'] : ''} ${isCardColor ? styles['container__input--card-color'] : ''} ${isError && openTooltip ? styles['container__input--error'] : ''} ${!!type ? styles[`container__input--${type}`] : ''} ${className}`}
+          className={`${styles.container__input} ${
+            !!icon || !!customIcon ? styles["container__input--figure"] : ""
+          } ${
+            hasPaddingRight ? styles["container__input--figure--right"] : ""
+          } ${hasPaddingLeft ? styles["container__input--padding-left"] : ""} ${
+            isContainerColor ? styles["container__input--container-color"] : ""
+          } ${isCardColor ? styles["container__input--card-color"] : ""} ${
+            isError && openTooltip ? styles["container__input--error"] : ""
+          } ${!!type ? styles[`container__input--${type}`] : ""} ${className}`}
           ref={ref ?? inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -282,8 +322,8 @@ function InputComponent<T extends FieldValues>(
           type={getType()}
           style={{
             //@ts-ignore
-            '--position':
-              type == 'range'
+            "--position":
+              type == "range"
                 ? `${(Number(props?.value ?? 0) / Number(props?.max)) * 100}%`
                 : undefined,
           }}
@@ -292,26 +332,32 @@ function InputComponent<T extends FieldValues>(
             name &&
             register?.(name, {
               ...registerOptions,
-              onBlur: e => {
+              onBlur: (e) => {
                 registerOptions?.onBlur?.(e);
                 handleBlur(e);
               },
             }))}
         />
-        {['checkbox', 'radio'].includes(type as string) && (
+        {["checkbox", "radio"].includes(type as string) && (
           <span
-            className={`${styles.container__input__checkmark} ${type == 'radio' ? styles['container__input__checkmark--radio'] : ''}`}
+            className={`${styles.container__input__checkmark} ${
+              type == "radio"
+                ? styles["container__input__checkmark--radio"]
+                : ""
+            }`}
           />
         )}
-        {type == 'switch' && (
+        {type == "switch" && (
           <span className={styles.container__input__switch__slider} />
         )}
-        {type == 'range' && (
+        {type == "range" && (
           <div
             className={styles.container__input__indicator}
             style={{
               //@ts-ignore
-              '--indicator-position': `${(Number(props?.value ?? 0) / Number(props?.max)) * 100}%`,
+              "--indicator-position": `${
+                (Number(props?.value ?? 0) / Number(props?.max)) * 100
+              }%`,
             }}
           >
             {props?.value}
@@ -319,7 +365,9 @@ function InputComponent<T extends FieldValues>(
         )}
         {icon && !showSpinner && (
           <i
-            className={`${styles.container__figure} ${hasPaddingRight ? styles['container__figure--right'] : ''} ${icon}`}
+            className={`${styles.container__figure} ${
+              hasPaddingRight ? styles["container__figure--right"] : ""
+            } ${icon}`}
           />
         )}
 
@@ -337,27 +385,37 @@ function InputComponent<T extends FieldValues>(
 
         {(readOnly || props?.disabled) &&
           !hideLock &&
-          !['checkbox', 'radio'].includes(type as string) && (
+          !["checkbox", "radio"].includes(type as string) && (
             <i
-              className={`${styles.container__figure} ${styles['container__figure--right']} fa-solid fa-lock ${!!type ? styles[`container__figure--${type}`] : ''}`}
+              className={`${styles.container__figure} ${
+                styles["container__figure--right"]
+              } fa-solid fa-lock ${
+                !!type ? styles[`container__figure--${type}`] : ""
+              }`}
             />
           )}
         {rightIcon && !hideLock && (
           <i
-            className={`${styles.container__figure} ${styles['container__figure--right']}  ${rightIcon}`}
+            className={`${styles.container__figure} ${styles["container__figure--right"]}  ${rightIcon}`}
           />
         )}
 
-        {type === 'password' && !icon && !rightIcon && (
+        {type === "password" && !icon && !rightIcon && (
           <i
-            className={`${styles.container__figure} ${styles['container__figure--right']} ${styles['container__figure--password']} ${showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}`}
+            className={`${styles.container__figure} ${
+              styles["container__figure--right"]
+            } ${styles["container__figure--password"]} ${
+              showPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye"
+            }`}
             onClick={toggleShowPassword}
           />
         )}
 
         {showSpinner && (
           <div
-            className={`${styles.container__figure} ${!icon ? styles['container__figure--right'] : ''}`}
+            className={`${styles.container__figure} ${
+              !icon ? styles["container__figure--right"] : ""
+            }`}
           >
             <i className="fas fa-circle-notch fa-spin" />
           </div>
@@ -370,23 +428,23 @@ function InputComponent<T extends FieldValues>(
         (Array.isArray(errorMessage) ? (
           errorMessage.map((error, i) => (
             <span
-              className={styles['container__input-error']}
+              className={styles["container__input-error"]}
               key={`error-message-${i}`}
             >
               *{error}
             </span>
           ))
         ) : (
-          <span className={styles['container__input-error']}>
+          <span className={styles["container__input-error"]}>
             *{errorMessage}
           </span>
         ))}
 
-      {type == 'range' && (
+      {type == "range" && (
         <>
           <div className={styles.container__value}>{props?.value}</div>
           <div
-            className={`${styles.container__value} ${styles['container__value--right']}`}
+            className={`${styles.container__value} ${styles["container__value--right"]}`}
           >
             {props?.max}
           </div>

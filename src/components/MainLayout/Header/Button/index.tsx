@@ -1,10 +1,11 @@
-import { formatLargeString } from '@/utils/formatLargeString';
-import { Button } from '@/components/core/Button';
-import styles from './styles.module.scss';
-import useBlockies from '@/hooks/blockies/useBlockies';
-import useAccount from '@/hooks/account/useAccount';
-import useIsHomePage from '@/hooks/layout/useIsHomePage';
-import useTranslation from 'next-translate/useTranslation';
+import { Button } from "@/components/core/Button";
+import useAccount from "@/hooks/account/useAccount";
+import useBlockies from "@/hooks/blockies/useBlockies";
+import useIsHomePage from "@/hooks/layout/useIsHomePage";
+import { formatLargeString } from "@/utils/formatLargeString";
+import useTranslation from "next-translate/useTranslation";
+import styles from "./styles.module.scss";
+
 export default function HeaderButton() {
   const { handleOpenAuthModal, isConnected, isSkeleton, address, status } =
     useAccount();
@@ -14,12 +15,15 @@ export default function HeaderButton() {
     size: 4,
     scale: 6,
   });
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
-  if (!isConnected && status !== 'connecting') {
+  if (!isConnected && status !== "connecting") {
     return (
-      <Button useMaxContent >
-        {t('comming_soon')}
+      <Button
+        useMaxContent
+        // onClick={handleOpenAuthModal}
+      >
+        {t("comming_soon")}
         {/* {t('connect_wallet')} */}
       </Button>
     );
@@ -30,9 +34,9 @@ export default function HeaderButton() {
       useMaxContent
       isActive={isHomePage}
       isSecondary={!isHomePage}
-      // onClick={handleOpenAuthModal}
+      onClick={handleOpenAuthModal}
       isSkeleton={isSkeleton}
-      className={isSkeleton ? styles.button__skeleton : ''}
+      className={isSkeleton ? styles.button__skeleton : ""}
     >
       <img src={blockies.toDataURL()} alt="avatar" className={styles.image} />
       {formatLargeString(address)}

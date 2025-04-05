@@ -10,6 +10,7 @@ export interface ModalHeaderProps {
   className?: string;
   hideCloseButton?: boolean;
   version?: string;
+  invertColor?: boolean;
 }
 
 export interface ContainerProps {

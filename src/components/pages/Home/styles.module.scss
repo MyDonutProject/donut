@@ -56,7 +56,7 @@
     & strong {
       font-family: "Changa One", sans-serif;
       font-size: 150px;
-      line-height: 130px;
+      line-height: 70px;
     }
 
     @include media-tablet {
@@ -99,8 +99,8 @@
     }
 
     &--3 {
-      top: min(5dvw, 30%);
-      right: calc(-5dvw + 180px);
+      top: min(8dvw, 30%);
+      right: calc(-3dvw + 180px);
       filter: blur(2px);
 
       @include media-tablet {
@@ -109,7 +109,7 @@
     }
 
     &--4 {
-      right: calc(-30dvw + min(350px, 20dvw));
+      right: calc(-40dvw + min(350px, 20dvw));
       max-width: min(350px, 50dvw);
       top: min(5dvw, 50%);
       transform: rotate(-25deg) translateY(-min(5dvw, 50%));

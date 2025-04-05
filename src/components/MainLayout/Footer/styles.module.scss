@@ -4,6 +4,7 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  padding-inline: 32px;
 
   &__icon {
     width: 36px;
@@ -19,6 +20,5 @@
     &:hover {
       background-color: $secondary-color;
     }
-    
   }
 }

@@ -94,5 +94,14 @@
   "copy_base_title": "Copié!",
   "copy_url": "Maintenant, il ne reste qu'à envoyer à vos futurs affiliés !",
   "copy": "Copier",
-  "comming_soon": "Bientôt disponible"
+  "comming_soon": "Bientôt disponible",
+  "activate_matrix_title": "Activer la Matrice",
+  "sending_label": "Envoi",
+  "rate_label": "Taux",
+  "fee_label": "Frais de réseau",
+  "activate_matrix_button": "Envoyer",
+  "my_matrices": "Mes Matrices",
+  "minted_donuts": "Beignets frappés",
+  "earned_sol": "Solanas gagnés",
+  "registered_at": "Inscrit le {{date}}"
 }

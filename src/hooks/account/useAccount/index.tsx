@@ -1,25 +1,47 @@
-import { useAppKitAccount, useDisconnect } from '@reown/appkit/react';
-import { useAppKit } from '@reown/appkit/react';
-import { useCallback, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { ModalsKey } from '@/enums/modalsKey';
+import { ModalsKey } from "@/enums/modalsKey";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import {
+  useAppKit,
+  useAppKitAccount,
+  useDisconnect,
+} from "@reown/appkit/react";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
 
 export default function useAccount() {
+  const [balance, setBalance] = useState<number>(0);
   const {
     isConnected: appKitIsConnected,
     address,
     status,
   } = useAppKitAccount();
+  const { connection } = useAppKitConnection();
+
+  function effectToGetBalance() {
+    const handleGetBalance = async () => {
+      const wallet = new PublicKey(address);
+      const balance = await connection?.getBalance(wallet);
+      setBalance(balance / LAMPORTS_PER_SOL);
+    };
+
+    if (!address || !connection) {
+      return;
+    }
+
+    handleGetBalance();
+  }
+
+  useEffect(effectToGetBalance, [address, connection]);
   const { disconnect } = useDisconnect();
   const { push } = useRouter();
 
   const { open } = useAppKit();
-  const isSkeleton = !appKitIsConnected && status === 'connecting';
-  const isConnected = appKitIsConnected || status === 'connected';
-  
+  const isSkeleton = !appKitIsConnected && status === "connecting";
+  const isConnected = appKitIsConnected || status === "connected";
 
   const handleDisconnectTimeout = useCallback(() => {
-    if (status === 'connecting') {
+    if (status === "connecting") {
       const timeout = setTimeout(() => {
         disconnect();
       }, 3000);
@@ -31,7 +53,7 @@ export default function useAccount() {
   useEffect(handleDisconnectTimeout, [handleDisconnectTimeout]);
 
   const handleOpenAuthModal = useCallback(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -39,21 +61,21 @@ export default function useAccount() {
 
     if (isConnected && !isMobile) {
       open({
-        view: 'Account',
+        view: "Account",
       });
       return;
     }
 
     if (isMobile) {
       push({
-        hash: ModalsKey.ProfileDetails
+        hash: ModalsKey.ProfileDetails,
       });
       return;
     }
 
     open({
-      view: 'Connect',
-      namespace: 'solana',
+      view: "Connect",
+      namespace: "solana",
     });
   }, [isConnected, open]);
 
@@ -63,5 +85,6 @@ export default function useAccount() {
     status,
     isSkeleton,
     handleOpenAuthModal,
+    balance,
   };
 }

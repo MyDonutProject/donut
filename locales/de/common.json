@@ -95,5 +95,14 @@
   "copy_base_title": "Kopiert!",
   "copy_url": "Jetzt ist es nur noch, es an Ihre zukünftigen Affiliates zu senden!",
   "copy": "Kopieren",
-  "comming_soon": "Bald verfügbar"
+  "comming_soon": "Bald verfügbar",
+  "activate_matrix_title": "Matrix aktivieren",
+  "sending_label": "Senden",
+  "rate_label": "Kurs",
+  "fee_label": "Netzwerkgebühr",
+  "activate_matrix_button": "Senden",
+  "my_matrices": "Meine Matrizen",
+  "minted_donuts": "Geprägte Donuts",
+  "earned_sol": "Verdiente Solanas",
+  "registered_at": "Registriert am {{date}}"
 }

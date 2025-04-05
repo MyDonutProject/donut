@@ -1,19 +1,21 @@
-import styles from './styles.module.scss';
-import LanguageButton from '../Language/Button';
-import Link from '@/components/core/Link';
-import HeaderButton from './Button';
-import HeaderMenu from './Menu';
-import useIsHomePage from '@/hooks/layout/useIsHomePage';
+import Link from "@/components/core/Link";
+import useIsHomePage from "@/hooks/layout/useIsHomePage";
+import LanguageButton from "../Language/Button";
+import HeaderButton from "./Button";
+import HeaderMenu from "./Menu";
+import styles from "./styles.module.scss";
 
 function Header() {
   const { isHomePage } = useIsHomePage();
 
   return (
     <div
-      className={`${styles.container} ${!isHomePage ? styles['container--navigation'] : ''}`}
+      className={`${styles.container} ${
+        !isHomePage ? styles["container--navigation"] : ""
+      }`}
     >
       <span className={styles.container__wrapper}>
-        <Link href={'/'}>
+        <Link href={"/"}>
           <img
             className={styles.container__logo}
             alt="Logo"

@@ -1,8 +1,8 @@
-import { ModalHeaderProps } from './props';
-import CloseButton from './CloseButton';
-import styles from './styles.module.scss';
-import { Button } from '../../Button';
-import useTranslation from 'next-translate/useTranslation';
+import useTranslation from "next-translate/useTranslation";
+import { Button } from "../../Button";
+import CloseButton from "./CloseButton";
+import { ModalHeaderProps } from "./props";
+import styles from "./styles.module.scss";
 
 /**
  * ModalHeader Component
@@ -43,7 +43,7 @@ import useTranslation from 'next-translate/useTranslation';
 export function ModalHeader({
   title,
   onClose,
-  className = '',
+  className = "",
   isLoading,
   handleGoBack,
   smallPadding,
@@ -52,8 +52,9 @@ export function ModalHeader({
   hideCloseButton,
   smallMobilePadding,
   version,
+  invertColor,
 }: ModalHeaderProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   /**
    * Handles the back button click event
@@ -68,7 +69,13 @@ export function ModalHeader({
 
   return (
     <div
-      className={`${styles.container} ${withoutPadding ? styles['container--no-padding'] : ''} ${smallMobilePadding ? styles['container--small-mobile-padding'] : ''} ${smallPadding ? styles['container--small-padding'] : ''} ${className}`}
+      className={`${styles.container} ${
+        withoutPadding ? styles["container--no-padding"] : ""
+      } ${
+        smallMobilePadding ? styles["container--small-mobile-padding"] : ""
+      } ${smallPadding ? styles["container--small-padding"] : ""} ${
+        invertColor ? styles["container--invert-color"] : ""
+      } ${className}`}
     >
       {withBackButton && (
         <Button
@@ -77,15 +84,15 @@ export function ModalHeader({
           onClick={onGoBack}
           isSecondary
           useMaxContent
-          className={styles['container__back-button']}
+          className={styles["container__back-button"]}
         >
           <i className="fa-solid fa-arrow-left" />
-          <span>{t('back_button')}</span>
+          <span>{t("back_button")}</span>
         </Button>
       )}
 
       {isLoading ? (
-        <div className={styles['title-skeleton']} />
+        <div className={styles["title-skeleton"]} />
       ) : (
         <h3 className={styles.container__title}>{title}</h3>
       )}

@@ -95,5 +95,14 @@
   "copy_base_title": "Copiado!",
   "copy_url": "Agora é só enviar aos seus futuros afiliados!",
   "copy": "Copiar",
-  "comming_soon": "Em breve"
+  "comming_soon": "Em breve",
+  "activate_matrix_title": "Ativar Matriz",
+  "sending_label": "Enviando",
+  "rate_label": "Taxa",
+  "fee_label": "Taxa de Rede",
+  "activate_matrix_button": "Enviar",
+  "my_matrices": "Minhas Matrizes",
+  "minted_donuts": "Donuts mintados",
+  "earned_sol": "Solanas Ganhas",
+  "registered_at": "Cadastrado em {{date}}"
 }

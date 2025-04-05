@@ -95,5 +95,14 @@
   "copy_base_title": "Copied!",
   "copy_url": "Now it's just send to your future affiliates!",
   "copy": "Copy",
-  "comming_soon": "Coming soon"
+  "comming_soon": "Coming soon",
+  "activate_matrix_title": "Activate matrix",
+  "sending_label": "Sending",
+  "rate_label": "Rate",
+  "fee_label": "Network Fee",
+  "activate_matrix_button": "Send",
+  "my_matrices": "My Matrices",
+  "minted_donuts": "Minted Donuts",
+  "earned_sol": "Earned Solanas",
+  "registered_at": "Registered at {{date}}"
 }
