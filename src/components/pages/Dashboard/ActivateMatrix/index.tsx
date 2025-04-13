@@ -1,23 +1,41 @@
 import { useBinanceTicker } from "@/api/binance/queries";
+import { usePrepareAccounts } from "@/api/contracts/mutations/usePrepareAccounts";
 import { Button } from "@/components/core/Button";
 import { ErrorCard } from "@/components/core/ErrorCard";
 import { Input } from "@/components/core/Input";
 import useAccount from "@/hooks/account/useAccount";
+import { useProgram } from "@/hooks/contract/useProgram";
 import { Decimal } from "@/lib/Decimal";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import useTranslation from "next-translate/useTranslation";
+import { useForm } from "react-hook-form";
 import styles from "./styles.module.scss";
 
 export default function ActivateMatrix() {
   const { t } = useTranslation("common");
-  const { balance } = useAccount();
+  const { balance, connection } = useAccount();
+  const { handleSubmit, register } = useForm<{ amount: number }>();
+  const { program } = useProgram();
+  const { mutate, isPending } = usePrepareAccounts();
+  const { wallet } = useWallet();
+  const anchorWallet = useAnchorWallet();
   const {
     data: tickerData,
-    isPending: isTickerPending,
     error: tickerError,
     refetch: refetchTicker,
   } = useBinanceTicker({ symbol: "SOLUSDT" });
 
   const error = tickerError;
+
+  function onSubmit(data: { amount: number }) {
+    mutate({
+      amount: data.amount.toString(),
+      connection: connection,
+      program: program,
+      wallet,
+      anchorWallet,
+    });
+  }
 
   function handleRefetch() {
     if (tickerError) {
@@ -31,7 +49,7 @@ export default function ActivateMatrix() {
 
   return (
     <div className={styles.card}>
-      <div className={styles.card__content}>
+      <form className={styles.card__content} onSubmit={handleSubmit(onSubmit)}>
         <h1>{t("activate_matrix_title")}</h1>
         <div className={styles.card__row}>
           <span className={styles.card__row__label}>{t("sending_label")}</span>
@@ -41,7 +59,8 @@ export default function ActivateMatrix() {
           </span>
         </div>
         <Input
-          value={0.058}
+          register={register}
+          name="amount"
           className={styles.card__input}
           customIcon={
             <div className={styles.card__chip}>
@@ -66,13 +85,13 @@ export default function ActivateMatrix() {
         <div className={styles.card__row}>
           <div className={styles.card__row__value}>{t("fee_label")}</div>
           <div className={styles.card__row__label}>
-            <span>{0.000004} SOL</span>
+            <span>{0.01} SOL</span>
           </div>
         </div>
-        <Button>
+        <Button disabled={isPending} isloading={isPending}>
           <span>{t("activate_matrix_button")}</span>
         </Button>
-      </div>
+      </form>
     </div>
   );
 }

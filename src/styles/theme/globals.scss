@@ -1,11 +1,11 @@
-@import 'common';
-@import 'light-theme';
-@import 'dark-theme';
-@import 'skeleton';
-@import 'main';
+@import "common";
+@import "light-theme";
+@import "dark-theme";
+@import "skeleton";
+@import "main";
 
 * {
-  font-family: $font-family, 'Inter', sans-serif;
+  font-family: $font-family, "Inter", sans-serif;
 }
 
 :root {
@@ -14,7 +14,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: $font-family, 'Inter', sans-serif;
+  font-family: $font-family, "Inter", sans-serif;
   color: $text-primary;
 }
 
@@ -25,7 +25,7 @@ h4,
 h5,
 h6 {
   background-color: unset;
-  font-family: 'Changa One', sans-serif;
+  font-family: "Changa One", sans-serif;
 }
 
 a {
@@ -37,11 +37,11 @@ a:-webkit-any-link {
   color: $text-primary;
 }
 
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   @include light-theme;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   @include dark-theme;
 }
 
@@ -61,7 +61,7 @@ body {
     }
   }
 
-  input[type='number'] {
+  input[type="number"] {
     -moz-appearance: textfield;
     appearance: textfield;
   }
@@ -102,7 +102,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -145,4 +145,15 @@ MuiAutocomplete-popper {
 
 #tv-attr-logo {
   display: none !important;
+}
+
+.wallet-adapter-button-trigger {
+  background: $primary-color !important;
+  border-radius: 8px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.wallet-adapter-dropdown-list,
+.wallet-adapter-button {
+  font-family: inherit !important;
 }

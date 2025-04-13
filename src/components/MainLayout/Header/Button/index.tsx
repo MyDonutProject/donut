@@ -1,47 +1,8 @@
-import { Button } from "@/components/core/Button";
-import useAccount from "@/hooks/account/useAccount";
-import useBlockies from "@/hooks/blockies/useBlockies";
-import useIsHomePage from "@/hooks/layout/useIsHomePage";
-import { formatLargeString } from "@/utils/formatLargeString";
+import { WalletButton } from "@/providers/Solana";
 import useTranslation from "next-translate/useTranslation";
-import { useRouter } from "next/router";
-import styles from "./styles.module.scss";
 
 export default function HeaderButton() {
-  const { handleOpenAuthModal, isConnected, isSkeleton, address, status } =
-    useAccount();
-  const { isHomePage } = useIsHomePage();
-  const { query } = useRouter();
-
-  const blockies = useBlockies(address, {
-    size: 4,
-    scale: 6,
-  });
   const { t } = useTranslation("common");
 
-  if (!isConnected && status !== "connecting") {
-    return (
-      <Button
-        useMaxContent
-        onClick={!!query?.easter ? handleOpenAuthModal : undefined}
-      >
-        {t("comming_soon")}
-        {/* {t('connect_wallet')} */}
-      </Button>
-    );
-  }
-
-  return (
-    <Button
-      useMaxContent
-      isActive={isHomePage}
-      isSecondary={!isHomePage}
-      onClick={handleOpenAuthModal}
-      isSkeleton={isSkeleton}
-      className={isSkeleton ? styles.button__skeleton : ""}
-    >
-      <img src={blockies.toDataURL()} alt="avatar" className={styles.image} />
-      {formatLargeString(address)}
-    </Button>
-  );
+  return <WalletButton></WalletButton>;
 }

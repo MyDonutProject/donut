@@ -1,90 +1,55 @@
-import { ModalsKey } from "@/enums/modalsKey";
-import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
-import {
-  useAppKit,
-  useAppKitAccount,
-  useDisconnect,
-} from "@reown/appkit/react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useAccount() {
   const [balance, setBalance] = useState<number>(0);
-  const {
-    isConnected: appKitIsConnected,
-    address,
-    status,
-  } = useAppKitAccount();
-  const { connection } = useAppKitConnection();
+  const wallet = useWallet();
+
+  const { connection } = useConnection();
+  const myPublicKey = !!wallet.publicKey
+    ? new PublicKey(wallet.publicKey)
+    : null;
 
   function effectToGetBalance() {
     const handleGetBalance = async () => {
-      const wallet = new PublicKey(address);
-      const balance = await connection?.getBalance(wallet);
+      if (!myPublicKey) {
+        return;
+      }
+
+      const balance = await connection?.getBalance(myPublicKey);
       setBalance(balance / LAMPORTS_PER_SOL);
     };
 
-    if (!address || !connection) {
+    if (!myPublicKey || !connection) {
       return;
     }
 
     handleGetBalance();
   }
 
-  useEffect(effectToGetBalance, [address, connection]);
-  const { disconnect } = useDisconnect();
-  const { push } = useRouter();
+  useEffect(effectToGetBalance, [myPublicKey, connection]);
 
-  const { open } = useAppKit();
-  const isSkeleton = !appKitIsConnected && status === "connecting";
-  const isConnected = appKitIsConnected || status === "connected";
+  const isSkeleton = !wallet.connected && wallet.connecting;
+  const isConnected = wallet.connected || wallet.connecting;
 
   const handleDisconnectTimeout = useCallback(() => {
     if (status === "connecting") {
       const timeout = setTimeout(() => {
-        disconnect();
+        wallet.disconnect();
       }, 3000);
 
       return () => clearTimeout(timeout);
     }
-  }, [status, disconnect]);
+  }, [wallet.connected, wallet.connecting]);
 
   useEffect(handleDisconnectTimeout, [handleDisconnectTimeout]);
 
-  const handleOpenAuthModal = useCallback(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const isMobile = window.innerWidth < 768;
-
-    if (isConnected && !isMobile) {
-      open({
-        view: "Account",
-      });
-      return;
-    }
-
-    if (isMobile) {
-      push({
-        hash: ModalsKey.ProfileDetails,
-      });
-      return;
-    }
-
-    open({
-      view: "Connect",
-      namespace: "solana",
-    });
-  }, [isConnected, open]);
-
   return {
     isConnected,
-    address,
-    status,
     isSkeleton,
-    handleOpenAuthModal,
     balance,
+    myPublicKey,
+    connection,
   };
 }
