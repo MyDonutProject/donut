@@ -62,20 +62,20 @@ export async function fetchPrepareAccounts({
 
     console.log(referrerInfo, "referrerInfo");
 
-    console.log("✅ Referenciador verificado");
-    console.log("🔢 Profundidade: " + referrerInfo.upline.depth.toString());
+    console.log("✅ Referrer verified");
+    console.log("🔢 Depth: " + referrerInfo.upline.depth.toString());
 
     const nextSlotIndex = referrerInfo.chain.filledSlots;
     if (nextSlotIndex >= 3) {
-      console.log("⚠️ ATENÇÃO: A matriz do referenciador já está cheia!");
+      console.log("⚠️ WARNING: Referrer matrix is already full!");
       return null;
     }
 
     console.log(
-      "🎯 VOCÊ PREENCHERÁ O SLOT " + (nextSlotIndex + 1) + " DA MATRIZ"
+      "🎯 YOU WILL FILL SLOT " + (nextSlotIndex + 1) + " OF THE MATRIX"
     );
 
-    console.log("\n🔍 VERIFICANDO SUA CONTA...");
+    console.log("\n🔍 VERIFYING YOUR ACCOUNT...");
 
     const [userAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from("user_account"), wallet.adapter.publicKey.toBuffer()],
@@ -85,11 +85,11 @@ export async function fetchPrepareAccounts({
     try {
       const userInfo = await program.account.userAccount.fetch(userAccount);
       if (userInfo.isRegistered) {
-        console.log("⚠️ Você já está registrado no sistema!");
+        console.log("⚠️ YOU ARE ALREADY REGISTERED IN THE SYSTEM!");
         return null;
       }
     } catch (e) {
-      console.log("✅ Prosseguindo com o registro...");
+      console.log("✅ Proceeding with registration...");
     }
 
     // 4. Obter ATA do usuário para WSOL
@@ -97,7 +97,7 @@ export async function fetchPrepareAccounts({
       mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
       owner: wallet.adapter.publicKey,
     });
-    console.log("🔑 WSOL ATA que será usada: " + userWsolAccount.toString());
+    console.log("🔑 WSOL ATA that will be used: " + userWsolAccount.toString());
 
     // 5. Verificar se a conta WSOL já existe e tem saldo suficiente
     const wsolAccountStatus = await checkWsolAccount(
@@ -136,7 +136,7 @@ export async function fetchPrepareAccounts({
           const uplines = referrerInfo.upline.upline;
 
           if (uplines && uplines.length > 0) {
-            console.log(`  Encontradas ${uplines.length} uplines disponíveis`);
+            console.log(`  Found ${uplines.length} available uplines`);
             // CORREÇÃO: Passar o filledSlots do referenciador para a função
             const recursiveData = await prepareUplinesForRecursion(
               uplines,
@@ -155,10 +155,10 @@ export async function fetchPrepareAccounts({
             // Atualizar flags e contas de upline
             uplinesData = recursiveData;
           } else {
-            console.log("  Referenciador não tem uplines anteriores");
+            console.log("  Referrer has no previous uplines");
           }
         } catch (e) {
-          console.log(`❌ Erro ao preparar recursividade: ${e.message}`);
+          console.log(`❌ Error preparing recursion: ${e.message}`);
           return null;
         }
       }
@@ -186,12 +186,12 @@ export async function fetchPrepareAccounts({
       !wsolAccountStatus.exists ||
       wsolAccountStatus.balance < depositAmount.toNumber()
     ) {
-      console.log("\n💱 PREPARANDO CONTA WSOL PARA DEPÓSITO...");
+      console.log("\n💱 PREPARING WSOL ACCOUNT FOR DEPOSIT...");
 
       // Fechar a conta WSOL existente se necessário
       if (wsolAccountStatus.exists) {
         try {
-          console.log("  Fechando conta WSOL existente para recriá-la...");
+          console.log("  Closing existing WSOL account to recreate it...");
           const closeIx = new TransactionInstruction({
             keys: [
               { pubkey: userWsolAccount, isSigner: false, isWritable: true },
@@ -220,17 +220,17 @@ export async function fetchPrepareAccounts({
             signedCloseTx.serialize()
           );
           await connection.confirmTransaction(closeTxid, "confirmed");
-          console.log("  ✅ Conta WSOL fechada com sucesso");
+          console.log("  ✅ WSOL account closed successfully");
         } catch (closeErr) {
           console.log(
-            "  ⚠️ Erro ao fechar conta WSOL existente: " + closeErr.message
+            "  ⚠️ Error closing existing WSOL account: " + closeErr.message
           );
         }
       }
 
       // Criar nova conta WSOL
       console.log(
-        `\n💱 CRIANDO CONTA WSOL COM DEPÓSITO DE: ${
+        `\n💱 CREATING WSOL ACCOUNT WITH DEPOSIT OF: ${
           depositAmount.toNumber() / 1e9
         } SOL...`
       );
@@ -308,7 +308,7 @@ export async function fetchPrepareAccounts({
       );
 
       await connection.confirmTransaction(wsolTxid, "confirmed");
-      console.log(`✅ Conta WSOL criada e financiada com sucesso!`);
+      console.log(`✅ WSOL account created and funded successfully!`);
 
       // Verificar o saldo final da conta WSOL
       try {
@@ -316,17 +316,17 @@ export async function fetchPrepareAccounts({
           userWsolAccount
         );
         console.log(
-          `  Saldo final da conta WSOL: ${finalTokenInfo.value.amount} lamports`
+          `  Final WSOL account balance: ${finalTokenInfo.value.amount} lamports`
         );
       } catch (e) {
-        console.log("  ⚠️ Erro ao verificar saldo final WSOL: " + e.message);
+        console.log("  ⚠️ Error checking final WSOL balance: " + e.message);
       }
     } else {
       console.log(
-        `\n✅ Conta WSOL já existe com saldo suficiente: ${wsolAccountStatus.balance} lamports`
+        `\n✅ WSOL account already exists with sufficient balance: ${wsolAccountStatus.balance} lamports`
       );
       console.log(
-        `  Saldo necessário para depósito: ${depositAmount.toNumber()} lamports`
+        `  Required deposit balance: ${depositAmount.toNumber()} lamports`
       );
     }
 
@@ -389,10 +389,10 @@ export async function fetchPrepareAccounts({
           signedCloseTx.serialize()
         );
         await connection.confirmTransaction(closeTxid, "confirmed");
-        console.log("✅ Conta WSOL fechada e fundos recuperados");
+        console.log("✅ WSOL account closed and funds recovered");
       }
     } catch (e) {
-      // Ignorar erros aqui
+      // Ignore errors here
     }
     throw err;
   }

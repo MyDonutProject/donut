@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 export default function useAccount() {
   const [balance, setBalance] = useState<number>(0);
   const wallet = useWallet();
+  const address = wallet.publicKey?.toBase58();
 
   const { connection } = useConnection();
   const myPublicKey = !!wallet.publicKey
@@ -51,5 +52,6 @@ export default function useAccount() {
     balance,
     myPublicKey,
     connection,
+    address,
   };
 }

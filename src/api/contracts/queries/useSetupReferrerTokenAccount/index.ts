@@ -1,6 +1,6 @@
 import useAccount from "@/hooks/account/useAccount";
 import { GenericError } from "@/models/generic-error";
-import { Provider, useAppKitProvider } from "@reown/appkit/react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ContractQueryKeys } from "../../queryKeys";
@@ -14,8 +14,8 @@ import { fetchSetupReferrerTokenAccount } from "./service";
 export function useSetupReferrerTokenAccount({
   referrerAddress,
 }: UseSetupReferrerTokenAccountProps) {
-  const { address, connection, isConnected } = useAccount();
-  const { walletProvider } = useAppKitProvider<Provider>("solana");
+  const { connection, isConnected, address } = useAccount();
+  const anchorWallet = useAnchorWallet();
 
   const queryKey: UseSetupReferrerTokenAccountQueryKeyProps = [
     ContractQueryKeys.REFERRER_TOKEN_ACCOUNT,
@@ -29,14 +29,12 @@ export function useSetupReferrerTokenAccount({
     UseSetupReferrerTokenAccountQueryKeyProps
   >({
     queryKey,
-    retry: false,
     queryFn: (context) =>
       fetchSetupReferrerTokenAccount({
         ...context,
         //@ts-ignore
         connection,
-        //@ts-ignore
-        walletProvider,
+        anchorWallet,
       }),
     enabled: !!referrerAddress && isConnected,
   });

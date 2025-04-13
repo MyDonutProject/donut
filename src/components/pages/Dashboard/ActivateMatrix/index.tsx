@@ -18,6 +18,7 @@ export default function ActivateMatrix() {
   const { program } = useProgram();
   const { mutate, isPending } = usePrepareAccounts();
   const { wallet } = useWallet();
+
   const anchorWallet = useAnchorWallet();
   const {
     data: tickerData,
