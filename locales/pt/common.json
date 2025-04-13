@@ -104,5 +104,8 @@
   "my_matrices": "Minhas Matrizes",
   "minted_donuts": "Donuts mintados",
   "earned_sol": "Solanas Ganhas",
-  "registered_at": "Cadastrado em {{date}}"
+  "registered_at": "Cadastrado em {{date}}",
+  "sponsor_label": "Endereço do patrocinador",
+  "sponsor_button": "Confirmar",
+  "confirm": "Confirmar"
 }

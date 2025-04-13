@@ -22,11 +22,17 @@ const NotificationToasty = dynamic(
 );
 
 // App.tsx
+import SponsorModal from "@/components/core/SponsorModal";
+import { ModalsKey } from "@/enums/modalsKey";
 import { ClusterProvider } from "@/providers/Cluster";
 import { SolanaProvider } from "@/providers/Solana";
 import QueryClientProvider from "@/providers/queryClientProvider";
+import { hasCookie, setCookie } from "cookies-next/client";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 function MainApp({ Component, ...rest }: any) {
+  const { query, push } = useRouter();
   const { store, props } = wrapper.useWrappedStore(rest);
   useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);
 
@@ -34,6 +40,25 @@ function MainApp({ Component, ...rest }: any) {
     store.dispatch(setSettings(props?.pageProps?.settings));
   }
   const dehydratedState = props?.pageProps?.dehydratedState;
+
+  function handleSetSponsor() {
+    if (typeof window === "undefined") return;
+
+    if (!hasCookie("sponsor")) {
+      push({
+        hash: ModalsKey.Sponsor,
+      });
+      return;
+    }
+
+    if (query?.sponsor) {
+      setCookie("sponsor", query?.sponsor, {
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+  }
+
+  useEffect(handleSetSponsor, []);
 
   return (
     <main>
@@ -70,6 +95,7 @@ function MainApp({ Component, ...rest }: any) {
               <NotificationToasty />
               <ClusterProvider>
                 <SolanaProvider>
+                  <SponsorModal />
                   <MainLayout>
                     <Component {...props?.pageProps} suppressHydrationWarning />
                   </MainLayout>

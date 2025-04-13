@@ -3,6 +3,7 @@ import { GenericError } from "@/models/generic-error";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { getCookie } from "cookies-next/client";
 import { ContractQueryKeys } from "../../queryKeys";
 import {
   UseSetupReferrerTokenAccountProps,
@@ -19,7 +20,7 @@ export function useSetupReferrerTokenAccount({
 
   const queryKey: UseSetupReferrerTokenAccountQueryKeyProps = [
     ContractQueryKeys.REFERRER_TOKEN_ACCOUNT,
-    { referrerAddress, address },
+    { referrerAddress: getCookie("sponsor") ?? referrerAddress, address },
   ];
 
   const { data, isFetching, error, refetch, ...query } = useQuery<
@@ -29,6 +30,7 @@ export function useSetupReferrerTokenAccount({
     UseSetupReferrerTokenAccountQueryKeyProps
   >({
     queryKey,
+    retry: false,
     queryFn: (context) =>
       fetchSetupReferrerTokenAccount({
         ...context,

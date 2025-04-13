@@ -103,5 +103,8 @@
   "my_matrices": "Mes Matrices",
   "minted_donuts": "Beignets frappés",
   "earned_sol": "Solanas gagnés",
-  "registered_at": "Inscrit le {{date}}"
+  "registered_at": "Inscrit le {{date}}",
+  "sponsor_label": "Adresse du parrain",
+  "sponsor_button": "Confirmer",
+  "confirm": "Confirmer"
 }
