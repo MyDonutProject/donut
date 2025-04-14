@@ -24,6 +24,7 @@ const NotificationToasty = dynamic(
 // App.tsx
 import SponsorModal from "@/components/core/SponsorModal";
 import { ModalsKey } from "@/enums/modalsKey";
+import useAccount from "@/hooks/account/useAccount";
 import { ClusterProvider } from "@/providers/Cluster";
 import { SolanaProvider } from "@/providers/Solana";
 import QueryClientProvider from "@/providers/queryClientProvider";
@@ -35,13 +36,14 @@ function MainApp({ Component, ...rest }: any) {
   const { query, push } = useRouter();
   const { store, props } = wrapper.useWrappedStore(rest);
   useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);
+  const { address } = useAccount();
   if (props?.pageProps?.settings) {
     store.dispatch(setSettings(props?.pageProps?.settings));
   }
   const dehydratedState = props?.pageProps?.dehydratedState;
 
   function handleSetSponsor() {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !!address) {
       return;
     }
 
@@ -59,7 +61,7 @@ function MainApp({ Component, ...rest }: any) {
     }
   }
 
-  useEffect(handleSetSponsor, []);
+  useEffect(handleSetSponsor, [address]);
 
   return (
     <main>
