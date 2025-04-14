@@ -1,29 +1,32 @@
-import { Button } from '@/components/core/Button';
-import { Input } from '@/components/core/Input';
-import styles from './styles.module.scss';
-import useTranslation from 'next-translate/useTranslation';
-import { useNotificationService } from '@/hooks/notifications/useNotificationService';
+import { useUserAccount } from "@/api/account";
+import { Button } from "@/components/core/Button";
+import { Input } from "@/components/core/Input";
+import { useNotificationService } from "@/hooks/notifications/useNotificationService";
+import useTranslation from "next-translate/useTranslation";
+import styles from "./styles.module.scss";
 
 export default function DashboardInvite() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const { NotificationsService } = useNotificationService();
+  const { data: userAccount, voucherUrl } = useUserAccount();
 
   function handleCopy() {
-    navigator.clipboard.writeText('donut.io/0x1234..5678');
+    navigator.clipboard.writeText(voucherUrl);
     NotificationsService.success({
-      title: t('copy_base_title'),
-      message: t('copy_url'),
+      title: t("copy_base_title"),
+      message: t("copy_url"),
     });
   }
 
   return (
     <div className={styles.card}>
       <div className={styles.card__content}>
-        <h2 className={styles.card__content__title}>{t('invite_title')}</h2>
+        <h2 className={styles.card__content__title}>{t("invite_title")}</h2>
         <div className={styles.card__content__input}>
           <Input
-            value="donut.io/0x1234..5678"
+            value={voucherUrl}
             readOnly
+            hasPaddingLeft={false}
             hideLock
             className={styles.card__content__input}
             customIcon={
@@ -32,7 +35,7 @@ export default function DashboardInvite() {
                 useMaxContent
                 onClick={handleCopy}
               >
-                {t('copy')}
+                {t("copy")}
               </Button>
             }
           />

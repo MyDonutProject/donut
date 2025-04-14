@@ -107,5 +107,7 @@
   "registered_at": "Cadastrado em {{date}}",
   "sponsor_label": "Endereço do patrocinador",
   "sponsor_button": "Confirmar",
-  "confirm": "Confirmar"
+  "confirm": "Confirmar",
+  "no_data_title": "Não há dados",
+  "no_data_found": "Não há dados para exibir"
 }

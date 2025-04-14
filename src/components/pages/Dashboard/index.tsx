@@ -1,4 +1,5 @@
-import useContractInteraction from "@/hooks/contract/useContractInteraction";
+import { useUserAccount } from "@/api/account";
+import { ErrorCard } from "@/components/core/ErrorCard";
 import ActivateMatrix from "./ActivateMatrix";
 import DashboardChart from "./Chart";
 import DashboardInvite from "./Invite";
@@ -6,10 +7,13 @@ import DashboardMatrices from "./Matrices";
 import DashboardRewards from "./Rewards";
 
 export default function Dashboard() {
-  const { referrerTokenAccount } = useContractInteraction();
-  const isActivated = !!referrerTokenAccount;
+  const { data: userAccount, error, refetch } = useUserAccount();
 
-  if (!isActivated) {
+  if (error) {
+    return <ErrorCard error={error} refetch={refetch} />;
+  }
+
+  if (!userAccount?.isRegistered) {
     return (
       <>
         <DashboardRewards />

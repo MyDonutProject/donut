@@ -1,7 +1,6 @@
-import styles from './styles.module.scss';
-import { useLottiePlayer } from '@/hooks/useLottiePlayer';
-import { NoDataComponentProps } from './props';
-import useTranslation from 'next-translate/useTranslation';
+import useTranslation from "next-translate/useTranslation";
+import { NoDataComponentProps } from "./props";
+import styles from "./styles.module.scss";
 
 /**
  * NoDataComponent
@@ -31,22 +30,25 @@ export function NoDataComponent({
   isSmall,
   tableStyles,
 }: NoDataComponentProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   // Initialize Lottie animation player with empty search animation
-  const { lottieAnimationRef } = useLottiePlayer({
-    path: '/empty-search.json',
-    loop: true,
-  });
 
   return (
     <div
-      className={`${styles.container} ${isSecondaryStyles ? styles['container--secondary-styles'] : ''} ${isSmall ? styles['container--small'] : ''} ${tableStyles ? styles['container--table'] : ''}`}
+      className={`${styles.container} ${
+        isSecondaryStyles ? styles["container--secondary-styles"] : ""
+      } ${isSmall ? styles["container--small"] : ""} ${
+        tableStyles ? styles["container--table"] : ""
+      }`}
     >
-      <div className={styles.container__lottie} ref={lottieAnimationRef} />
+      <img
+        className={styles.container__lottie}
+        src="/donut/assets/no-data.png"
+      />
       <div className={styles.container__wrapper}>
-        <h6 className={styles.container__title}>{t('no_data_title')}</h6>
-        <p className={styles.container__description}>{t('no_data_found')}</p>
+        <h6 className={styles.container__title}>{t("no_data_title")}</h6>
+        <p className={styles.container__description}>{t("no_data_found")}</p>
       </div>
     </div>
   );

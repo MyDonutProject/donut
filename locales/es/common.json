@@ -107,5 +107,7 @@
   "registered_at": "Registrado el {{date}}",
   "sponsor_label": "Dirección del patrocinador",
   "sponsor_button": "Confirmar",
-  "confirm": "Confirmar"
+  "confirm": "Confirmar",
+  "no_data_title": "No hay donuts",
+  "no_data_found": "No hay donuts para mostrar"
 }

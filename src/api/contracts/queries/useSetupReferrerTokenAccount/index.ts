@@ -30,7 +30,7 @@ export function useSetupReferrerTokenAccount({
     UseSetupReferrerTokenAccountQueryKeyProps
   >({
     queryKey,
-    retry: false,
+    retry: 2,
     queryFn: (context) =>
       fetchSetupReferrerTokenAccount({
         ...context,
@@ -38,7 +38,11 @@ export function useSetupReferrerTokenAccount({
         connection,
         anchorWallet,
       }),
-    enabled: !!referrerAddress && isConnected,
+    enabled:
+      !!referrerAddress &&
+      !!address &&
+      isConnected &&
+      typeof window !== "undefined",
   });
 
   return {

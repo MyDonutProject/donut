@@ -1,3 +1,4 @@
+import { useUserAccount } from "@/api/account";
 import { useBinanceTicker } from "@/api/binance/queries";
 import { usePrepareAccounts } from "@/api/contracts/mutations/usePrepareAccounts";
 import { Button } from "@/components/core/Button";
@@ -10,6 +11,7 @@ import { Decimal } from "@/lib/Decimal";
 import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import useTranslation from "next-translate/useTranslation";
 import { useForm } from "react-hook-form";
+import ActivateMatrixSkeleton from "./Skeleton";
 import styles from "./styles.module.scss";
 
 export default function ActivateMatrix() {
@@ -20,6 +22,11 @@ export default function ActivateMatrix() {
   const { mutate, isPending } = usePrepareAccounts();
   const { wallet } = useWallet();
   const { NotificationsService } = useNotificationService();
+  const {
+    error: accountError,
+    refetch,
+    isPending: isPendingAccount,
+  } = useUserAccount();
 
   const anchorWallet = useAnchorWallet();
   const {
@@ -28,7 +35,7 @@ export default function ActivateMatrix() {
     refetch: refetchTicker,
   } = useBinanceTicker({ symbol: "SOLUSDT" });
 
-  const error = tickerError;
+  const error = tickerError || accountError;
 
   function onSubmit(data: { amount: number }) {
     mutate({
@@ -45,10 +52,18 @@ export default function ActivateMatrix() {
     if (tickerError) {
       refetchTicker();
     }
+
+    if (accountError) {
+      refetch();
+    }
   }
 
   if (error) {
     return <ErrorCard error={error} refetch={handleRefetch} />;
+  }
+
+  if (isPendingAccount) {
+    return <ActivateMatrixSkeleton />;
   }
 
   return (
@@ -63,6 +78,7 @@ export default function ActivateMatrix() {
           </span>
         </div>
         <Input
+          isLoading={isPendingAccount}
           register={register}
           name="amount"
           className={styles.card__input}

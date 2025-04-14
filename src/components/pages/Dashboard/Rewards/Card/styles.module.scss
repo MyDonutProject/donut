@@ -20,3 +20,9 @@
     color: $primary-color;
   }
 }
+
+.value-skeleton {
+  @include skeleton($secondary: true);
+  width: 80%;
+  height: 32px;
+}

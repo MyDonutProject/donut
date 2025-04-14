@@ -1,24 +1,23 @@
-import { useBinanceTicker } from '@/api/binance/queries';
-import styles from '../styles.module.scss';
+import { useBinanceTicker } from "@/api/binance/queries";
+import styles from "../styles.module.scss";
 // import { DateRangeCard } from '@donut/common/components';
-import useDateFilter from '@/hooks/date-filter/useDateFilter';
-import DashboardChartHeaderSkeleton from './Skeleton';
-import { useEffect, useState } from 'react';
-import { useCountUp } from '@/hooks/useCountUp';
+import { useCountUp } from "@/hooks/useCountUp";
+import { useEffect, useState } from "react";
+import DashboardChartHeaderSkeleton from "./Skeleton";
 
 export default function DashboardChartHeader() {
   const { data: tickerData, isPending } = useBinanceTicker({
-    symbol: 'SOLUSDT',
+    symbol: "SOLUSDT",
   });
   const [isAnimatingIncrease, setIsAnimatingIncrease] = useState(false);
   const [previousBalance, setPreviousBalance] = useState<number>(
-    tickerData?.prevClosePrice.toNumber(),
+    tickerData?.prevClosePrice.toNumber()
   );
   const { value, reset } = useCountUp({
     end: tickerData?.prevClosePrice.toNumber() ?? 0,
     start: previousBalance ?? 0,
     duration: 1,
-    onUpdate: value => {
+    onUpdate: (value) => {
       setIsAnimatingIncrease(Number(value) > Number(previousBalance));
     },
     onComplete: () => {
@@ -32,8 +31,6 @@ export default function DashboardChartHeader() {
 
   useEffect(handleUseCountUpReset, [tickerData?.prevClosePrice?.toNumber()]);
 
-  const { startDate, endDate, handleSetDateRange } = useDateFilter();
-
   if (isPending) {
     return <DashboardChartHeaderSkeleton />;
   }
@@ -42,26 +39,28 @@ export default function DashboardChartHeader() {
     <div className={styles.card__header}>
       <div className={styles.card__header__wrapper}>
         <div
-          className={`${styles.card__header__wrapper__title} ${isAnimatingIncrease ? styles['card__header__wrapper__title--up'] : styles['card__header__wrapper__title--down']}`}
+          className={`${styles.card__header__wrapper__title} ${
+            isAnimatingIncrease
+              ? styles["card__header__wrapper__title--up"]
+              : styles["card__header__wrapper__title--down"]
+          }`}
         >
           {value}
         </div>
         <div className={styles.card__header__wrapper__column}>
           <div className={styles.card__header__wrapper__pair}>SOL/USDT</div>
           <div
-            className={`${styles.card__header__wrapper__result} ${tickerData?.priceChange.isNegative() ? styles['card__header__wrapper__result--negative'] : ''}`}
+            className={`${styles.card__header__wrapper__result} ${
+              tickerData?.priceChange.isNegative()
+                ? styles["card__header__wrapper__result--negative"]
+                : ""
+            }`}
           >
             {tickerData?.priceChange.toNumber()} (
             {tickerData?.priceChangePercent.toNumber()}%)
           </div>
         </div>
       </div>
-      {/* <DateRangeCard
-        range={[startDate, endDate]}
-        setRange={handleSetDateRange}
-        hidePicker
-        isDefault
-      /> */}
     </div>
   );
 }

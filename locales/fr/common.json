@@ -106,5 +106,7 @@
   "registered_at": "Inscrit le {{date}}",
   "sponsor_label": "Adresse du parrain",
   "sponsor_button": "Confirmer",
-  "confirm": "Confirmer"
+  "confirm": "Confirmer",
+  "no_data_title": "Aucun donut",
+  "no_data_found": "Aucun donut trouvé"
 }

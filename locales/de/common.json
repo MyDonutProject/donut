@@ -107,5 +107,7 @@
   "registered_at": "Registriert am {{date}}",
   "sponsor_label": "Sponsor-Adresse",
   "sponsor_button": "Bestätigen",
-  "confirm": "Bestätigen"
+  "confirm": "Bestätigen",
+  "no_data_title": "Keine Donuts",
+  "no_data_found": "Keine Donuts gefunden"
 }
