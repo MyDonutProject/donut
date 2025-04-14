@@ -11,7 +11,7 @@ import { fetchUserAccount } from "./service";
 
 export function useUserAccount() {
   const { program } = useProgram();
-  const wallet = useWallet();
+  const { wallet } = useWallet();
 
   const queryKey: UseUserAccountQueryKeyProps = [AccountQueryKeys.UserAccount];
 
@@ -22,14 +22,13 @@ export function useUserAccount() {
     UseUserAccountQueryKeyProps
   >({
     queryKey,
-    retry: false,
-    staleTime: 30000,
+    refetchOnWindowFocus: "always",
     queryFn: (context) =>
-      fetchUserAccount({ ...context, wallet: wallet?.wallet, program }),
+      fetchUserAccount({ ...context, wallet: wallet, program }),
     enabled: !!wallet && typeof window !== "undefined",
   });
 
-  // Handle initial wallet connection navigation
+  console.log(data, wallet, program);
 
   const voucherUrl = useMemo(() => {
     if (!data) {
@@ -38,8 +37,8 @@ export function useUserAccount() {
 
     return `${
       process.env.NEXT_PUBLIC_APP_URL
-    }?sponsor=${wallet?.wallet?.adapter?.publicKey?.toBase58()}`;
-  }, [data, wallet?.wallet?.adapter?.publicKey]);
+    }?sponsor=${wallet?.adapter?.publicKey?.toBase58()}`;
+  }, [data, wallet?.adapter?.publicKey]);
 
   return {
     data: data

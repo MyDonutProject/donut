@@ -24,7 +24,7 @@ export default function DashboardMatrices() {
             {t("slot_label", { slot: index + 1 })}
           </h3>
           <p className={styles.card__content__card__account}>
-            {slot ?? t("empty")}
+            {formatLargeString(slot?.toString() ?? t("empty")) ?? t("empty")}
           </p>
         </div>
       )),

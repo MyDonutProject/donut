@@ -26,6 +26,7 @@ export function useUserTransactions() {
     queryKey,
     refetchOnWindowFocus: true,
     staleTime: 3000,
+    refetchOnMount: "always",
     queryFn: (context) =>
       fetchUserTransactions({
         ...context,

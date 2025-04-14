@@ -8,7 +8,7 @@ import styles from "./styles.module.scss";
 export default function DashboardInvite() {
   const { t } = useTranslation("common");
   const { NotificationsService } = useNotificationService();
-  const { data: userAccount, voucherUrl } = useUserAccount();
+  const { voucherUrl } = useUserAccount();
 
   function handleCopy() {
     navigator.clipboard.writeText(voucherUrl);
