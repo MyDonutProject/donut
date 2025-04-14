@@ -44,7 +44,7 @@ export async function setupReferrerTokenAccount(
 ) {
   // Calculate ATA address for referrer
   const referrerTokenAccount = await anchor.utils.token.associatedAddress({
-    mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
+    mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
     owner: referrerAddress,
   });
 
@@ -100,33 +100,33 @@ export async function setupReferrerTokenAccount(
         const signedTx = await anchorWallet.signTransaction(tx);
         const txid = await connection.sendRawTransaction(signedTx.serialize());
         await connection.confirmTransaction(txid, "confirmed");
-        // console.log(
-        //   `  ✅ Referrer ATA created: ${referrerTokenAccount.toString()}`
-        // );
+        console.log(
+          `  ✅ Referrer ATA created: ${referrerTokenAccount.toString()}`
+        );
       } catch (e) {
-        // console.log(`  ⚠️ Error creating referrer ATA: ${e.message}`);
+        console.log(`  ⚠️ Error creating referrer ATA: ${e.message}`);
 
         // Check again if ATA was created despite error
         const verifyAccountInfo = await connection.getAccountInfo(
           referrerTokenAccount
         );
         if (verifyAccountInfo) {
-          // console.log(
-          //   `  ✅ Referrer ATA exists despite error: ${referrerTokenAccount.toString()}`
-          // );
+          console.log(
+            `  ✅ Referrer ATA exists despite error: ${referrerTokenAccount.toString()}`
+          );
         } else {
-          // console.log(`  ❌ Referrer ATA was not created`);
+          console.log(`  ❌ Referrer ATA was not created`);
         }
       }
     } else {
-      // console.log(
-      //   `\n✅ Referrer ATA already exists: ${referrerTokenAccount.toString()}`
-      // );
+      console.log(
+        `\n✅ Referrer ATA already exists: ${referrerTokenAccount.toString()}`
+      );
     }
 
     return referrerTokenAccount;
   } catch (e) {
-    // console.log(`  ⚠️ Error checking ATA: ${e.message}`);
+    console.log(`  ⚠️ Error checking ATA: ${e.message}`);
     return referrerTokenAccount;
   }
 }
@@ -301,9 +301,9 @@ export async function prepareUplinesForRecursion(
   const remainingAccounts = [];
   const uplinesInfo = [];
 
-  // console.log(
-  //   `\n🔄 ANALYZING ${uplinePDAs.length} UPLINES FOR OPTIMIZATION...`
-  // );
+  console.log(
+    `\n🔄 ANALYZING ${uplinePDAs.length} UPLINES FOR OPTIMIZATION...`
+  );
 
   // Initialize flags
   let needsPool = false;
@@ -314,20 +314,22 @@ export async function prepareUplinesForRecursion(
   // This ensures payment is processed correctly when slot 2 is filled
   if (referrerFilledSlots === 2) {
     needsPayment = true;
-    // console.log(`  ⚠️ FILLING REFERRER'S SLOT 3 - PAYMENT ACTIVATED`);
+    console.log(
+      `  ⚠️ FILLING REFERRER'S SLOT 2 (THIRD SLOT) - PAYMENT ACTIVATED`
+    );
   }
 
   // First, collect information about uplines
   for (let i = 0; i < uplinePDAs.length; i++) {
     const uplinePDA = uplinePDAs[i];
-    // console.log(`  Analyzing upline ${i + 1}: ${uplinePDA.toString()}`);
+    console.log(`  Analyzing upline ${i + 1}: ${uplinePDA.toString()}`);
 
     try {
       // Check upline account
       const uplineInfo = await program.account.userAccount.fetch(uplinePDA);
 
       if (!uplineInfo.isRegistered) {
-        // console.log(`  ❌ Upline is not registered! Skipping.`);
+        console.log(`  ❌ Upline is not registered! Skipping.`);
         continue;
       }
 
@@ -339,11 +341,15 @@ export async function prepareUplinesForRecursion(
         wallet
       );
 
+      console.log("uplineWallet", uplineWallet);
+
       // Determine ATA for tokens (always needed for future payments)
       const uplineTokenAccount = await anchor.utils.token.associatedAddress({
-        mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
+        mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
         owner: uplineWallet,
       });
+
+      console.log("uplineTokenAccount", uplineTokenAccount);
 
       // Create ATA to avoid future issues
       try {
@@ -398,13 +404,13 @@ export async function prepareUplinesForRecursion(
               signedTx.serialize()
             );
             await connection.confirmTransaction(txid, "confirmed");
-            // console.log(
-            //   `  ✅ ATA created successfully for upline: ${uplineTokenAccount.toString()}`
-            // );
+            console.log(
+              `  ✅ ATA created successfully for upline: ${uplineTokenAccount.toString()}`
+            );
           } catch (e) {
-            // console.log(
-            //   `  ⚠️ Error sending ATA creation transaction: ${e.message}`
-            // );
+            console.log(
+              `  ⚠️ Error sending ATA creation transaction: ${e.message}`
+            );
             // Continue trying to ensure robustness
           }
 
@@ -414,24 +420,24 @@ export async function prepareUplinesForRecursion(
               uplineTokenAccount
             );
             if (!verifyAccountInfo) {
-              // console.log(
-              //   `  ⚠️ Failed to create ATA, but continuing processing`
-              // );
+              console.log(
+                `  ⚠️ Failed to create ATA, but continuing processing`
+              );
             } else {
-              // console.log(
-              //   `  ✅ ATA verified after creation: ${uplineTokenAccount.toString()}`
-              // );
+              console.log(
+                `  ✅ ATA verified after creation: ${uplineTokenAccount.toString()}`
+              );
             }
           } catch (e) {
-            // console.log(`  ⚠️ Error verifying created ATA: ${e.message}`);
+            console.log(`  ⚠️ Error verifying created ATA: ${e.message}`);
           }
         } else {
-          // console.log(
-          //   `  ✅ ATA already exists for upline: ${uplineTokenAccount.toString()}`
-          // );
+          console.log(
+            `  ✅ ATA already exists for upline: ${uplineTokenAccount.toString()}`
+          );
         }
       } catch (e) {
-        // console.log(`  ⚠️ Error creating ATA: ${e.message}`);
+        console.log(`  ⚠️ Error creating ATA: ${e.message}`);
       }
 
       // Store information for sorting
@@ -443,22 +449,20 @@ export async function prepareUplinesForRecursion(
         filledSlots: parseInt(uplineInfo.chain.filledSlots.toString()),
       });
     } catch (e) {
-      // console.log(`  ❌ Error analyzing upline: ${e.message}`);
+      console.log(`  ❌ Error analyzing upline: ${e.message}`);
     }
   }
 
   // IMPORTANT: Sort by DECREASING depth (higher to lower)
   uplinesInfo.sort((a, b) => b.depth - a.depth);
 
-  // console.log(
-  //   `\n📊 UPLINE PROCESSING ORDER (Higher depth → Lower):`
-  // );
+  console.log(`\n📊 UPLINE PROCESSING ORDER (Higher depth → Lower):`);
   for (let i = 0; i < uplinesInfo.length; i++) {
-    // console.log(
-    //   `  ${i + 1}. PDA: ${uplinesInfo[i].pda.toString()} (Depth: ${
-    //     uplinesInfo[i].depth
-    //   }, Slots: ${uplinesInfo[i].filledSlots}/3)`
-    // );
+    console.log(
+      `  ${i + 1}. PDA: ${uplinesInfo[i].pda.toString()} (Depth: ${
+        uplinesInfo[i].depth
+      }, Slots: ${uplinesInfo[i].filledSlots}/3)`
+    );
   }
 
   // NEW LOGIC: Find recursion stop point
@@ -476,31 +480,31 @@ export async function prepareUplinesForRecursion(
       // Found empty slot (0) - deposit will go to pool
       // We activate needsPool regardless of what was set before
       needsPool = true;
-      // console.log(
-      //   `  🛑 Found empty slot in upline ${upline.pda.toString()} - stopping recursion here!`
-      // );
+      console.log(
+        `  🛑 Found empty slot (first slot) in upline ${upline.pda.toString()} - stopping recursion here!`
+      );
       break;
     } else if (upline.filledSlots === 1) {
       // Found slot 1 (second slot) - deposit will be reserved
       // We activate needsReserve regardless of what was set before
       needsReserve = true;
-      // console.log(
-      //   `  🛑 Found slot 1 in upline ${upline.pda.toString()} - stopping recursion here!`
-      // );
+      console.log(
+        `  🛑 Found slot 1 (second slot) in upline ${upline.pda.toString()} - stopping recursion here!`
+      );
       break;
     } else if (upline.filledSlots === 2) {
-      // Found slot 2 (third slot) - need to continue
+      // Found slot 2 (third slot) - need to continue recursion
       // Don't overwrite needsPayment, which may already be activated by direct referrer
-      // console.log(
-      //   `  ⏩ Found slot 2 in upline ${upline.pda.toString()} - continuing recursion...`
-      // );
+      console.log(
+        `  ⏩ Found slot 2 (third slot) in upline ${upline.pda.toString()} - continuing recursion...`
+      );
       // Continue loop to find next upline
     }
   }
 
-  // console.log(
-  //   `\n🔍 RELEVANT UPLINES FOR THIS TRANSACTION: ${relevantUplines.length} of ${uplinesInfo.length}`
-  // );
+  console.log(
+    `\n🔍 RELEVANT UPLINES FOR THIS TRANSACTION: ${relevantUplines.length} of ${uplinesInfo.length}`
+  );
 
   // Now add only relevant uplines and their specific accounts
   for (let i = 0; i < relevantUplines.length; i++) {
@@ -531,11 +535,11 @@ export async function prepareUplinesForRecursion(
     }
   }
 
-  // console.log(`\n📋 OPTIMIZED NEEDS ANALYSIS:`);
-  // console.log(`  Needs pool accounts (slot 1): ${needsPool}`);
-  // console.log(`  Needs reserve accounts (slot 2): ${needsReserve}`);
-  // console.log(`  Needs payment accounts (slot 3): ${needsPayment}`);
-  // console.log(`  Total accounts added: ${remainingAccounts.length}`);
+  console.log(`\n📋 OPTIMIZED NEEDS ANALYSIS:`);
+  console.log(`  Needs pool accounts (slot 1): ${needsPool}`);
+  console.log(`  Needs reserve accounts (slot 2): ${needsReserve}`);
+  console.log(`  Needs payment accounts (slot 3): ${needsPayment}`);
+  console.log(`  Total accounts added: ${remainingAccounts.length}`);
 
   return {
     remainingAccounts,
@@ -558,7 +562,7 @@ export async function setupVaultTokenAccount(
 
   // Calculate token vault address
   const programTokenVault = await anchor.utils.token.associatedAddress({
-    mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
+    mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
     owner: vaultAuthority,
   });
 
@@ -567,7 +571,7 @@ export async function setupVaultTokenAccount(
     const vaultAccountInfo = await connection.getAccountInfo(programTokenVault);
 
     if (!vaultAccountInfo) {
-      // console.log(`\n🔧 Creating ATA for program vault...`);
+      console.log(`\n🔧 Creating ATA for program vault...`);
 
       const createVaultATAIx = new web3.TransactionInstruction({
         keys: [
@@ -612,31 +616,29 @@ export async function setupVaultTokenAccount(
         const signedTx = await anchorWallet.signTransaction(tx);
         const txid = await connection.sendRawTransaction(signedTx.serialize());
         await connection.confirmTransaction(txid, "confirmed");
-        // console.log(
-        //   `  ✅ Vault ATA created: ${programTokenVault.toString()}`
-        // );
+        console.log(`  ✅ Vault ATA created: ${programTokenVault.toString()}`);
       } catch (e) {
-        // console.log(`  ⚠️ Error creating vault ATA: ${e.message}`);
+        console.log(`  ⚠️ Error creating vault ATA: ${e.message}`);
 
         // Check again if ATA was created despite error
         const verifyAccountInfo = await connection.getAccountInfo(
           programTokenVault
         );
         if (verifyAccountInfo) {
-          // console.log(
-          //   `  ✅ Vault ATA exists despite error: ${programTokenVault.toString()}`
-          // );
+          console.log(
+            `  ✅ Vault ATA exists despite error: ${programTokenVault.toString()}`
+          );
         }
       }
     } else {
-      // console.log(
-      //   `\n✅ Vault ATA already exists: ${programTokenVault.toString()}`
-      // );
+      console.log(
+        `\n✅ Vault ATA already exists: ${programTokenVault.toString()}`
+      );
     }
 
     return programTokenVault;
   } catch (e) {
-    // console.log(`  ⚠️ Error checking vault ATA: ${e.message}`);
+    console.log(`  ⚠️ Error checking vault ATA: ${e.message}`);
     return programTokenVault;
   }
 }
@@ -649,9 +651,7 @@ export async function phase2_registerUser(
   program: Program<Idl>
 ) {
   if (!phase1Data) {
-    // console.error(
-    //   "❌ Phase 1 data not available. Execute Phase 1 first."
-    // );
+    console.error("❌ Phase 1 data not available. Execute Phase 1 first.");
     return;
   }
 
@@ -689,6 +689,8 @@ export async function phase2_registerUser(
     console.log(
       `  Activated flags: Pool=${uplinesData.needsPool}, Reserve=${uplinesData.needsReserve}, Payment=${uplinesData.needsPayment}`
     );
+
+    console.log(referrerTokenAccount, "referrerTokenAccount");
 
     // CORRECTION: Ensure pool accounts are included when needsPool is true
     // This is important for recursion
@@ -739,10 +741,6 @@ export async function phase2_registerUser(
       rent: web3.SYSVAR_RENT_PUBKEY,
     };
 
-    console.log(accounts, "accounts");
-
-    console.log(uplinesData, "uplinesData");
-
     // CORRECTION: Check and print detailed info for debugging
     if (uplinesData.needsPayment) {
       try {
@@ -782,8 +780,8 @@ export async function phase2_registerUser(
         .accounts(accounts)
         .remainingAccounts(uplinesData.remainingAccounts)
         .rpc({
-          skipPreflight: true,
           commitment: "confirmed",
+          skipPreflight: true,
         });
 
       console.log("✅ TRANSACTION SENT: " + tx);
@@ -791,18 +789,25 @@ export async function phase2_registerUser(
         `🔍 Explorer link: https://explorer.solana.com/tx/${tx}?cluster=devnet`
       );
 
-      // console.log("\n⏳ WAITING FOR CONFIRMATION...");
+      console.log("\n⏳ WAITING FOR CONFIRMATION...");
       await connection.confirmTransaction(tx, "confirmed");
       console.log("✅ TRANSACTION CONFIRMED!");
     } catch (e) {
       console.error("❌ ERROR SENDING TRANSACTION:", e);
 
       if (e.logs) {
-        console.log("📋 ERROR LOGS:");
-        e.logs.forEach((log) => console.log(`  ${log}`));
+        console.log("📋 DETAILED ERROR LOGS:");
+        e.logs.forEach((log, index) => console.log(`  ${index + 1}: ${log}`));
+
+        // Add specific error checks
+        if (e.logs.some((log) => log.includes("insufficient funds"))) {
+          console.error("💡 Error: Insufficient funds for reserve operation");
+        } else if (e.logs.some((log) => log.includes("invalid account"))) {
+          console.error("💡 Error: Missing or invalid reserve accounts");
+        }
       }
 
-      throw e; // Re-throw error for external handling
+      throw e;
     }
 
     // Verify results
@@ -881,6 +886,7 @@ export async function phase2_registerUser(
       console.log("\n🎉 Register Success! 🎉");
       console.log("=========================================================");
       console.log("\n⚠️ IMPORTANT: SAVE THESE ADDRESSES FOR FUTURE USE:");
+
       console.log("🔑 YOUR ADDRESS: " + wallet.adapter.publicKey.toString());
       console.log("🔑 YOUR PDA: " + userAccount.toString());
 
@@ -960,5 +966,123 @@ export async function phase2_registerUser(
     } catch (e) {
       // Ignorar erros aqui
     }
+  }
+}
+
+export async function diagnosticarReferenciador(
+  referrerAddress: string,
+  program: Program<Idl>,
+  connection: Connection,
+  exwallet: Wallet,
+  anchorWallet: AnchorWallet
+) {
+  try {
+    console.log(
+      `\n🔍 DIAGNÓSTICO DO REFERENCIADOR: ${referrerAddress.toString()}`
+    );
+    console.log("========================================================");
+    // Obter PDA da conta
+    const [referrerAccount] = web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("user_account"),
+        new web3.PublicKey(referrerAddress).toBuffer(),
+      ],
+      MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
+    );
+    console.log(`📄 PDA da conta: ${referrerAccount.toString()}`);
+
+    // Obter dados da conta
+    const referrerInfo = await program.account.userAccount.fetch(
+      referrerAccount
+    );
+
+    console.log(
+      `✅ Status: ${
+        referrerInfo.isRegistered ? "Registrado" : "Não registrado"
+      }`
+    );
+    if (referrerInfo.referrer) {
+      console.log(`👉 Referenciador: ${referrerInfo.referrer.toString()}`);
+    } else {
+      console.log(`👉 Referenciador: Nenhum (conta raiz)`);
+    }
+
+    console.log(`🔢 ID Upline: ${referrerInfo.upline.id.toString()}`);
+    console.log(`📊 Profundidade: ${referrerInfo.upline.depth.toString()}`);
+
+    // Mostrar uplines
+    console.log(`📝 Uplines: ${referrerInfo.upline.upline.length} encontradas`);
+    for (let i = 0; i < referrerInfo.upline.upline.length; i++) {
+      console.log(`  ${i + 1}: ${referrerInfo.upline.upline[i].toString()}`);
+    }
+
+    // Mostrar estado da matriz
+    console.log(`📊 ID da matriz: ${referrerInfo.chain.id.toString()}`);
+    console.log(`📊 Slots preenchidos: ${referrerInfo.chain.filledSlots}/3`);
+
+    // Mostrar conteúdo dos slots
+    for (let i = 0; i < referrerInfo.chain.slots.length; i++) {
+      if (referrerInfo.chain.slots[i]) {
+        console.log(
+          `  Slot ${i + 1}: ${referrerInfo.chain.slots[i].toString()}`
+        );
+      } else {
+        console.log(`  Slot ${i + 1}: vazio`);
+      }
+    }
+
+    // Verificar valores reservados
+    if (referrerInfo.reservedSol > 0) {
+      console.log(`💰 SOL Reservado: ${referrerInfo.reservedSol / 1e9} SOL`);
+    }
+
+    if (referrerInfo.reservedTokens > 0) {
+      console.log(
+        `💰 Tokens Reservados: ${referrerInfo.reservedTokens / 1e9} tokens`
+      );
+    }
+
+    // Verificar ATA
+    try {
+      const wallet = await findWalletForPDA(
+        referrerAccount,
+        connection,
+        program,
+        exwallet
+      );
+      console.log(`👛 Wallet encontrada: ${wallet.toString()}`);
+
+      const ata = await anchor.utils.token.associatedAddress({
+        mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+        owner: wallet,
+      });
+
+      const ataInfo = await connection.getAccountInfo(ata);
+      if (ataInfo) {
+        console.log(`✅ ATA existe: ${ata.toString()}`);
+
+        try {
+          const balance = await connection.getTokenAccountBalance(ata);
+          console.log(
+            `💰 Saldo de tokens: ${Number(balance.value.amount) / 1e9} tokens`
+          );
+        } catch (e) {
+          console.log(`⚠️ Erro ao verificar saldo: ${e.message}`);
+        }
+      } else {
+        console.log(`❌ ATA não existe: ${ata.toString()}`);
+
+        console.log(
+          `Deseja criar a ATA agora? (execute setupReferrerTokenAccount(wallet))`
+        );
+      }
+    } catch (e) {
+      console.log(`❌ Erro ao verificar ATA: ${e.message}`);
+    }
+
+    return referrerInfo;
+  } catch (e) {
+    console.error(`❌ ERRO AO DIAGNOSTICAR: ${e.message}`);
+    return null;
   }
 }

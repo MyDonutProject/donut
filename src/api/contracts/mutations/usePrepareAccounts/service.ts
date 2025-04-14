@@ -32,7 +32,7 @@ export async function fetchPrepareAccounts({
   anchorWallet: AnchorWallet;
 }) {
   try {
-    const toDecimalAmount = new Decimal(amount, { scale: 10 });
+    const toDecimalAmount = new Decimal(amount, { scale: 9 });
     const depositAmount = new anchor.BN(toDecimalAmount.subunits);
     const balance = await connection.getBalance(wallet.adapter.publicKey);
 
@@ -47,6 +47,14 @@ export async function fetchPrepareAccounts({
       // 0.01 SOL para taxas
       throw new Error("Insufficient balance");
     }
+
+    // await diagnosticarReferenciador(
+    //   MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS.toString(),
+    //   program,
+    //   connection,
+    //   wallet,
+    //   anchorWallet
+    // );
 
     const [referrerAccount] = PublicKey.findProgramAddressSync(
       [
@@ -97,6 +105,7 @@ export async function fetchPrepareAccounts({
       mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
       owner: wallet.adapter.publicKey,
     });
+    console.log("detailed ATA", userWsolAccount);
     console.log("🔑 WSOL ATA that will be used: " + userWsolAccount.toString());
 
     // 5. Verificar se a conta WSOL já existe e tem saldo suficiente
@@ -123,6 +132,7 @@ export async function fetchPrepareAccounts({
       uplinesData.needsPayment = true;
 
       // Preparar uplines para recursividade (apenas se estamos no slot 3)
+      console.log(referrerInfo.upline, "referrerInfo.upline");
       if (
         referrerInfo.upline &&
         referrerInfo.upline.upline &&
@@ -170,6 +180,9 @@ export async function fetchPrepareAccounts({
       wallet,
       anchorWallet
     );
+
+    console.log("programTokenVault", programTokenVault);
+
     const referrerTokenAccount = await setupReferrerTokenAccount(
       MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
       connection,
@@ -177,9 +190,13 @@ export async function fetchPrepareAccounts({
       anchorWallet
     );
 
+    console.log("referrerTokenAccount", referrerTokenAccount);
+
     // 8. Preparar a conta WSOL com saldo para o depósito
     // Valor mínimo para rent-exempt
     const rentExempt = 2282880;
+
+    console.log("wsolAccountStatus", wsolAccountStatus);
 
     // Se a conta WSOL não existe ou não tem saldo suficiente, transferir o valor necessário
     if (
@@ -187,46 +204,6 @@ export async function fetchPrepareAccounts({
       wsolAccountStatus.balance < depositAmount.toNumber()
     ) {
       console.log("\n💱 PREPARING WSOL ACCOUNT FOR DEPOSIT...");
-
-      // Fechar a conta WSOL existente se necessário
-      if (wsolAccountStatus.exists) {
-        try {
-          console.log("  Closing existing WSOL account to recreate it...");
-          const closeIx = new TransactionInstruction({
-            keys: [
-              { pubkey: userWsolAccount, isSigner: false, isWritable: true },
-              {
-                pubkey: wallet.adapter.publicKey,
-                isSigner: false,
-                isWritable: true,
-              },
-              {
-                pubkey: wallet.adapter.publicKey,
-                isSigner: true,
-                isWritable: false,
-              },
-            ],
-            programId: MAIN_ADDRESSESS_CONFIG.SPL_TOKEN_PROGRAM_ID,
-            data: Buffer.from([9]), // Comando CloseAccount
-          });
-
-          const closeTx = new Transaction().add(closeIx);
-          closeTx.feePayer = wallet.adapter.publicKey;
-          const { blockhash } = await connection.getLatestBlockhash();
-          closeTx.recentBlockhash = blockhash;
-
-          const signedCloseTx = await anchorWallet.signTransaction(closeTx);
-          const closeTxid = await connection.sendRawTransaction(
-            signedCloseTx.serialize()
-          );
-          await connection.confirmTransaction(closeTxid, "confirmed");
-          console.log("  ✅ WSOL account closed successfully");
-        } catch (closeErr) {
-          console.log(
-            "  ⚠️ Error closing existing WSOL account: " + closeErr.message
-          );
-        }
-      }
 
       // Criar nova conta WSOL
       console.log(
@@ -340,7 +317,7 @@ export async function fetchPrepareAccounts({
       programTokenVault,
       uplinesData,
     };
-    // console.log("Phase 2 data:", phase2Data);
+    console.log("Phase 2 data:", phase2Data);
     await phase2_registerUser(
       phase2Data,
       connection,

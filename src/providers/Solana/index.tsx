@@ -11,7 +11,7 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import dynamic from "next/dynamic";
-import { ReactNode, useCallback, useMemo } from "react";
+import { ReactNode, useCallback } from "react";
 import { useCluster } from "../Cluster";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
@@ -24,13 +24,20 @@ export const WalletButton = dynamic(
 
 export function SolanaProvider({ children }: { children: ReactNode }) {
   const { cluster } = useCluster();
-  const endpoint = useMemo(() => cluster.endpoint, [cluster]);
+  // const endpoint = useMemo(() => cluster.endpoint, [cluster]);
+  const endpoint =
+    "https://weathered-quiet-theorem.solana-devnet.quiknode.pro/198997b67cb51804baeb34ed2257274aa2b2d8c0";
   const onError = useCallback((error: WalletError) => {
     console.error(error);
   }, []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider
+      endpoint={endpoint}
+      config={{
+        commitment: "confirmed",
+      }}
+    >
       <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
