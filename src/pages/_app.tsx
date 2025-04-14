@@ -42,7 +42,9 @@ function MainApp({ Component, ...rest }: any) {
   const dehydratedState = props?.pageProps?.dehydratedState;
 
   function handleSetSponsor() {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     if (!hasCookie("sponsor")) {
       push({
