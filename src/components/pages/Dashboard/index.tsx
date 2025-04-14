@@ -6,7 +6,7 @@ import DashboardMatrices from "./Matrices";
 import DashboardRewards from "./Rewards";
 
 export default function Dashboard() {
-  const { data: userAccount, error, refetch } = useUserAccount();
+  const { data: userAccount } = useUserAccount();
 
   if (!userAccount || !userAccount?.isRegistered) {
     return (
