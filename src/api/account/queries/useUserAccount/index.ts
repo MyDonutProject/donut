@@ -28,6 +28,7 @@ export function useUserAccount() {
     UseUserAccountQueryKeyProps
   >({
     queryKey,
+    retry: false,
     staleTime: 30000,
     queryFn: (context) =>
       fetchUserAccount({ ...context, wallet: wallet?.wallet, program }),

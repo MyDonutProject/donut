@@ -1,5 +1,4 @@
 import { useUserAccount } from "@/api/account";
-import { ErrorCard } from "@/components/core/ErrorCard";
 import ActivateMatrix from "./ActivateMatrix";
 import DashboardChart from "./Chart";
 import DashboardInvite from "./Invite";
@@ -9,11 +8,7 @@ import DashboardRewards from "./Rewards";
 export default function Dashboard() {
   const { data: userAccount, error, refetch } = useUserAccount();
 
-  if (error) {
-    return <ErrorCard error={error} refetch={refetch} />;
-  }
-
-  if (!userAccount?.isRegistered) {
+  if (!userAccount || !userAccount?.isRegistered) {
     return (
       <>
         <DashboardRewards />
