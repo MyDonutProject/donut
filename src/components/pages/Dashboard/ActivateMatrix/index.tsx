@@ -35,7 +35,7 @@ export default function ActivateMatrix() {
     refetch: refetchTicker,
   } = useBinanceTicker({ symbol: "SOLUSDT" });
 
-  const error = tickerError || accountError;
+  const error = tickerError;
 
   function onSubmit(data: { amount: number }) {
     mutate({
@@ -51,10 +51,6 @@ export default function ActivateMatrix() {
   function handleRefetch() {
     if (tickerError) {
       refetchTicker();
-    }
-
-    if (accountError) {
-      refetch();
     }
   }
 
