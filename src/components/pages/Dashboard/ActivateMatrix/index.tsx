@@ -5,6 +5,7 @@ import { ErrorCard } from "@/components/core/ErrorCard";
 import { Input } from "@/components/core/Input";
 import useAccount from "@/hooks/account/useAccount";
 import { useProgram } from "@/hooks/contract/useProgram";
+import { useNotificationService } from "@/hooks/notifications/useNotificationService";
 import { Decimal } from "@/lib/Decimal";
 import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import useTranslation from "next-translate/useTranslation";
@@ -18,6 +19,7 @@ export default function ActivateMatrix() {
   const { program } = useProgram();
   const { mutate, isPending } = usePrepareAccounts();
   const { wallet } = useWallet();
+  const { NotificationsService } = useNotificationService();
 
   const anchorWallet = useAnchorWallet();
   const {
@@ -35,6 +37,7 @@ export default function ActivateMatrix() {
       program: program,
       wallet,
       anchorWallet,
+      notificationService: NotificationsService,
     });
   }
 

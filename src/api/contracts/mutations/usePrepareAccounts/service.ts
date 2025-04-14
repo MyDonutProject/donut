@@ -1,5 +1,9 @@
 import { MAIN_ADDRESSESS_CONFIG } from "@/constants/contract";
 import { Decimal } from "@/lib/Decimal";
+import { ErrorService } from "@/services/error-service";
+import { NotificationsService } from "@/services/NotificationService";
+import { store } from "@/store";
+import { addNotificationToasty } from "@/store/notifications";
 import * as anchor from "@project-serum/anchor";
 import { Idl, Program } from "@project-serum/anchor";
 import { AnchorWallet, Wallet } from "@solana/wallet-adapter-react";
@@ -12,6 +16,7 @@ import {
 } from "@solana/web3.js";
 import {
   checkWsolAccount,
+  closeWalletOnError,
   phase2_registerUser,
   prepareUplinesForRecursion,
   setupReferrerTokenAccount,
@@ -24,37 +29,24 @@ export async function fetchPrepareAccounts({
   program,
   wallet,
   anchorWallet,
+  notificationService,
 }: {
   amount: string;
   connection: Connection;
   program: Program<Idl>;
   wallet: Wallet;
   anchorWallet: AnchorWallet;
+  notificationService: NotificationsService<typeof store>;
 }) {
   try {
     const toDecimalAmount = new Decimal(amount, { scale: 9 });
     const depositAmount = new anchor.BN(toDecimalAmount.subunits);
     const balance = await connection.getBalance(wallet.adapter.publicKey);
 
-    console.log(balance, "balance");
-    console.log(depositAmount.toNumber(), "depositAmount");
-    console.log(
-      balance < depositAmount.toNumber() + 10000000,
-      "balance < depositAmount.toNumber() + 10000000"
-    );
-
     if (balance < depositAmount.toNumber() + 10000000) {
       // 0.01 SOL para taxas
       throw new Error("Insufficient balance");
     }
-
-    // await diagnosticarReferenciador(
-    //   MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS.toString(),
-    //   program,
-    //   connection,
-    //   wallet,
-    //   anchorWallet
-    // );
 
     const [referrerAccount] = PublicKey.findProgramAddressSync(
       [
@@ -68,14 +60,18 @@ export async function fetchPrepareAccounts({
       referrerAccount
     );
 
-    console.log(referrerInfo, "referrerInfo");
-
     console.log("✅ Referrer verified");
     console.log("🔢 Depth: " + referrerInfo.upline.depth.toString());
 
     const nextSlotIndex = referrerInfo.chain.filledSlots;
     if (nextSlotIndex >= 3) {
-      console.log("⚠️ WARNING: Referrer matrix is already full!");
+      store.dispatch(
+        addNotificationToasty({
+          id: 1,
+          message: "Referrer matrix is already full!",
+          type: "error",
+        })
+      );
       return null;
     }
 
@@ -93,7 +89,10 @@ export async function fetchPrepareAccounts({
     try {
       const userInfo = await program.account.userAccount.fetch(userAccount);
       if (userInfo.isRegistered) {
-        console.log("⚠️ YOU ARE ALREADY REGISTERED IN THE SYSTEM!");
+        notificationService.info({
+          title: "already_registered_title",
+          message: "already_registered_message",
+        });
         return null;
       }
     } catch (e) {
@@ -105,8 +104,6 @@ export async function fetchPrepareAccounts({
       mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
       owner: wallet.adapter.publicKey,
     });
-    console.log("detailed ATA", userWsolAccount);
-    console.log("🔑 WSOL ATA that will be used: " + userWsolAccount.toString());
 
     // 5. Verificar se a conta WSOL já existe e tem saldo suficiente
     const wsolAccountStatus = await checkWsolAccount(
@@ -132,7 +129,6 @@ export async function fetchPrepareAccounts({
       uplinesData.needsPayment = true;
 
       // Preparar uplines para recursividade (apenas se estamos no slot 3)
-      console.log(referrerInfo.upline, "referrerInfo.upline");
       if (
         referrerInfo.upline &&
         referrerInfo.upline.upline &&
@@ -165,10 +161,10 @@ export async function fetchPrepareAccounts({
             // Atualizar flags e contas de upline
             uplinesData = recursiveData;
           } else {
-            console.log("  Referrer has no previous uplines");
+            console.log("Referrer has no previous uplines");
           }
         } catch (e) {
-          console.log(`❌ Error preparing recursion: ${e.message}`);
+          ErrorService.onError(e);
           return null;
         }
       }
@@ -181,8 +177,6 @@ export async function fetchPrepareAccounts({
       anchorWallet
     );
 
-    console.log("programTokenVault", programTokenVault);
-
     const referrerTokenAccount = await setupReferrerTokenAccount(
       MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
       connection,
@@ -190,28 +184,15 @@ export async function fetchPrepareAccounts({
       anchorWallet
     );
 
-    console.log("referrerTokenAccount", referrerTokenAccount);
-
     // 8. Preparar a conta WSOL com saldo para o depósito
     // Valor mínimo para rent-exempt
     const rentExempt = 2282880;
-
-    console.log("wsolAccountStatus", wsolAccountStatus);
 
     // Se a conta WSOL não existe ou não tem saldo suficiente, transferir o valor necessário
     if (
       !wsolAccountStatus.exists ||
       wsolAccountStatus.balance < depositAmount.toNumber()
     ) {
-      console.log("\n💱 PREPARING WSOL ACCOUNT FOR DEPOSIT...");
-
-      // Criar nova conta WSOL
-      console.log(
-        `\n💱 CREATING WSOL ACCOUNT WITH DEPOSIT OF: ${
-          depositAmount.toNumber() / 1e9
-        } SOL...`
-      );
-
       // 1. Criar a conta ATA
       const createATAIx = new TransactionInstruction({
         keys: [
@@ -276,7 +257,9 @@ export async function fetchPrepareAccounts({
         syncNativeIx
       );
       wsolSetupTx.feePayer = wallet.adapter.publicKey;
+
       const { blockhash } = await connection.getLatestBlockhash();
+
       wsolSetupTx.recentBlockhash = blockhash;
 
       const signedWsolTx = await anchorWallet.signTransaction(wsolSetupTx);
@@ -285,7 +268,6 @@ export async function fetchPrepareAccounts({
       );
 
       await connection.confirmTransaction(wsolTxid, "confirmed");
-      console.log(`✅ WSOL account created and funded successfully!`);
 
       // Verificar o saldo final da conta WSOL
       try {
@@ -307,7 +289,6 @@ export async function fetchPrepareAccounts({
       );
     }
 
-    // Retornar os dados necessários para a fase 2
     const phase2Data = {
       depositAmount,
       userAccount,
@@ -317,7 +298,7 @@ export async function fetchPrepareAccounts({
       programTokenVault,
       uplinesData,
     };
-    console.log("Phase 2 data:", phase2Data);
+
     await phase2_registerUser(
       phase2Data,
       connection,
@@ -328,49 +309,12 @@ export async function fetchPrepareAccounts({
     // console.log("Phase 2 registration complete");
   } catch (err) {
     console.log("Error while preparing accounts:" + err);
+    notificationService.error({
+      title: "error_preparing_accounts_title",
+      message: "error_preparing_accounts_description",
+    });
     // Se houver erro, verificar a conta WSOL e tentar fechá-la para recuperar fundos
-    try {
-      const userWsolAccount = await anchor.utils.token.associatedAddress({
-        mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
-        owner: wallet.adapter.publicKey,
-      });
-
-      const wsolInfo = await connection.getAccountInfo(userWsolAccount);
-      if (wsolInfo && wsolInfo.data.length > 0) {
-        console.log("\n🧹 Tentando fechar conta WSOL para recuperar fundos...");
-        const closeIx = new TransactionInstruction({
-          keys: [
-            { pubkey: userWsolAccount, isSigner: false, isWritable: true },
-            {
-              pubkey: wallet.adapter.publicKey,
-              isSigner: false,
-              isWritable: true,
-            },
-            {
-              pubkey: wallet.adapter.publicKey,
-              isSigner: true,
-              isWritable: false,
-            },
-          ],
-          programId: MAIN_ADDRESSESS_CONFIG.SPL_TOKEN_PROGRAM_ID,
-          data: Buffer.from([9]), // Comando CloseAccount
-        });
-
-        const closeTx = new Transaction().add(closeIx);
-        closeTx.feePayer = wallet.adapter.publicKey;
-        const { blockhash } = await connection.getLatestBlockhash();
-        closeTx.recentBlockhash = blockhash;
-
-        const signedCloseTx = await anchorWallet.signTransaction(closeTx);
-        const closeTxid = await connection.sendRawTransaction(
-          signedCloseTx.serialize()
-        );
-        await connection.confirmTransaction(closeTxid, "confirmed");
-        console.log("✅ WSOL account closed and funds recovered");
-      }
-    } catch (e) {
-      // Ignore errors here
-    }
+    await closeWalletOnError(wallet, anchorWallet, connection);
     throw err;
   }
 }
