@@ -35,7 +35,6 @@ function MainApp({ Component, ...rest }: any) {
   const { query, push } = useRouter();
   const { store, props } = wrapper.useWrappedStore(rest);
   useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);
-
   if (props?.pageProps?.settings) {
     store.dispatch(setSettings(props?.pageProps?.settings));
   }

@@ -15,7 +15,7 @@ import { fetchSetupReferrerTokenAccount } from "./service";
 export function useSetupReferrerTokenAccount({
   referrerAddress,
 }: UseSetupReferrerTokenAccountProps) {
-  const { connection, isConnected, address } = useAccount();
+  const { connection, address } = useAccount();
   const anchorWallet = useAnchorWallet();
 
   const queryKey: UseSetupReferrerTokenAccountQueryKeyProps = [
@@ -38,11 +38,7 @@ export function useSetupReferrerTokenAccount({
         connection,
         anchorWallet,
       }),
-    enabled:
-      !!referrerAddress &&
-      !!address &&
-      isConnected &&
-      typeof window !== "undefined",
+    enabled: !!referrerAddress && !!address && typeof window !== "undefined",
   });
 
   return {

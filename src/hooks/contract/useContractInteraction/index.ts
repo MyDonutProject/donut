@@ -1,8 +1,9 @@
 import { useSetupReferrerTokenAccount } from "@/api/contracts/queries/useSetupReferrerTokenAccount";
+import { MAIN_ADDRESSESS_CONFIG } from "@/constants/contract";
 
 export default function useContractInteraction() {
   const { data: referrerTokenAccount } = useSetupReferrerTokenAccount({
-    referrerAddress: process.env.NEXT_PUBLIC_REFERRER_ADDRESS,
+    referrerAddress: MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS.toBase58(),
   });
 
   return {
