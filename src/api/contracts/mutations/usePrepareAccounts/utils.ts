@@ -526,13 +526,11 @@ export async function prepareUplinesForRecursion(
 
     // 3. Add ATA only if slot 2 (token payment)
     // or if last relevant upline (may receive tokens later)
-    if (upline.filledSlots === 2 || i === relevantUplines.length - 1) {
-      remainingAccounts.push({
-        pubkey: upline.ata,
-        isWritable: true,
-        isSigner: false,
-      });
-    }
+    remainingAccounts.push({
+      pubkey: upline.ata,
+      isWritable: true,
+      isSigner: false,
+    });
   }
 
   console.log(`\n📋 OPTIMIZED NEEDS ANALYSIS:`);
@@ -894,10 +892,11 @@ export async function phase2_registerUser(
       if (uplinesData.remainingAccounts.length > 0) {
         console.log("\n📋 Upline verification:");
 
-        // Verificar apenas as PDAs (a cada 2 ou 3 contas)
-        for (let i = 0; i < uplinesData.remainingAccounts.length; i += 2) {
+        // Verificar apenas as PDAs (a cada 3 contas)
+        for (let i = 0; i < uplinesData.remainingAccounts.length; i += 3) {
           if (i < uplinesData.remainingAccounts.length) {
             const uplinePDA = uplinesData.remainingAccounts[i].pubkey;
+
             try {
               const uplineInfo = await program.account.userAccount.fetch(
                 uplinePDA
