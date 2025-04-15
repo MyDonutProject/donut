@@ -25,6 +25,7 @@ const NotificationToasty = dynamic(
 import SponsorModal from "@/components/core/SponsorModal";
 import { ModalsKey } from "@/enums/modalsKey";
 import useAccount from "@/hooks/account/useAccount";
+import { usePriceStreaming } from "@/hooks/hermes-client/usePriceStreaming";
 import { ClusterProvider } from "@/providers/Cluster";
 import { SolanaProvider } from "@/providers/Solana";
 import QueryClientProvider from "@/providers/queryClientProvider";
@@ -35,12 +36,16 @@ import { useEffect } from "react";
 function MainApp({ Component, ...rest }: any) {
   const { query, push } = useRouter();
   const { store, props } = wrapper.useWrappedStore(rest);
-  useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);
   const { address } = useAccount();
+
+  useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);
+  const dehydratedState = props?.pageProps?.dehydratedState;
+
   if (props?.pageProps?.settings) {
     store.dispatch(setSettings(props?.pageProps?.settings));
   }
-  const dehydratedState = props?.pageProps?.dehydratedState;
+
+  usePriceStreaming();
 
   function handleSetSponsor() {
     if (typeof window === "undefined" || !!address) {

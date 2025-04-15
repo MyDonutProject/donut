@@ -1,9 +1,10 @@
-import { combineReducers } from 'redux';
-import themeReducer from './theme/reducer';
-import languageReducer from './language/reducer';
-import { notificationsReducer } from '@/store/notifications';
-import dateFilterReducer from './date-filter/reducer';
-import affiliatesFilterReducer from './affiliates/reducer';
+import { notificationsReducer } from "@/store/notifications";
+import { combineReducers } from "redux";
+import affiliatesFilterReducer from "./affiliates/reducer";
+import dateFilterReducer from "./date-filter/reducer";
+import hermesReducer from "./hermes/reducer";
+import languageReducer from "./language/reducer";
+import themeReducer from "./theme/reducer";
 
 const rootReducer = combineReducers({
   theme: themeReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   notifications: notificationsReducer,
   dateFilter: dateFilterReducer,
   affiliatesFilter: affiliatesFilterReducer,
+  hermes: hermesReducer,
 });
 
 export default rootReducer;

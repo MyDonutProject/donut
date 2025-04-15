@@ -1,27 +1,32 @@
-import { useBinanceTicker } from "@/api/binance/queries";
+import { WalletService } from "@/services/WalletService";
 import styles from "../styles.module.scss";
 // import { DateRangeCard } from '@donut/common/components';
 import { useCountUp } from "@/hooks/useCountUp";
+import { RootState } from "@/store";
 import { useEffect, useState } from "react";
-import DashboardChartHeaderSkeleton from "./Skeleton";
+import { useSelector } from "react-redux";
 
 export default function DashboardChartHeader() {
-  const { data: tickerData, isPending } = useBinanceTicker({
-    symbol: "SOLUSDT",
-  });
+  const { decimalPrice } = useSelector((state: RootState) => state.hermes);
   const [isAnimatingIncrease, setIsAnimatingIncrease] = useState(false);
+
   const [previousBalance, setPreviousBalance] = useState<number>(
-    tickerData?.prevClosePrice.toNumber()
+    decimalPrice.toNumber()
   );
   const { value, reset } = useCountUp({
-    end: tickerData?.prevClosePrice.toNumber() ?? 0,
+    end: decimalPrice.toNumber(),
     start: previousBalance ?? 0,
     duration: 1,
+    formatter(value) {
+      return WalletService.maskCurrency({
+        amount: value,
+      });
+    },
     onUpdate: (value) => {
       setIsAnimatingIncrease(Number(value) > Number(previousBalance));
     },
     onComplete: () => {
-      setPreviousBalance(tickerData?.prevClosePrice.toNumber());
+      setPreviousBalance(decimalPrice.toNumber());
     },
   });
 
@@ -29,11 +34,7 @@ export default function DashboardChartHeader() {
     reset();
   }
 
-  useEffect(handleUseCountUpReset, [tickerData?.prevClosePrice?.toNumber()]);
-
-  if (isPending) {
-    return <DashboardChartHeaderSkeleton />;
-  }
+  useEffect(handleUseCountUpReset, [decimalPrice.toNumber()]);
 
   return (
     <div className={styles.card__header}>
@@ -49,16 +50,6 @@ export default function DashboardChartHeader() {
         </div>
         <div className={styles.card__header__wrapper__column}>
           <div className={styles.card__header__wrapper__pair}>SOL/USDT</div>
-          <div
-            className={`${styles.card__header__wrapper__result} ${
-              tickerData?.priceChange.isNegative()
-                ? styles["card__header__wrapper__result--negative"]
-                : ""
-            }`}
-          >
-            {tickerData?.priceChange.toNumber()} (
-            {tickerData?.priceChangePercent.toNumber()}%)
-          </div>
         </div>
       </div>
     </div>
