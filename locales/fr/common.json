@@ -108,5 +108,7 @@
   "sponsor_button": "Confirmer",
   "confirm": "Confirmer",
   "no_data_title": "Aucun donut",
-  "no_data_found": "Aucun donut trouvé"
+  "no_data_found": "Aucun donut trouvé",
+  "reserved_donuts": "Beignets réservés",
+  "reserved_solanas": "Solanas réservés"
 }

@@ -8,6 +8,10 @@
   align-items: center;
   justify-content: space-between;
 
+  &--locked {
+    opacity: 0.7;
+  }
+
   &__wrapper {
     display: flex;
     align-items: center;
@@ -34,6 +38,9 @@
       font-weight: 900;
       color: $text-primary;
       text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 4px;
 
       &--primary {
         color: $primary-color;

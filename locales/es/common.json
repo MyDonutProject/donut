@@ -109,5 +109,7 @@
   "sponsor_button": "Confirmar",
   "confirm": "Confirmar",
   "no_data_title": "No hay donuts",
-  "no_data_found": "No hay donuts para mostrar"
+  "no_data_found": "No hay donuts para mostrar",
+  "reserved_donuts": "Donuts reservados",
+  "reserved_solanas": "Solanas reservadas"
 }

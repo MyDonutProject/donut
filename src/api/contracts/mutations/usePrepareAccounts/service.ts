@@ -60,10 +60,11 @@ export async function fetchPrepareAccounts({
       referrerAccount
     );
 
-    console.log("✅ Referrer verified");
+    console.log("✅ Referrer verified", referrerInfo);
     console.log("🔢 Depth: " + referrerInfo.upline.depth.toString());
 
     const nextSlotIndex = referrerInfo.chain.filledSlots;
+
     if (nextSlotIndex >= 3) {
       store.dispatch(
         addNotificationToasty({

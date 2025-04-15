@@ -1,31 +1,29 @@
-import { useMemo } from 'react';
-import { options } from '../Header/Select/options';
-import styles from './styles.module.scss';
-import useTranslation from 'next-translate/useTranslation';
-import AffiliatesCard from './Card';
-import { StaggerAnimation } from '@/components/core/Animation/Stagger';
-import { RootState } from '@/store';
-import { useSelector } from 'react-redux';
+import { useUserAccount } from "@/api/account";
+import { StaggerAnimation } from "@/components/core/Animation/Stagger";
+import { RootState } from "@/store";
+import useTranslation from "next-translate/useTranslation";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import AffiliatesCard from "./Card";
+import styles from "./styles.module.scss";
 
 export default function AffiliatesTableContent() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const filter = useSelector(
-    (state: RootState) => state.affiliatesFilter.filter,
+    (state: RootState) => state.affiliatesFilter.filter
   );
 
-  const affiliates = options
-    .filter(option => !!option.image)
+  const { data: userAccount } = useUserAccount();
+
+  const affiliates = userAccount?.chain?.slots
+    ?.filter((i) => !!i)
     .map((option, index) => ({
-      name: option.label,
+      name: "classic",
       date: new Date(),
-      rank: option,
-      address: '0x1234567...abcdef',
-      position: (index + 1) * 5,
-    }))
-    .filter(affiliate => {
-      if (!filter) return true;
-      return affiliate.rank.label === filter;
-    });
+      rank: "classic",
+      address: option?.toString(),
+      position: index,
+    }));
 
   if (affiliates?.length === 0) {
     return (
@@ -36,7 +34,7 @@ export default function AffiliatesTableContent() {
             src="/donut/assets/no-data.png"
             alt="none"
           />
-          <p className={styles.container__description}>{t('no_referrals')}</p>
+          <p className={styles.container__description}>{t("no_referrals")}</p>
         </div>
       </div>
     );
@@ -44,10 +42,11 @@ export default function AffiliatesTableContent() {
 
   const Affiliates = useMemo(
     () =>
-      affiliates.map(affiliate => (
+      affiliates.map((affiliate) => (
+        //@ts-ignore
         <AffiliatesCard {...affiliate} key={affiliate.name} />
       )),
-    [affiliates],
+    [affiliates]
   );
 
   return (

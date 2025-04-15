@@ -28,8 +28,6 @@ export function useUserAccount() {
     enabled: !!wallet && typeof window !== "undefined",
   });
 
-  console.log(data, wallet, program);
-
   const voucherUrl = useMemo(() => {
     if (!data) {
       return null;

@@ -1,5 +1,5 @@
 export function formatLargeString(value: string): string {
-  if (value.length <= 10) {
+  if (value?.length <= 10) {
     return value;
   }
 

@@ -3,7 +3,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { ParsedTransactionWithMeta } from "@solana/web3.js";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { TransactionQueryKeys } from "../../queryKeys";
 import { getDonuts, getSolanas } from "./helpers";
 import { UseUserTransactionsQueryKeyProps } from "./props";
@@ -56,6 +56,10 @@ export function useUserTransactions() {
       ) ?? 0
     );
   }, [parsedSolanas]);
+
+  useEffect(() => {
+    refetch();
+  }, [wallet]);
 
   return {
     data,

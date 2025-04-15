@@ -1,4 +1,4 @@
-import { useUserTransactions } from "@/api/transactions/queries/useUserTransactions";
+import { useUserBalance } from "@/api/balance";
 import { NoDataComponent } from "@/components/core/NoDataComponent";
 import { Decimal } from "@/lib/Decimal";
 import useTranslation from "next-translate/useTranslation";
@@ -8,26 +8,28 @@ import styles from "./styles.module.scss";
 
 export default function RewardsTable() {
   const { t } = useTranslation("common");
-  const { parsedDonuts, parsedSolanas } = useUserTransactions();
+  const { data: userBalance } = useUserBalance();
 
   const donuts =
-    parsedDonuts?.map((t) => ({
+    [userBalance?.reservedTokens].map((t) => ({
       symbol: "donut",
-      amount: Decimal.fromSubunits(t?.uiTokenAmount?.amount, {
+      amount: Decimal.fromSubunits(t?.toString(), {
         scale: 9,
       }).toNumberString(),
       conversion: 0,
       createdAt: new Date(),
+      locked: true,
     })) || [];
 
   const solanas =
-    parsedSolanas?.map((t) => ({
+    [userBalance?.reservedSol].map((t) => ({
       symbol: "sol",
-      amount: Decimal.fromSubunits(t?.uiTokenAmount?.amount, {
+      amount: Decimal.fromSubunits(t?.toString(), {
         scale: 9,
       }).toNumberString(),
       conversion: 0,
       createdAt: new Date(),
+      locked: true,
     })) || [];
 
   const Donuts = useMemo(

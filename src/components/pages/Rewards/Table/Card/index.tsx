@@ -4,7 +4,9 @@ import styles from "./styles.module.scss";
 
 export default function Card({ item }: CardProps) {
   return (
-    <div className={styles.card}>
+    <div
+      className={`${styles.card} ${item.locked ? styles["card--locked"] : ""}`}
+    >
       <div className={styles.card__wrapper}>
         <img
           className={styles.card__image}
@@ -26,7 +28,12 @@ export default function Card({ item }: CardProps) {
       <div className={`${styles.card__column} ${styles["card__column--end"]}`}>
         <div
           className={`${styles.card__column__title} ${styles["card__column__title--primary"]}`}
-        >{`+${item.amount} ${item.symbol}`}</div>
+        >
+          <i
+            className={item?.locked ? "fa-solid fa-lock" : "fa-solid fa-plus"}
+          />
+          {`${item.amount} ${item.symbol}`}
+        </div>
         <div className={styles.card__column__value}>
           {WalletService.maskCurrency({ amount: item.conversion })}
         </div>

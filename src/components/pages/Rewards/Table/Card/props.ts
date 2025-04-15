@@ -4,5 +4,6 @@ export interface CardProps {
     amount: number;
     conversion: number;
     createdAt: Date;
+    locked: boolean;
   };
 }

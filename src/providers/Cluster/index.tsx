@@ -22,7 +22,13 @@ export enum ClusterNetwork {
 // To use the mainnet-beta cluster, provide a custom endpoint
 export const defaultClusters: Cluster[] = [
   {
-    name: "devnet",
+    name: "quicknode-devnet",
+    endpoint:
+      "https://weathered-quiet-theorem.solana-devnet.quiknode.pro/198997b67cb51804baeb34ed2257274aa2b2d8c0",
+    network: ClusterNetwork.Devnet,
+  },
+  {
+    name: "public-devnet",
     endpoint: clusterApiUrl("devnet"),
     network: ClusterNetwork.Devnet,
   },

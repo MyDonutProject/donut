@@ -24,16 +24,13 @@ export const WalletButton = dynamic(
 
 export function SolanaProvider({ children }: { children: ReactNode }) {
   const { cluster } = useCluster();
-  // const endpoint = useMemo(() => cluster.endpoint, [cluster]);
-  const endpoint =
-    "https://weathered-quiet-theorem.solana-devnet.quiknode.pro/198997b67cb51804baeb34ed2257274aa2b2d8c0";
   const onError = useCallback((error: WalletError) => {
     console.error(error);
   }, []);
 
   return (
     <ConnectionProvider
-      endpoint={endpoint}
+      endpoint={cluster.endpoint}
       config={{
         commitment: "confirmed",
       }}

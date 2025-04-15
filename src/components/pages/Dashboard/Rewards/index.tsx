@@ -1,4 +1,4 @@
-import { useUserTransactions } from "@/api/transactions";
+import { useUserBalance } from "@/api/balance";
 import { ModalHeader } from "@/components/core/Modal/Header";
 import { Decimal } from "@/lib/Decimal";
 import useTranslation from "next-translate/useTranslation";
@@ -7,7 +7,7 @@ import styles from "./styles.module.scss";
 
 export default function DashboardRewards() {
   const { t } = useTranslation("common");
-  const { sumDonuts, sumSolanas } = useUserTransactions();
+  const { data: userBalance } = useUserBalance();
 
   return (
     <div className={styles.container}>
@@ -18,10 +18,10 @@ export default function DashboardRewards() {
       />
       <div className={styles.container__content}>
         <RewardsCard
-          title={t("minted_donuts")}
+          title={t("reserved_donuts")}
           value={
-            sumDonuts !== null
-              ? Decimal.fromSubunits(sumDonuts?.toString(), {
+            userBalance?.reservedTokens !== null
+              ? Decimal.fromSubunits(userBalance?.reservedTokens?.toString(), {
                   scale: 9,
                 }).toNumberString()
               : null
@@ -29,10 +29,10 @@ export default function DashboardRewards() {
           image={"/donut/assets/donut.png"}
         />
         <RewardsCard
-          title={t("earned_solanas")}
+          title={t("reserved_solanas")}
           value={
-            sumSolanas !== null
-              ? Decimal.fromSubunits(sumSolanas?.toString(), {
+            userBalance?.reservedSol !== null
+              ? Decimal.fromSubunits(userBalance?.reservedSol?.toString(), {
                   scale: 9,
                 }).toNumberString()
               : null

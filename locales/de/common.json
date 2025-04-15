@@ -109,5 +109,7 @@
   "sponsor_button": "Bestätigen",
   "confirm": "Bestätigen",
   "no_data_title": "Keine Donuts",
-  "no_data_found": "Keine Donuts gefunden"
+  "no_data_found": "Keine Donuts gefunden",
+  "reserved_donuts": "Reservierte Donuts",
+  "reserved_solanas": "Reservierte Solanas"
 }
