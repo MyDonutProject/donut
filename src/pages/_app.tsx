@@ -47,8 +47,6 @@ function MainApp({ Component, ...rest }: any) {
       return;
     }
 
-    console.log("hasCookie", hasCookie("sponsor"));
-
     if (!hasCookie("sponsor")) {
       push({
         hash: ModalsKey.Sponsor,

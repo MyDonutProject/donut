@@ -12,14 +12,12 @@ export function useProgram() {
 
   return useMemo(() => {
     if (!wallet) {
-      console.log("No wallet connected");
       return {
         program: null,
       };
     }
 
     if (!connection) {
-      console.log("No connection available");
       return {
         program: null,
       };

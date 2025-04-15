@@ -24,17 +24,14 @@ export async function checkWsolAccount(
           userWsolAccount
         );
         const balance = Number(tokenInfo.value.amount);
-        console.log(`  Current WSOL account balance: ${balance} lamports`);
         return { exists: true, balance };
       } catch (e) {
-        console.log(`  Error checking WSOL account balance: ${e.message}`);
         return { exists: true, balance: 0 };
       }
     }
 
     return { exists: false, balance: 0 };
   } catch (e) {
-    console.log(`  Error checking WSOL account: ${e.message}`);
     return { exists: false, balance: 0 };
   }
 }
@@ -101,7 +98,6 @@ export async function setupReferrerTokenAccount(
         const signedTx = await anchorWallet.signTransaction(tx);
         const txid = await connection.sendRawTransaction(signedTx.serialize());
         await connection.confirmTransaction(txid, "confirmed");
-        console.log();
       } catch (e) {
         ErrorService.onError(e);
         // Check again if ATA was created despite error
@@ -258,7 +254,6 @@ export async function findWalletForPDA(
   } catch (e) {}
 
   // Fallback
-  // console.log(`  ⚠️ Could not determine wallet for this PDA`);
   return wallet.adapter.publicKey;
 }
 
@@ -304,15 +299,11 @@ export async function prepareUplinesForRecursion(
         wallet
       );
 
-      console.log("uplineWallet", uplineWallet);
-
       // Determine ATA for tokens (always needed for future payments)
       const uplineTokenAccount = await anchor.utils.token.associatedAddress({
         mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
         owner: uplineWallet,
       });
-
-      console.log("uplineTokenAccount", uplineTokenAccount);
 
       // Create ATA to avoid future issues
       try {
@@ -320,8 +311,6 @@ export async function prepareUplinesForRecursion(
           uplineTokenAccount
         );
         if (!tokenAccountInfo) {
-          // console.log(`  Creating ATA for upline...`);
-
           const createATAIx = new TransactionInstruction({
             keys: [
               {
@@ -374,25 +363,10 @@ export async function prepareUplinesForRecursion(
 
           // Verify if ATA was actually created
           try {
-            const verifyAccountInfo = await connection.getAccountInfo(
-              uplineTokenAccount
-            );
-            if (!verifyAccountInfo) {
-              console.log(
-                `  ⚠️ Failed to create ATA, but continuing processing`
-              );
-            } else {
-              console.log(
-                `  ✅ ATA verified after creation: ${uplineTokenAccount.toString()}`
-              );
-            }
+            await connection.getAccountInfo(uplineTokenAccount);
           } catch (e) {
             ErrorService.onError(e);
           }
-        } else {
-          console.log(
-            `  ✅ ATA already exists for upline: ${uplineTokenAccount.toString()}`
-          );
         }
       } catch (e) {
         ErrorService.onError(e);
@@ -413,14 +387,6 @@ export async function prepareUplinesForRecursion(
 
   // IMPORTANT: Sort by DECREASING depth (higher to lower)
   uplinesInfo.sort((a, b) => b.depth - a.depth);
-
-  for (let i = 0; i < uplinesInfo.length; i++) {
-    console.log(
-      `  ${i + 1}. PDA: ${uplinesInfo[i].pda.toString()} (Depth: ${
-        uplinesInfo[i].depth
-      }, Slots: ${uplinesInfo[i].filledSlots}/3)`
-    );
-  }
 
   // NEW LOGIC: Find recursion stop point
   let relevantUplines = [];
@@ -556,14 +522,7 @@ export async function setupVaultTokenAccount(
         ErrorService.onError(e);
 
         // Check again if ATA was created despite error
-        const verifyAccountInfo = await connection.getAccountInfo(
-          programTokenVault
-        );
-        if (verifyAccountInfo) {
-          console.log(
-            `  ✅ Vault ATA exists despite error: ${programTokenVault.toString()}`
-          );
-        }
+        await connection.getAccountInfo(programTokenVault);
       }
     }
 
@@ -669,23 +628,14 @@ export async function phase2_registerUser(
           referrerTokenAccount
         );
         if (!referrerTokenInfo) {
-          console.log(
-            "⚠️ WARNING: Referrer ATA doesn't exist! Trying to create..."
-          );
           await setupReferrerTokenAccount(
             MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
             connection,
             wallet,
             anchorWallet
           );
-        } else {
-          console.log(
-            " ✅ Confirmed: Referrer Associated Token Account exists!"
-          );
         }
-      } catch (e) {
-        console.log(`⚠️ Error checking referrer ATA: ${e.message}`);
-      }
+      } catch (e) {}
     }
 
     try {
@@ -724,12 +674,8 @@ export async function phase2_registerUser(
       // Check WSOL account - should be closed after transaction
       const wsolInfo = await connection.getAccountInfo(userWsolAccount);
       if (!wsolInfo || wsolInfo.data.length === 0) {
-        console.log("\n✅ Wsol account was closed correctly after processing");
       } else {
-        console.log("\n⚠️ Wsol account is still open after processing");
-
         // Close WSOL account manually if still open
-        console.log("🧹 Trying to close WSOL account...");
         try {
           const closeIx = new web3.TransactionInstruction({
             keys: [
@@ -808,7 +754,6 @@ export async function closeWalletOnError(
 
     const wsolInfo = await connection.getAccountInfo(userWsolAccount);
     if (wsolInfo && wsolInfo.data.length > 0) {
-      console.log("\n🧹 Tentando fechar conta WSOL para recuperar fundos...");
       const closeIx = new TransactionInstruction({
         keys: [
           { pubkey: userWsolAccount, isSigner: false, isWritable: true },
@@ -837,7 +782,6 @@ export async function closeWalletOnError(
         signedCloseTx.serialize()
       );
       await connection.confirmTransaction(closeTxid, "confirmed");
-      console.log("✅ WSOL account closed and funds recovered");
     }
   } catch (e) {
     // Ignore errors here

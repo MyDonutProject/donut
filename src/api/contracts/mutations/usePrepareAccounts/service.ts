@@ -60,9 +60,6 @@ export async function fetchPrepareAccounts({
       referrerAccount
     );
 
-    console.log("✅ Referrer verified", referrerInfo);
-    console.log("🔢 Depth: " + referrerInfo.upline.depth.toString());
-
     const nextSlotIndex = referrerInfo.chain.filledSlots;
 
     if (nextSlotIndex >= 3) {
@@ -75,12 +72,6 @@ export async function fetchPrepareAccounts({
       );
       return null;
     }
-
-    console.log(
-      "🎯 YOU WILL FILL SLOT " + (nextSlotIndex + 1) + " OF THE MATRIX"
-    );
-
-    console.log("\n🔍 VERIFYING YOUR ACCOUNT...");
 
     const [userAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from("user_account"), wallet.adapter.publicKey.toBuffer()],
@@ -96,9 +87,7 @@ export async function fetchPrepareAccounts({
         });
         return null;
       }
-    } catch (e) {
-      console.log("✅ Proceeding with registration...");
-    }
+    } catch (e) {}
 
     // 4. Obter ATA do usuário para WSOL
     const userWsolAccount = await anchor.utils.token.associatedAddress({
@@ -135,15 +124,10 @@ export async function fetchPrepareAccounts({
         referrerInfo.upline.upline &&
         referrerInfo.upline.upline.length > 0
       ) {
-        console.log(
-          "\n🔄 Preparando uplines para recursividade otimizada (slot 3)"
-        );
-
         try {
           const uplines = referrerInfo.upline.upline;
 
           if (uplines && uplines.length > 0) {
-            console.log(`  Found ${uplines.length} available uplines`);
             // CORREÇÃO: Passar o filledSlots do referenciador para a função
             const recursiveData = await prepareUplinesForRecursion(
               uplines,
@@ -161,8 +145,6 @@ export async function fetchPrepareAccounts({
 
             // Atualizar flags e contas de upline
             uplinesData = recursiveData;
-          } else {
-            console.log("Referrer has no previous uplines");
           }
         } catch (e) {
           ErrorService.onError(e);
@@ -275,19 +257,7 @@ export async function fetchPrepareAccounts({
         const finalTokenInfo = await connection.getTokenAccountBalance(
           userWsolAccount
         );
-        console.log(
-          `  Final WSOL account balance: ${finalTokenInfo.value.amount} lamports`
-        );
-      } catch (e) {
-        console.log("  ⚠️ Error checking final WSOL balance: " + e.message);
-      }
-    } else {
-      console.log(
-        `\n✅ WSOL account already exists with sufficient balance: ${wsolAccountStatus.balance} lamports`
-      );
-      console.log(
-        `  Required deposit balance: ${depositAmount.toNumber()} lamports`
-      );
+      } catch (e) {}
     }
 
     const phase2Data = {
@@ -307,14 +277,11 @@ export async function fetchPrepareAccounts({
       anchorWallet,
       program
     );
-    // console.log("Phase 2 registration complete");
   } catch (err) {
-    console.log("Error while preparing accounts:" + err);
     notificationService.error({
       title: "error_preparing_accounts_title",
       message: "error_preparing_accounts_description",
     });
-    // Se houver erro, verificar a conta WSOL e tentar fechá-la para recuperar fundos
     await closeWalletOnError(wallet, anchorWallet, connection);
     throw err;
   }

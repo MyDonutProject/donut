@@ -51,8 +51,6 @@ export const fetchWalletSignatures = async (
       });
     });
 
-    console.log("[fetchWalletSignatures] My transactions:", myTransactions);
-
     return myTransactions;
   } catch (error) {
     console.error("Error fetching wallet signatures:", error);
