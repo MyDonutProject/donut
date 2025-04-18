@@ -16,23 +16,38 @@ export async function fetchSetupReferrerTokenAccount({
   anchorWallet: AnchorWallet;
 }) {
   try {
+    console.log("Starting fetchSetupReferrerTokenAccount...");
+
     const { referrerAddress: outterReferrerAddress, address } = queryKey[1];
+    console.log("Referrer address from query:", outterReferrerAddress);
+    console.log("User address:", address);
+
     const myPublicKey = new PublicKey(address);
+    console.log("Created PublicKey from address:", myPublicKey.toBase58());
 
     const mainReferrerAddress = MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
-    const referrerAddress =
-      new PublicKey(outterReferrerAddress) || mainReferrerAddress;
+    const referrerAddress = outterReferrerAddress
+      ? new PublicKey(outterReferrerAddress)
+      : mainReferrerAddress;
+    console.log("Using referrer address:", referrerAddress.toBase58());
 
     const referrerTokenAccount = await anchor.utils.token.associatedAddress({
       mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
       owner: referrerAddress,
     });
+    console.log(
+      "Generated referrer token account:",
+      referrerTokenAccount.toBase58()
+    );
 
     try {
+      console.log("Checking if token account exists...");
       const tokenAccountInfo: Nullable<anchor.web3.AccountInfo<Buffer>> =
         await connection.getAccountInfo(referrerTokenAccount);
 
       if (!tokenAccountInfo) {
+        console.log("Token account does not exist, creating new ATA...");
+
         const createATAIx = new web3.TransactionInstruction({
           keys: [
             { pubkey: myPublicKey, isSigner: true, isWritable: true },
@@ -63,6 +78,8 @@ export async function fetchSetupReferrerTokenAccount({
           data: Buffer.from([]),
         });
 
+        console.log("Created ATA instruction");
+        console.log("Getting latest blockhash...");
         const { blockhash } = await connection.getLatestBlockhash();
 
         const transaction = new Transaction({
@@ -70,20 +87,31 @@ export async function fetchSetupReferrerTokenAccount({
           recentBlockhash: blockhash,
         }).add(createATAIx);
 
+        console.log("Created transaction, requesting signature...");
         const signedTx = await anchorWallet.signTransaction(transaction);
 
+        console.log("Transaction signed, sending to network...");
         const txHash = await connection.sendRawTransaction(
           signedTx.serialize()
         );
 
+        console.log("Transaction sent, hash:", txHash);
+        console.log("Waiting for confirmation...");
+
         await connection.confirmTransaction(txHash, "confirmed");
+        console.log("Transaction confirmed!");
 
         return txHash;
+      } else {
+        console.log("Token account already exists");
+        return null;
       }
     } catch (error) {
+      console.error("Inner error in fetchSetupReferrerTokenAccount:", error);
       throw error;
     }
   } catch (error) {
+    console.error("Outer error in fetchSetupReferrerTokenAccount:", error);
     throw error;
   }
 }

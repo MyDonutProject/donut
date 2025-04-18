@@ -5,6 +5,7 @@ import { Button } from "@/components/core/Button";
 import { ErrorCard } from "@/components/core/ErrorCard";
 import { Input } from "@/components/core/Input";
 import useAccount from "@/hooks/account/useAccount";
+import { useGetLookUpTableAccount } from "@/hooks/contract/useLookUpTableAccount";
 import { useProgram } from "@/hooks/contract/useProgram";
 import { useNotificationService } from "@/hooks/notifications/useNotificationService";
 import { Decimal } from "@/lib/Decimal";
@@ -22,6 +23,7 @@ export default function ActivateMatrix() {
   const { mutate, isPending } = usePrepareAccounts();
   const { wallet } = useWallet();
   const { NotificationsService } = useNotificationService();
+  const { getLookupTableAccount } = useGetLookUpTableAccount();
   const {
     error: accountError,
     refetch,
@@ -45,6 +47,7 @@ export default function ActivateMatrix() {
       wallet,
       anchorWallet,
       notificationService: NotificationsService,
+      getLookupTableAccount,
     });
   }
 

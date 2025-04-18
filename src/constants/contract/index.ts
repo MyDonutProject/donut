@@ -26,4 +26,7 @@ export const MAIN_ADDRESSESS_CONFIG = {
   ),
   B_VAULT_LP: new PublicKey(process.env.NEXT_PUBLIC_B_VAULT_LP as string),
   VAULT_PROGRAM: new PublicKey(process.env.NEXT_PUBLIC_VAULT_PROGRAM as string),
+  LOOKUP_TABLE_ADDRESS: new PublicKey(
+    process.env.NEXT_PUBLIC_LOOKUP_TABLE_ADDRESS as string
+  ),
 };

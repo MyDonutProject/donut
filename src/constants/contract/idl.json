@@ -1,1 +1,328 @@
-{"version":"0.1.0","name":"referral_system","instructions":[{"name":"initialize","accounts":[{"name":"state","isMut":true,"isSigner":true},{"name":"owner","isMut":true,"isSigner":true},{"name":"systemProgram","isMut":false,"isSigner":false}],"args":[]},{"name":"registerWithoutReferrer","accounts":[{"name":"state","isMut":true,"isSigner":false},{"name":"userWallet","isMut":true,"isSigner":true},{"name":"user","isMut":true,"isSigner":false},{"name":"pythSolUsdPrice","isMut":false,"isSigner":false},{"name":"pool","isMut":true,"isSigner":false},{"name":"userSourceToken","isMut":true,"isSigner":false},{"name":"bVault","isMut":true,"isSigner":false},{"name":"bTokenVault","isMut":true,"isSigner":false},{"name":"bVaultLpMint","isMut":true,"isSigner":false},{"name":"bVaultLp","isMut":true,"isSigner":false},{"name":"vaultProgram","isMut":false,"isSigner":false},{"name":"tokenProgram","isMut":false,"isSigner":false},{"name":"systemProgram","isMut":false,"isSigner":false},{"name":"associatedTokenProgram","isMut":false,"isSigner":false}],"args":[{"name":"depositAmount","type":"u64"}]},{"name":"register","accounts":[{"name":"state","isMut":true,"isSigner":false},{"name":"userWallet","isMut":true,"isSigner":true},{"name":"referrer","isMut":true,"isSigner":false},{"name":"referrerWallet","isMut":true,"isSigner":false},{"name":"user","isMut":true,"isSigner":false},{"name":"pythSolUsdPrice","isMut":false,"isSigner":false},{"name":"pool","isMut":true,"isSigner":false},{"name":"userSourceToken","isMut":true,"isSigner":false},{"name":"bVault","isMut":true,"isSigner":false},{"name":"bTokenVault","isMut":true,"isSigner":false},{"name":"bVaultLpMint","isMut":true,"isSigner":false},{"name":"bVaultLp","isMut":true,"isSigner":false},{"name":"vaultProgram","isMut":false,"isSigner":false},{"name":"programSolVault","isMut":true,"isSigner":false},{"name":"tokenMint","isMut":true,"isSigner":false},{"name":"programTokenVault","isMut":true,"isSigner":false},{"name":"referrerTokenAccount","isMut":true,"isSigner":false},{"name":"tokenMintAuthority","isMut":false,"isSigner":false},{"name":"vaultAuthority","isMut":false,"isSigner":false},{"name":"tokenProgram","isMut":false,"isSigner":false},{"name":"systemProgram","isMut":false,"isSigner":false},{"name":"associatedTokenProgram","isMut":false,"isSigner":false}],"args":[{"name":"depositAmount","type":"u64"}]},{"name":"registerWithSolDepositOptimized","accounts":[{"name":"state","isMut":true,"isSigner":false},{"name":"userWallet","isMut":true,"isSigner":true},{"name":"referrer","isMut":true,"isSigner":false},{"name":"referrerWallet","isMut":true,"isSigner":false},{"name":"user","isMut":true,"isSigner":false},{"name":"userWsolAccount","isMut":true,"isSigner":false},{"name":"wsolMint","isMut":false,"isSigner":false},{"name":"pythSolUsdPrice","isMut":false,"isSigner":false},{"name":"pool","isMut":true,"isSigner":false,"isOptional":true},{"name":"bVault","isMut":true,"isSigner":false,"isOptional":true},{"name":"bTokenVault","isMut":true,"isSigner":false,"isOptional":true},{"name":"bVaultLpMint","isMut":true,"isSigner":false,"isOptional":true},{"name":"bVaultLp","isMut":true,"isSigner":false,"isOptional":true},{"name":"vaultProgram","isMut":false,"isSigner":false,"isOptional":true},{"name":"programSolVault","isMut":true,"isSigner":false},{"name":"tokenMint","isMut":true,"isSigner":false},{"name":"programTokenVault","isMut":true,"isSigner":false},{"name":"referrerTokenAccount","isMut":true,"isSigner":false,"isOptional":true},{"name":"tokenMintAuthority","isMut":false,"isSigner":false},{"name":"vaultAuthority","isMut":false,"isSigner":false},{"name":"tokenProgram","isMut":false,"isSigner":false},{"name":"systemProgram","isMut":false,"isSigner":false},{"name":"associatedTokenProgram","isMut":false,"isSigner":false},{"name":"rent","isMut":false,"isSigner":false}],"args":[{"name":"depositAmount","type":"u64"},{"name":"needsPool","type":"bool"},{"name":"needsReserve","type":"bool"},{"name":"needsPayment","type":"bool"}]},{"name":"registerWithSolDeposit","accounts":[{"name":"state","isMut":true,"isSigner":false},{"name":"userWallet","isMut":true,"isSigner":true},{"name":"referrer","isMut":true,"isSigner":false},{"name":"referrerWallet","isMut":true,"isSigner":false},{"name":"user","isMut":true,"isSigner":false},{"name":"userWsolAccount","isMut":true,"isSigner":false},{"name":"wsolMint","isMut":false,"isSigner":false},{"name":"pythSolUsdPrice","isMut":false,"isSigner":false},{"name":"pool","isMut":true,"isSigner":false,"isOptional":true},{"name":"bVault","isMut":true,"isSigner":false,"isOptional":true},{"name":"bTokenVault","isMut":true,"isSigner":false,"isOptional":true},{"name":"bVaultLpMint","isMut":true,"isSigner":false,"isOptional":true},{"name":"bVaultLp","isMut":true,"isSigner":false,"isOptional":true},{"name":"vaultProgram","isMut":false,"isSigner":false,"isOptional":true},{"name":"programSolVault","isMut":true,"isSigner":false},{"name":"tokenMint","isMut":true,"isSigner":false},{"name":"programTokenVault","isMut":true,"isSigner":false},{"name":"referrerTokenAccount","isMut":true,"isSigner":false,"isOptional":true},{"name":"tokenMintAuthority","isMut":false,"isSigner":false},{"name":"vaultAuthority","isMut":false,"isSigner":false},{"name":"tokenProgram","isMut":false,"isSigner":false},{"name":"systemProgram","isMut":false,"isSigner":false},{"name":"associatedTokenProgram","isMut":false,"isSigner":false},{"name":"rent","isMut":false,"isSigner":false}],"args":[{"name":"depositAmount","type":"u64"}]}],"accounts":[{"name":"ProgramState","type":{"kind":"struct","fields":[{"name":"owner","type":"publicKey"},{"name":"nextUplineId","type":"u64"},{"name":"nextChainId","type":"u64"},{"name":"minimumDepositUsd","type":"u64"}]}},{"name":"UserAccount","type":{"kind":"struct","fields":[{"name":"isRegistered","type":"bool"},{"name":"referrer","type":{"option":"publicKey"}},{"name":"upline","type":{"defined":"ReferralUpline"}},{"name":"chain","type":{"defined":"ReferralChain"}},{"name":"reservedSol","type":"u64"},{"name":"reservedTokens","type":"u64"}]}}],"types":[{"name":"ReferralUpline","type":{"kind":"struct","fields":[{"name":"id","type":"u64"},{"name":"depth","type":"u64"},{"name":"upline","type":{"vec":"publicKey"}}]}},{"name":"ReferralChain","type":{"kind":"struct","fields":[{"name":"id","type":"u64"},{"name":"slots","type":{"array":[{"option":"publicKey"},3]}},{"name":"filledSlots","type":"u8"}]}}],"events":[{"name":"UserRegistered","fields":[{"name":"user","type":"publicKey","index":false},{"name":"referrer","type":{"option":"publicKey"},"index":false},{"name":"uplineId","type":"u64","index":false},{"name":"depth","type":"u64","index":false}]},{"name":"ChainCompleted","fields":[{"name":"owner","type":"publicKey","index":false},{"name":"chainId","type":"u64","index":false},{"name":"slot0","type":"publicKey","index":false},{"name":"slot1","type":"publicKey","index":false},{"name":"slot2","type":"publicKey","index":false}]},{"name":"ChainSlotFilled","fields":[{"name":"owner","type":"publicKey","index":false},{"name":"chainId","type":"u64","index":false},{"name":"user","type":"publicKey","index":false},{"name":"slotIndex","type":"u8","index":false}]},{"name":"SlotAction","fields":[{"name":"slot","type":"u8","index":false},{"name":"user","type":"publicKey","index":false},{"name":"referrer","type":"publicKey","index":false},{"name":"action","type":"string","index":false},{"name":"amount","type":"u64","index":false}]},{"name":"TokenAction","fields":[{"name":"slot","type":"u8","index":false},{"name":"user","type":"publicKey","index":false},{"name":"referrer","type":"publicKey","index":false},{"name":"action","type":"string","index":false},{"name":"amount","type":"u64","index":false}]}],"errors":[{"code":6000,"name":"ReferrerNotRegistered","msg":"Referrer account is not registered"},{"code":6001,"name":"InvalidUpline","msg":"Invalid upline relationship"},{"code":6002,"name":"InvalidUplineDepth","msg":"Invalid upline depth"},{"code":6003,"name":"NotAuthorized","msg":"Not authorized"},{"code":6004,"name":"ChainFull","msg":"Chain is already full"},{"code":6005,"name":"InvalidSlotOwner","msg":"Slot account not owned by program"},{"code":6006,"name":"SlotNotRegistered","msg":"Slot account not registered"},{"code":6007,"name":"InvalidSlotReferrer","msg":"Invalid referrer in chain slot"},{"code":6008,"name":"CannotLoadUplineAccount","msg":"Cannot load upline account"},{"code":6009,"name":"InvalidAccountDiscriminator","msg":"Invalid account discriminator"},{"code":6010,"name":"InsufficientDeposit","msg":"Insufficient deposit amount"},{"code":6011,"name":"PythPriceFetchFailed","msg":"Failed to fetch price from Pyth"},{"code":6012,"name":"DonutsCalculationFailed","msg":"Failed to calculate DONUTS equivalent"},{"code":6013,"name":"DepositToPoolFailed","msg":"Failed to process deposit to pool"},{"code":6014,"name":"SolReserveFailed","msg":"Failed to process SOL reserve"},{"code":6015,"name":"ReferrerPaymentFailed","msg":"Failed to process referrer payment"},{"code":6016,"name":"WrapSolFailed","msg":"Failed to wrap SOL to WSOL"},{"code":6017,"name":"UnwrapSolFailed","msg":"Failed to unwrap WSOL to SOL"},{"code":6018,"name":"TokenMintFailed","msg":"Failed to mint tokens"},{"code":6019,"name":"TokenTransferFailed","msg":"Failed to transfer tokens"},{"code":6020,"name":"RequiredAccountNotProvided","msg":"Required account not provided"}]}
+{
+  "version": "0.1.0",
+  "name": "referral_system",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        { "name": "state", "isMut": true, "isSigner": true },
+        { "name": "owner", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "registerWithoutReferrer",
+      "accounts": [
+        { "name": "state", "isMut": true, "isSigner": false },
+        { "name": "userWallet", "isMut": true, "isSigner": true },
+        { "name": "user", "isMut": true, "isSigner": false },
+        { "name": "pythSolUsdPrice", "isMut": false, "isSigner": false },
+        { "name": "pool", "isMut": true, "isSigner": false },
+        { "name": "userSourceToken", "isMut": true, "isSigner": false },
+        { "name": "bVault", "isMut": true, "isSigner": false },
+        { "name": "bTokenVault", "isMut": true, "isSigner": false },
+        { "name": "bVaultLpMint", "isMut": true, "isSigner": false },
+        { "name": "bVaultLp", "isMut": true, "isSigner": false },
+        { "name": "vaultProgram", "isMut": false, "isSigner": false },
+        { "name": "tokenMint", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false },
+        { "name": "associatedTokenProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "depositAmount", "type": "u64" }]
+    },
+    {
+      "name": "registerWithSolDeposit",
+      "accounts": [
+        { "name": "state", "isMut": true, "isSigner": false },
+        { "name": "userWallet", "isMut": true, "isSigner": true },
+        { "name": "referrer", "isMut": true, "isSigner": false },
+        { "name": "referrerWallet", "isMut": true, "isSigner": false },
+        { "name": "user", "isMut": true, "isSigner": false },
+        { "name": "userWsolAccount", "isMut": true, "isSigner": false },
+        { "name": "wsolMint", "isMut": false, "isSigner": false },
+        { "name": "pythSolUsdPrice", "isMut": false, "isSigner": false },
+        { "name": "pool", "isMut": true, "isSigner": false },
+        { "name": "bVault", "isMut": true, "isSigner": false },
+        { "name": "bTokenVault", "isMut": true, "isSigner": false },
+        { "name": "bVaultLpMint", "isMut": true, "isSigner": false },
+        { "name": "bVaultLp", "isMut": true, "isSigner": false },
+        { "name": "vaultProgram", "isMut": false, "isSigner": false },
+        { "name": "programSolVault", "isMut": true, "isSigner": false },
+        { "name": "tokenMint", "isMut": true, "isSigner": false },
+        { "name": "programTokenVault", "isMut": true, "isSigner": false },
+        { "name": "referrerTokenAccount", "isMut": true, "isSigner": false },
+        { "name": "tokenMintAuthority", "isMut": false, "isSigner": false },
+        { "name": "vaultAuthority", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false },
+        { "name": "associatedTokenProgram", "isMut": false, "isSigner": false },
+        { "name": "rent", "isMut": false, "isSigner": false }
+      ],
+      "args": [{ "name": "depositAmount", "type": "u64" }]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ProgramState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "owner", "type": "publicKey" },
+          { "name": "nextUplineId", "type": "u64" },
+          { "name": "nextChainId", "type": "u64" },
+          { "name": "minimumDepositUsd", "type": "u64" }
+        ]
+      }
+    },
+    {
+      "name": "UserAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "isRegistered", "type": "bool" },
+          { "name": "referrer", "type": { "option": "publicKey" } },
+          { "name": "ownerWallet", "type": "publicKey" },
+          { "name": "ownerTokenAta", "type": "publicKey" },
+          { "name": "upline", "type": { "defined": "ReferralUpline" } },
+          { "name": "chain", "type": { "defined": "ReferralChain" } },
+          { "name": "reservedSol", "type": "u64" },
+          { "name": "reservedTokens", "type": "u64" }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "UplineEntry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "pda", "type": "publicKey" },
+          { "name": "wallet", "type": "publicKey" },
+          { "name": "tokenAta", "type": "publicKey" }
+        ]
+      }
+    },
+    {
+      "name": "ReferralUpline",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "id", "type": "u64" },
+          { "name": "depth", "type": "u64" },
+          { "name": "upline", "type": { "vec": { "defined": "UplineEntry" } } }
+        ]
+      }
+    },
+    {
+      "name": "ReferralChain",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "id", "type": "u64" },
+          {
+            "name": "slots",
+            "type": { "array": [{ "option": "publicKey" }, 3] }
+          },
+          { "name": "filledSlots", "type": "u8" }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "UserRegistered",
+      "fields": [
+        { "name": "user", "type": "publicKey", "index": false },
+        {
+          "name": "referrer",
+          "type": { "option": "publicKey" },
+          "index": false
+        },
+        { "name": "uplineId", "type": "u64", "index": false },
+        { "name": "depth", "type": "u64", "index": false }
+      ]
+    },
+    {
+      "name": "ChainCompleted",
+      "fields": [
+        { "name": "owner", "type": "publicKey", "index": false },
+        { "name": "chainId", "type": "u64", "index": false },
+        { "name": "slot0", "type": "publicKey", "index": false },
+        { "name": "slot1", "type": "publicKey", "index": false },
+        { "name": "slot2", "type": "publicKey", "index": false }
+      ]
+    },
+    {
+      "name": "ChainSlotFilled",
+      "fields": [
+        { "name": "owner", "type": "publicKey", "index": false },
+        { "name": "chainId", "type": "u64", "index": false },
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "slotIndex", "type": "u8", "index": false }
+      ]
+    },
+    {
+      "name": "SlotAction",
+      "fields": [
+        { "name": "slot", "type": "u8", "index": false },
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "referrer", "type": "publicKey", "index": false },
+        { "name": "action", "type": "string", "index": false },
+        { "name": "amount", "type": "u64", "index": false }
+      ]
+    },
+    {
+      "name": "TokenAction",
+      "fields": [
+        { "name": "slot", "type": "u8", "index": false },
+        { "name": "user", "type": "publicKey", "index": false },
+        { "name": "referrer", "type": "publicKey", "index": false },
+        { "name": "action", "type": "string", "index": false },
+        { "name": "amount", "type": "u64", "index": false }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ReferrerNotRegistered",
+      "msg": "Referrer account is not registered"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidUpline",
+      "msg": "Invalid upline relationship"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidUplineDepth",
+      "msg": "Invalid upline depth"
+    },
+    { "code": 6003, "name": "NotAuthorized", "msg": "Not authorized" },
+    { "code": 6004, "name": "ChainFull", "msg": "Chain is already full" },
+    {
+      "code": 6005,
+      "name": "InvalidSlotOwner",
+      "msg": "Slot account not owned by program"
+    },
+    {
+      "code": 6006,
+      "name": "SlotNotRegistered",
+      "msg": "Slot account not registered"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidSlotReferrer",
+      "msg": "Invalid referrer in chain slot"
+    },
+    {
+      "code": 6008,
+      "name": "CannotLoadUplineAccount",
+      "msg": "Cannot load upline account"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidAccountDiscriminator",
+      "msg": "Invalid account discriminator"
+    },
+    {
+      "code": 6010,
+      "name": "InsufficientDeposit",
+      "msg": "Insufficient deposit amount"
+    },
+    {
+      "code": 6011,
+      "name": "PythPriceFetchFailed",
+      "msg": "Failed to fetch price from Pyth"
+    },
+    {
+      "code": 6012,
+      "name": "DonutsCalculationFailed",
+      "msg": "Failed to calculate DONUTS equivalent"
+    },
+    {
+      "code": 6013,
+      "name": "DepositToPoolFailed",
+      "msg": "Failed to process deposit to pool"
+    },
+    {
+      "code": 6014,
+      "name": "SolReserveFailed",
+      "msg": "Failed to process SOL reserve"
+    },
+    {
+      "code": 6015,
+      "name": "ReferrerPaymentFailed",
+      "msg": "Failed to process referrer payment"
+    },
+    {
+      "code": 6016,
+      "name": "WrapSolFailed",
+      "msg": "Failed to wrap SOL to WSOL"
+    },
+    {
+      "code": 6017,
+      "name": "UnwrapSolFailed",
+      "msg": "Failed to unwrap WSOL to SOL"
+    },
+    { "code": 6018, "name": "TokenMintFailed", "msg": "Failed to mint tokens" },
+    {
+      "code": 6019,
+      "name": "TokenTransferFailed",
+      "msg": "Failed to transfer tokens"
+    },
+    {
+      "code": 6020,
+      "name": "InvalidPoolAddress",
+      "msg": "Invalid pool address"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidVaultAddress",
+      "msg": "Invalid vault address"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidTokenMintAddress",
+      "msg": "Invalid token mint address"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidOracleAddress",
+      "msg": "Invalid oracle address"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidTokenAccount",
+      "msg": "Invalid token account"
+    },
+    {
+      "code": 6025,
+      "name": "InvalidWalletForATA",
+      "msg": "Invalid wallet for ATA"
+    },
+    {
+      "code": 6026,
+      "name": "UplineEntryCreationFailed",
+      "msg": "Failed to create upline entry"
+    },
+    {
+      "code": 6027,
+      "name": "MissingUplineAccount",
+      "msg": "Missing required account for upline"
+    },
+    {
+      "code": 6028,
+      "name": "PaymentWalletInvalid",
+      "msg": "Payment wallet is not a system account"
+    },
+    {
+      "code": 6029,
+      "name": "TokenAccountInvalid",
+      "msg": "Token account is not a valid ATA"
+    }
+  ]
+}

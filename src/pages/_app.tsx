@@ -23,20 +23,15 @@ const NotificationToasty = dynamic(
 
 // App.tsx
 import SponsorModal from "@/components/core/SponsorModal";
-import { ModalsKey } from "@/enums/modalsKey";
-import useAccount from "@/hooks/account/useAccount";
 import { usePriceStreaming } from "@/hooks/hermes-client/usePriceStreaming";
 import { ClusterProvider } from "@/providers/Cluster";
 import { SolanaProvider } from "@/providers/Solana";
 import QueryClientProvider from "@/providers/queryClientProvider";
-import { hasCookie, setCookie } from "cookies-next/client";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 function MainApp({ Component, ...rest }: any) {
   const { query, push } = useRouter();
   const { store, props } = wrapper.useWrappedStore(rest);
-  const { address } = useAccount();
 
   useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);
   const dehydratedState = props?.pageProps?.dehydratedState;
@@ -46,27 +41,6 @@ function MainApp({ Component, ...rest }: any) {
   }
 
   usePriceStreaming();
-
-  function handleSetSponsor() {
-    if (typeof window === "undefined" || !!address) {
-      return;
-    }
-
-    if (!hasCookie("sponsor")) {
-      push({
-        hash: ModalsKey.Sponsor,
-      });
-      return;
-    }
-
-    if (query?.sponsor) {
-      setCookie("sponsor", query?.sponsor, {
-        maxAge: 60 * 60 * 24 * 30,
-      });
-    }
-  }
-
-  useEffect(handleSetSponsor, [address]);
 
   return (
     <main>
