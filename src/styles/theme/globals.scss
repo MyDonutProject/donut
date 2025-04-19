@@ -157,3 +157,9 @@ MuiAutocomplete-popper {
 .wallet-adapter-button {
   font-family: inherit !important;
 }
+
+.wallet-adapter-button,
+.wallet-adapter-button-trigger {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}

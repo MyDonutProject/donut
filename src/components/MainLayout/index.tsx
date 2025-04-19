@@ -1,7 +1,6 @@
 import { useUserAccount } from "@/api/account";
-import { ModalsKey } from "@/enums/modalsKey";
 import useAccount from "@/hooks/account/useAccount";
-import { hasCookie, setCookie } from "cookies-next";
+import { setCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { PropsWithChildren, useEffect } from "react";
 import Layout from "../Layout";
@@ -21,17 +20,8 @@ export default function MainLayout({ children }: PropsWithChildren) {
       return;
     }
 
-    if (!hasCookie("sponsor")) {
-      push({
-        hash: ModalsKey.Sponsor,
-      });
-      return;
-    }
-
     if (query?.sponsor) {
-      setCookie("sponsor", query?.sponsor, {
-        maxAge: 60 * 60 * 24 * 30,
-      });
+      setCookie("sponsor", query?.sponsor);
     }
   }
 
