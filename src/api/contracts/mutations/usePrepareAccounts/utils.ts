@@ -1,4 +1,5 @@
 import { MAIN_ADDRESSESS_CONFIG } from "@/constants/contract";
+import { CacheService, DerivedPDAResponse } from "@/services/cache-service";
 import { ErrorService } from "@/services/error-service";
 import * as anchor from "@project-serum/anchor";
 import { Idl, Program, web3 } from "@project-serum/anchor";
@@ -14,8 +15,6 @@ import {
   ComputeBudgetProgram,
   PublicKey,
   SystemProgram,
-  Transaction,
-  TransactionInstruction,
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
@@ -79,6 +78,7 @@ export async function setupReferrerTokenAccount(
         const signedTx = await anchorWallet.signTransaction(tx);
         const txid = await connection.sendRawTransaction(signedTx.serialize());
         await connection.confirmTransaction(txid, "confirmed");
+        console.log(`  ✅ Referrer ATA created: ${txid}`);
       } catch (e) {
         ErrorService.onError(e);
         // Check again if ATA was created despite error
@@ -131,91 +131,48 @@ export async function setupUserWsolAccount(
   }
 }
 
-async function findWalletForPDA(
-  pdaAccount: any,
-  connection: Connection,
-  program: Program<Idl>,
-  wallet: Wallet
+// New function that gets upline account data directly
+async function getUplineAccountData(
+  pdaAccount: PublicKey,
+  program: Program<Idl>
 ) {
-  // Fixed mapping of known PDAs to wallets
-  const knownPDAMappings = {
-    // Add your known keys here
-  };
-
-  const pdaString = pdaAccount.toString();
-  if (knownPDAMappings[pdaString]) {
-    console.log(`  ✅ Found in fixed mapping: ${knownPDAMappings[pdaString]}`);
-    return new PublicKey(knownPDAMappings[pdaString]);
-  }
-
-  // Try to derive from oldest transaction
   try {
-    const signatures = await connection.getSignaturesForAddress(pdaAccount, {
-      limit: 5,
-    });
-
-    if (signatures && signatures.length > 0) {
-      // Sort by oldest first (likely creation transaction)
-      signatures.sort((a, b) => a.blockTime - b.blockTime);
-
-      for (const sig of signatures) {
-        try {
-          const tx = await connection.getTransaction(sig.signature);
-
-          // Look for account creator (signer)
-          if (tx && tx.transaction && tx.transaction.message) {
-            const signers = tx.transaction.message.accountKeys.filter(
-              (k, idx) =>
-                tx.transaction.message.isAccountSigner(idx) &&
-                !k.equals(MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID) &&
-                !k.equals(SystemProgram.programId)
-            );
-
-            if (signers.length > 0) {
-              // Verify if this wallet actually derives to this PDA
-              const [derivedPDA] = PublicKey.findProgramAddressSync(
-                [Buffer.from("user_account"), signers[0].toBuffer()],
-                MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
-              );
-
-              if (derivedPDA.equals(pdaAccount)) {
-                console.log(`  ✅ Wallet found: ${signers[0].toString()}`);
-                return signers[0];
-              }
-            }
-          }
-        } catch (e) {}
-      }
-    }
-  } catch (e) {}
-
-  // Try to extract from referrer in account
-  try {
+    // Fetch account data
     const accountInfo = await program.account.userAccount.fetch(pdaAccount);
 
-    if (accountInfo.referrer) {
-      const [derivedPDA] = PublicKey.findProgramAddressSync(
-        [Buffer.from("user_account"), accountInfo.referrer.toBuffer()],
-        MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
-      );
-
-      if (derivedPDA.equals(pdaAccount)) {
-        return accountInfo.referrer;
-      }
+    if (!accountInfo.isRegistered) {
+      throw new Error(`PDA ${pdaAccount.toString()} is not registered`);
     }
-  } catch (e) {}
 
-  // Fallback
-  console.log(`  ⚠️ Could not determine wallet for this PDA`);
-  return wallet.adapter.publicKey;
+    if (!accountInfo.ownerWallet) {
+      throw new Error(
+        `PDA ${pdaAccount.toString()} does not have owner_wallet field`
+      );
+    }
+
+    console.log(
+      `  ✅ Wallet found in account: ${accountInfo.ownerWallet.toString()}`
+    );
+    console.log(
+      `  ✅ Token ATA found in account: ${accountInfo.ownerTokenAta.toString()}`
+    );
+
+    return {
+      wallet: accountInfo.ownerWallet,
+      tokenAta: accountInfo.ownerTokenAta,
+      depth: accountInfo.upline.depth,
+    };
+  } catch (e) {
+    console.log(`  ❌ Error fetching account: ${e.message}`);
+    throw e;
+  }
 }
 
 export async function prepareUplinesForRecursion(
-  uplinePDAs: any,
+  uplinePDAs: PublicKey[],
   program: Program<Idl>,
   connection: Connection,
-  wallet: Wallet,
-  anchorWallet: AnchorWallet
+  wallet: Wallet
 ) {
   const remainingAccounts = [];
   const triosInfo = [];
@@ -224,80 +181,21 @@ export async function prepareUplinesForRecursion(
     `\n🔄 PREPARING ${uplinePDAs.length} UPLINES (MAX 10) FOR RECURSION`
   );
 
-  // First, collect upline information
+  // Collect upline information
   for (let i = 0; i < Math.min(uplinePDAs.length, 10); i++) {
     const uplinePDA = uplinePDAs[i];
     console.log(`  Analyzing upline ${i + 1}: ${uplinePDA.toString()}`);
 
     try {
-      // Check upline account
-      const uplineInfo = await program.account.userAccount.fetch(uplinePDA);
-
-      if (!uplineInfo.isRegistered) {
-        console.log(`  ❌ Upline is not registered! Skipping.`);
-        continue;
-      }
-
-      // Determine original wallet for this PDA
-      const uplineWallet = await findWalletForPDA(
-        uplinePDA,
-        connection,
-        program,
-        wallet
-      );
-
-      // Determine ATA for tokens
-      const uplineTokenAccount = await anchor.utils.token.associatedAddress({
-        mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-        owner: uplineWallet,
-      });
-
-      // Check if ATA exists and create if needed
-      try {
-        const tokenAccountInfo = await connection.getAccountInfo(
-          uplineTokenAccount
-        );
-        if (!tokenAccountInfo) {
-          console.log(`  Creating ATA for upline...`);
-
-          const instructions = [];
-
-          // Create instruction for ATA
-          instructions.push(
-            Token.createAssociatedTokenAccountInstruction(
-              ASSOCIATED_TOKEN_PROGRAM_ID,
-              TOKEN_PROGRAM_ID,
-              MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-              uplineTokenAccount,
-              uplineWallet,
-              wallet.adapter.publicKey
-            )
-          );
-
-          const transaction = new web3.Transaction().add(...instructions);
-          transaction.feePayer = wallet.adapter.publicKey;
-          const { blockhash } = await connection.getLatestBlockhash();
-          transaction.recentBlockhash = blockhash;
-
-          // Sign and send transaction
-          const signedTx = await anchorWallet.signTransaction(transaction);
-          const txid = await connection.sendRawTransaction(
-            signedTx.serialize()
-          );
-          await connection.confirmTransaction(txid, "confirmed");
-
-          console.log(`  ✅ ATA created: ${signedTx}`);
-        }
-      } catch (e) {
-        console.log(`  Continuing without ATA, program can create if needed`);
-      }
+      // Get data directly from the account
+      const uplineData = await getUplineAccountData(uplinePDA, program);
 
       // Store information for sorting - TRIO ONLY!
       triosInfo.push({
         pda: uplinePDA,
-        wallet: uplineWallet,
-        ata: uplineTokenAccount,
-        depth: parseInt(uplineInfo.upline.depth.toString()),
+        wallet: uplineData.wallet,
+        ata: uplineData.tokenAta,
+        depth: parseInt(uplineData.depth.toString()),
       });
     } catch (e) {
       console.log(`  ❌ Error analyzing upline: ${e.message}`);
@@ -314,6 +212,8 @@ export async function prepareUplinesForRecursion(
         triosInfo[i].depth
       })`
     );
+    console.log(`    Wallet: ${triosInfo[i].wallet.toString()}`);
+    console.log(`    ATA: ${triosInfo[i].ata.toString()}`);
   }
 
   // Build remainingAccounts array with TRIOS ONLY
@@ -346,7 +246,7 @@ export async function prepareUplinesForRecursion(
   // Extra verification to ensure we only have trios
   if (remainingAccounts.length % 3 !== 0) {
     console.error(
-      "⚠️ WARNING: Number of accounts is not multiple of 3. This indicates an issue!"
+      "⚠️ WARNING: Number of accounts is not a multiple of 3. This indicates a problem!"
     );
   } else {
     console.log(
@@ -394,6 +294,7 @@ export async function setupVaultTokenAccount(
         const signedTx = await anchorWallet.signTransaction(tx);
         const txid = await connection.sendRawTransaction(signedTx.serialize());
         await connection.confirmTransaction(txid, "confirmed");
+        console.log(`  ✅ Program token vault ATA created: ${txid}`);
       } catch (e) {
         ErrorService.onError(e);
 
@@ -409,54 +310,56 @@ export async function setupVaultTokenAccount(
   }
 }
 
-export async function closeWalletOnError(
+// Modified function to handle errors without closing WSOL account
+export async function handleTransactionError(
+  error: any,
   wallet: Wallet,
-  anchorWallet: AnchorWallet,
   connection: Connection
 ) {
   try {
-    const userWsolAccount = await anchor.utils.token.associatedAddress({
-      mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
-      owner: wallet.adapter.publicKey,
-    });
+    console.log(`  ⚠️ Transaction error occurred: ${error.message}`);
 
-    const wsolInfo = await connection.getAccountInfo(userWsolAccount);
-    if (wsolInfo && wsolInfo.data.length > 0) {
-      const closeIx = new TransactionInstruction({
-        keys: [
-          { pubkey: userWsolAccount, isSigner: false, isWritable: true },
-          {
-            pubkey: wallet.adapter.publicKey,
-            isSigner: false,
-            isWritable: true,
-          },
-          {
-            pubkey: wallet.adapter.publicKey,
-            isSigner: true,
-            isWritable: false,
-          },
-        ],
-        programId: MAIN_ADDRESSESS_CONFIG.SPL_TOKEN_PROGRAM_ID,
-        data: Buffer.from([9]), // CloseAccount command
+    // Log any transaction logs if available
+    if (error.logs && Array.isArray(error.logs)) {
+      console.log("  Transaction logs:");
+      error.logs.forEach((log: string, index: number) => {
+        console.log(`    ${index}: ${log}`);
       });
-
-      const closeTx = new Transaction().add(closeIx);
-      closeTx.feePayer = wallet.adapter.publicKey;
-      const { blockhash } = await connection.getLatestBlockhash();
-      closeTx.recentBlockhash = blockhash;
-
-      const signedCloseTx = await anchorWallet.signTransaction(closeTx);
-      const closeTxid = await connection.sendRawTransaction(
-        signedCloseTx.serialize()
-      );
-      await connection.confirmTransaction(closeTxid, "confirmed");
     }
+
+    // Check if user's WSOL account exists but don't close it
+    const { userWsolAccount } = await getNeededDerivedPDA(wallet);
+    const wsolInfo = await connection.getAccountInfo(userWsolAccount);
+
+    if (wsolInfo && wsolInfo.data.length > 0) {
+      console.log(
+        `  ℹ️ WSOL account exists with ${wsolInfo.lamports / 1e9} SOL`
+      );
+      // The WSOL account will be kept open as per the contract philosophy
+    }
+
+    ErrorService.onError(error);
   } catch (e) {
-    // Ignore errors here
+    // Ignore errors in error handling
+    console.log(`  ⚠️ Error during error handling: ${e}`);
   }
 }
 
-export async function getNeededDerivedPDA(wallet: Wallet) {
+export async function getNeededDerivedPDA(
+  wallet: Wallet
+): Promise<DerivedPDAResponse> {
+  const cacheService = CacheService.getInstance();
+  const cacheKey = wallet.adapter.publicKey.toString();
+  const cachedResult = cacheService.get<DerivedPDAResponse>(
+    "derived_pda",
+    cacheKey
+  );
+
+  if (cachedResult) {
+    console.log("🔍 DEBUG: Using cached PDA values for wallet:", cacheKey);
+    return cachedResult;
+  }
+
   // PDA for user
   const [userAccount] = PublicKey.findProgramAddressSync(
     [Buffer.from("user_account"), wallet.adapter.publicKey.toBuffer()],
@@ -513,7 +416,7 @@ export async function getNeededDerivedPDA(wallet: Wallet) {
   });
   console.log("🔍 DEBUG: User wsol account:", userWsolAccount.toString());
 
-  return {
+  const result = {
     tokenMintAuthority,
     vaultAuthority,
     programSolVault,
@@ -523,6 +426,11 @@ export async function getNeededDerivedPDA(wallet: Wallet) {
     userAccount,
     referrerAccount,
   };
+
+  // Cache the result for 60 seconds
+  cacheService.set<DerivedPDAResponse>("derived_pda", cacheKey, result);
+
+  return result;
 }
 
 export async function setVersionedTransaction(
@@ -552,9 +460,15 @@ export async function setVersionedTransaction(
     units: 1000000, // Increase limit for complex transactions
   });
 
-  registerInstructions.push(modifyComputeUnits);
+  // Also add a priority instruction
+  const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
+    microLamports: 5000, // Increase transaction priority
+  });
 
-  // Create main program instruction (don't execute yet)
+  registerInstructions.push(modifyComputeUnits);
+  registerInstructions.push(setPriority);
+
+  // Create main program instruction
   console.log("  🔍 Creating register_with_sol_deposit instruction...");
   const accounts = {
     state: MAIN_ADDRESSESS_CONFIG.STATE_ADDRESS,
@@ -612,17 +526,20 @@ export async function setVersionedTransaction(
   // Send transaction
   console.log("  📡 Sending transaction...");
 
-  const txid = await connection.sendRawTransaction(signedTx.serialize(), {
-    skipPreflight: true,
-  });
-
-  await connection.confirmTransaction(txid, "confirmed");
-
-  console.log("✅ TRANSACTION SENT: " + txid);
-  console.log(`🔍 Explorer link: https://solscan.io/tx/${txid}?cluster=devnet`);
-  console.log("\n⏳ WAITING FOR CONFIRMATION...");
-
   try {
+    const txid = await connection.sendRawTransaction(signedTx.serialize(), {
+      skipPreflight: true,
+    });
+
+    console.log("✅ TRANSACTION SENT: " + txid);
+    console.log(
+      `🔍 Explorer link: https://solscan.io/tx/${txid}?cluster=devnet`
+    );
+    console.log("\n⏳ WAITING FOR CONFIRMATION...");
+
+    await connection.confirmTransaction(txid, "confirmed");
+    console.log("✅ TRANSACTION CONFIRMED!");
+
     // Check user account state
     const userInfo = await program.account.userAccount.fetch(userAccount);
 
@@ -632,6 +549,7 @@ export async function setVersionedTransaction(
     console.log("🔢 Depth: " + userInfo.upline.depth.toString());
     console.log("📊 Filled slots: " + userInfo.chain.filledSlots + "/3");
 
+    // Check if the new fields owner_wallet and owner_token_ata were added
     if (userInfo.ownerWallet) {
       console.log("\n📋 NEW FIELDS:");
       console.log("👤 Owner Wallet: " + userInfo.ownerWallet.toString());
@@ -659,9 +577,9 @@ export async function setVersionedTransaction(
     console.log("\n📋 REFERRER STATE AFTER REGISTRATION:");
     console.log("📊 Filled slots: " + newReferrerInfo.chain.filledSlots + "/3");
 
-    // If was in slot 3, check recursion processing
+    // If slot 3 was filled and matrix completed, check recursion processing
     if (
-      newReferrerInfo.chain.filledSlots === 2 &&
+      newReferrerInfo.chain.filledSlots === 0 &&
       remainingAccounts.length > 0
     ) {
       console.log("\n🔄 CHECKING RECURSION RESULTS:");
@@ -777,7 +695,8 @@ export async function setVersionedTransaction(
         MAIN_ADDRESSESS_CONFIG.LOOKUP_TABLE_ADDRESS.toString()
     );
   } catch (e) {
-    console.log("❌ ERROR CHECKING RESULTS:", e);
-    ErrorService.onError(e);
+    console.log("❌ ERROR PROCESSING TRANSACTION:");
+    // Use the new error handler instead of trying to close WSOL
+    await handleTransactionError(e, wallet, connection);
   }
 }

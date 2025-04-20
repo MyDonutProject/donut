@@ -27,10 +27,8 @@ import { usePriceStreaming } from "@/hooks/hermes-client/usePriceStreaming";
 import { ClusterProvider } from "@/providers/Cluster";
 import { SolanaProvider } from "@/providers/Solana";
 import QueryClientProvider from "@/providers/queryClientProvider";
-import { useRouter } from "next/router";
 
 function MainApp({ Component, ...rest }: any) {
-  const { query, push } = useRouter();
   const { store, props } = wrapper.useWrappedStore(rest);
 
   useDeferredStyles(props?.pageProps?.settings?.fontFamily?.url);

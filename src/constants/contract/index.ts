@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import { getCookie, hasCookie } from "cookies-next";
+import { getCookie, hasCookie } from "cookies-next/client";
 
 export const MAIN_ADDRESSESS_CONFIG = {
   REFERRER_ADDRESS: hasCookie("sponsor")

@@ -13,7 +13,7 @@ export default function MainLayout({ children }: PropsWithChildren) {
   // useContractInteraction();
   useUserAccount();
   const { address } = useAccount();
-  const { push, query } = useRouter();
+  const { query } = useRouter();
 
   function handleSetSponsor() {
     if (typeof window === "undefined" || !!address) {
@@ -23,6 +23,8 @@ export default function MainLayout({ children }: PropsWithChildren) {
     if (query?.sponsor) {
       setCookie("sponsor", query?.sponsor);
     }
+
+    console.log("🔍 DEBUG: Query:", query);
   }
 
   useEffect(handleSetSponsor, [address]);

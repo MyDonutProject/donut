@@ -22,7 +22,7 @@ export function useUserAccount() {
     UseUserAccountQueryKeyProps
   >({
     queryKey,
-    refetchOnWindowFocus: "always",
+    retry: 2,
     queryFn: (context) =>
       fetchUserAccount({ ...context, wallet: wallet, program }),
     enabled: !!wallet && typeof window !== "undefined",
@@ -36,7 +36,7 @@ export function useUserAccount() {
     return `${
       process.env.NEXT_PUBLIC_APP_URL
     }?sponsor=${wallet?.adapter?.publicKey?.toBase58()}`;
-  }, [data, wallet?.adapter?.publicKey]);
+  }, [data, wallet]);
 
   return {
     data: data

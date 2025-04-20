@@ -20,15 +20,12 @@ export default function ActivateMatrix() {
   const { balance, connection } = useAccount();
   const { handleSubmit, register } = useForm<{ amount: number }>();
   const { program } = useProgram();
+
   const { mutate, isPending } = usePrepareAccounts();
   const { wallet } = useWallet();
   const { NotificationsService } = useNotificationService();
   const { getLookupTableAccount } = useGetLookUpTableAccount();
-  const {
-    error: accountError,
-    refetch,
-    isPending: isPendingAccount,
-  } = useUserAccount();
+  const { isPending: isPendingAccount } = useUserAccount();
 
   const anchorWallet = useAnchorWallet();
   const {

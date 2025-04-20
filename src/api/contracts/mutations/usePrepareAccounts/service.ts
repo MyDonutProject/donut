@@ -13,7 +13,6 @@ import {
   RpcResponseAndContext,
 } from "@solana/web3.js";
 import {
-  closeWalletOnError,
   prepareUplinesForRecursion,
   setupReferrerTokenAccount,
   setupVaultTokenAccount,
@@ -95,10 +94,16 @@ export async function fetchPrepareAccounts({
       MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
     );
     console.log("🔍 DEBUG: Referrer account:", referrerAccount.toString());
+
     let referrerInfo;
     try {
+      console.log("🔍 DEBUG: Fetching referrer info");
+      console.log("program", program);
+      console.log("program.account", program.account);
+      console.log("program.account.userAccount", program.account.userAccount);
       referrerInfo = await program.account.userAccount.fetch(referrerAccount);
 
+      console.log("🔍 DEBUG: Referrer info:", referrerInfo);
       if (!referrerInfo.isRegistered) {
         console.error("❌ ERROR: Referrer is not registered!");
         return;
@@ -186,8 +191,7 @@ export async function fetchPrepareAccounts({
             uplines,
             program,
             connection,
-            wallet,
-            anchorWallet
+            wallet
           );
         } else {
           console.log("  Referrer has no previous uplines");
@@ -239,7 +243,7 @@ export async function fetchPrepareAccounts({
       title: "error_preparing_accounts_title",
       message: "error_preparing_accounts_description",
     });
-    await closeWalletOnError(wallet, anchorWallet, connection);
+
     throw err;
   }
 }

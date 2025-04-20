@@ -3,7 +3,7 @@ import Link from "@/components/core/Link";
 import useIsHomePage from "@/hooks/layout/useIsHomePage";
 import { formatLargeString } from "@/utils/formatLargeString";
 import { Tooltip } from "@mui/material";
-import { getCookie, hasCookie } from "cookies-next/client";
+import { getCookie } from "cookies-next/client";
 import useTranslation from "next-translate/useTranslation";
 import LanguageButton from "../Language/Button";
 import HeaderButton from "./Button";
@@ -13,6 +13,11 @@ import styles from "./styles.module.scss";
 function Header() {
   const { isHomePage } = useIsHomePage();
   const { t } = useTranslation("common");
+
+  const sponsorCode = getCookie("sponsor");
+  const formattedSponsorCode = formatLargeString(sponsorCode);
+  console.log("sponsorCode", sponsorCode);
+
   return (
     <div
       className={`${styles.container} ${
@@ -29,12 +34,15 @@ function Header() {
         </Link>
         <HeaderMenu />
         <div className={styles.container__row}>
-          {hasCookie("sponsor") && (
+          {!!sponsorCode && (
             <Tooltip title={t("sponsor_label")}>
               <Input
                 placeholder="Sponsor Code"
-                value={formatLargeString(getCookie("sponsor"))}
+                value={formattedSponsorCode}
                 readOnly
+                style={{
+                  minWidth: "150px",
+                }}
               />
             </Tooltip>
           )}
