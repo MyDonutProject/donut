@@ -98,12 +98,107 @@ export async function fetchPrepareAccounts({
     let referrerInfo;
     try {
       console.log("🔍 DEBUG: Fetching referrer info");
-      console.log("program", program);
-      console.log("program.account", program.account);
-      console.log("program.account.userAccount", program.account.userAccount);
-      referrerInfo = await program.account.userAccount.fetch(referrerAccount);
+
+      // Validate program state
+      if (!program?.account?.userAccount) {
+        console.error("❌ ERROR: Invalid program state:", {
+          programExists: !!program,
+          accountExists: !!program?.account,
+          userAccountExists: !!program?.account?.userAccount,
+        });
+        throw new Error("Invalid program state");
+      }
+
+      // Validate connection
+      try {
+        const accountInfo = await connection.getAccountInfo(referrerAccount);
+        console.log("🔍 DEBUG: Account info from connection:", {
+          exists: !!accountInfo,
+          size: accountInfo?.data?.length,
+          executable: accountInfo?.executable,
+        });
+      } catch (e) {
+        console.error("❌ ERROR: Failed to get account info:", e);
+      }
+
+      // Helper function to fetch minimal referrer data
+      const fetchMinimalReferrerInfo = async () => {
+        let account = null;
+        try {
+          console.log(
+            "🔍 DEBUG: About to fetch account from address:",
+            referrerAccount.toString()
+          );
+          try {
+            account = await Promise.race([
+              program.account.userAccount.fetch(referrerAccount),
+              new Promise((_, reject) =>
+                setTimeout(
+                  () => reject(new Error("Fetch timeout after 30s")),
+                  1000
+                )
+              ),
+            ]);
+          } catch (fetchError) {
+            console.error("❌ ERROR: Failed to fetch account:", {
+              error: fetchError.message,
+              stack: fetchError.stack,
+              name: fetchError.name,
+            });
+
+            // Try fallback method
+            console.log("🔍 DEBUG: Attempting fallback fetch method...");
+            try {
+              const rawAccount = await connection.getAccountInfo(
+                referrerAccount
+              );
+              if (rawAccount) {
+                console.log(
+                  "�� DEBUG: Raw account data fetched, attempting to decode..."
+                );
+                try {
+                  account = program.coder.accounts.decode(
+                    "userAccount",
+                    rawAccount.data
+                  );
+                  console.log("✅ DEBUG: Successfully decoded account data");
+                } catch (decodeError) {
+                  console.error(
+                    "❌ ERROR: Failed to decode account:",
+                    decodeError
+                  );
+                  throw decodeError;
+                }
+              } else {
+                console.error("❌ ERROR: No account data found in fallback");
+                throw new Error("Account not found");
+              }
+            } catch (fallbackError) {
+              console.error("❌ ERROR: Fallback method failed:", fallbackError);
+              throw fallbackError;
+            }
+          }
+
+          console.log("🔍 DEBUG: Account fetch completed", account);
+
+          const minimalInfo = account;
+
+          return minimalInfo;
+        } catch (error) {
+          // Clean up on error
+          if (account) {
+            account.chain = null;
+            account.upline = null;
+            account = null;
+          }
+          throw error;
+        }
+      };
+
+      referrerInfo = await fetchMinimalReferrerInfo();
 
       console.log("🔍 DEBUG: Referrer info:", referrerInfo);
+
       if (!referrerInfo.isRegistered) {
         console.error("❌ ERROR: Referrer is not registered!");
         return;
@@ -119,9 +214,11 @@ export async function fetchPrepareAccounts({
           "✅ Referrer uses new fields owner_wallet and owner_token_ata"
         );
         console.log("💼 Owner Wallet: " + referrerInfo.ownerWallet.toString());
-        console.log(
-          "💰 Owner Token ATA: " + referrerInfo.ownerTokenAta.toString()
-        );
+        const referrerATA = await anchor.utils.token.associatedAddress({
+          mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+          owner: referrerInfo.ownerWallet,
+        });
+        console.log("💰 Owner Token ATA: " + referrerATA.toString());
       } else {
         console.log(
           "ℹ️ Referrer uses old structure (without owner_wallet and owner_token_ata fields)"
@@ -191,7 +288,8 @@ export async function fetchPrepareAccounts({
             uplines,
             program,
             connection,
-            wallet
+            wallet,
+            anchorWallet
           );
         } else {
           console.log("  Referrer has no previous uplines");

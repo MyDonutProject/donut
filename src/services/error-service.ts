@@ -18,7 +18,7 @@ export class ErrorService {
     const notificationsService = new NotificationsService(store);
     console.log("📋 DETAILED ERROR LOGS:");
     //@ts-ignore
-    error.logs.forEach((log, index) => {
+    error?.logs?.forEach?.((log, index) => {
       if (log.includes("insufficient funds")) {
         notificationsService.error({
           title: title

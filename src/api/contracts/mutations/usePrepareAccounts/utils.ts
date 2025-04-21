@@ -131,48 +131,12 @@ export async function setupUserWsolAccount(
   }
 }
 
-// New function that gets upline account data directly
-async function getUplineAccountData(
-  pdaAccount: PublicKey,
-  program: Program<Idl>
-) {
-  try {
-    // Fetch account data
-    const accountInfo = await program.account.userAccount.fetch(pdaAccount);
-
-    if (!accountInfo.isRegistered) {
-      throw new Error(`PDA ${pdaAccount.toString()} is not registered`);
-    }
-
-    if (!accountInfo.ownerWallet) {
-      throw new Error(
-        `PDA ${pdaAccount.toString()} does not have owner_wallet field`
-      );
-    }
-
-    console.log(
-      `  ✅ Wallet found in account: ${accountInfo.ownerWallet.toString()}`
-    );
-    console.log(
-      `  ✅ Token ATA found in account: ${accountInfo.ownerTokenAta.toString()}`
-    );
-
-    return {
-      wallet: accountInfo.ownerWallet,
-      tokenAta: accountInfo.ownerTokenAta,
-      depth: accountInfo.upline.depth,
-    };
-  } catch (e) {
-    console.log(`  ❌ Error fetching account: ${e.message}`);
-    throw e;
-  }
-}
-
 export async function prepareUplinesForRecursion(
   uplinePDAs: PublicKey[],
   program: Program<Idl>,
   connection: Connection,
-  wallet: Wallet
+  wallet: Wallet,
+  anchorWallet: AnchorWallet
 ) {
   const remainingAccounts = [];
   const triosInfo = [];
@@ -188,14 +152,167 @@ export async function prepareUplinesForRecursion(
 
     try {
       // Get data directly from the account
-      const uplineData = await getUplineAccountData(uplinePDA, program);
+      const uplineInfo = await program.account.userAccount.fetch(uplinePDA);
 
-      // Store information for sorting - TRIO ONLY!
+      let uplineWallet;
+
+      if (uplineInfo.ownerWallet) {
+        uplineWallet = uplineInfo.ownerWallet;
+        console.log(
+          `  ✅ Wallet get from owner_wallet: ${uplineWallet.toString()}`
+        );
+      } else if (
+        uplineInfo.upline &&
+        uplineInfo.upline.upline &&
+        Array.isArray(uplineInfo.upline.upline) &&
+        uplineInfo.upline.upline.length > 0
+      ) {
+        // Procurar a entrada correspondente a esta upline específica
+        let foundEntry = null;
+        for (const entry of uplineInfo.upline.upline) {
+          if (entry.pda && entry.pda.equals(uplinePDA)) {
+            foundEntry = entry;
+            console.log(`  ✅ Entry found in UplineEntry structure`);
+            break;
+          }
+        }
+
+        if (foundEntry) {
+          // Usar dados da entrada correta
+          uplineWallet = foundEntry.wallet;
+          console.log(
+            `  ✅ Wallet get from correct entry: ${uplineWallet.toString()}`
+          );
+        } else {
+          // Se não encontrou a entrada correspondente, usar a primeira entrada
+          console.log(
+            `  ⚠️ Specific entry not found, using first entry of structure`
+          );
+          uplineWallet = uplineInfo.upline.upline[0].wallet;
+          console.log(`    Wallet: ${uplineWallet.toString()}`);
+        }
+      } else {
+        // Fallback for other methods if previous options fail
+        console.log(
+          `  ⚠️ UplineEntry structure missing or incomplete (possible base user)`
+        );
+
+        // Check if it's the base user (no referrer)
+        if (!uplineInfo.referrer) {
+          // Get program state owner
+          const stateInfo = await program.account.programState.fetch(
+            MAIN_ADDRESSESS_CONFIG.STATE_ADDRESS
+          );
+
+          console.log(
+            `  🔑 Confirmed: Upline is the base user (owner: ${stateInfo.owner})`
+          );
+          uplineWallet = stateInfo.owner;
+        } else {
+          // It's not the base user, but the structure is incomplete - use referrer as fallback
+          uplineWallet = uplineInfo.referrer;
+          console.log(
+            `  🔄 Using referrer as wallet: ${uplineWallet.toString()}`
+          );
+        }
+      }
+      const uplineTokenAccount = await anchor.utils.token.associatedAddress({
+        mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+        owner: uplineWallet,
+      });
+
+      console.log(
+        `  💰 ATA derivada para a wallet: ${uplineTokenAccount.toString()}`
+      );
+
+      // Check if ATA exists and create if necessary
+      const ataInfo = await connection.getAccountInfo(uplineTokenAccount);
+      if (!ataInfo) {
+        console.log(`  ⚠️ ATA does not exist, creating...`);
+
+        try {
+          // Criar ATA
+          const createATAIx = new web3.TransactionInstruction({
+            keys: [
+              {
+                pubkey: wallet.adapter.publicKey,
+                isSigner: true,
+                isWritable: true,
+              },
+              { pubkey: uplineTokenAccount, isSigner: false, isWritable: true },
+              { pubkey: uplineWallet, isSigner: false, isWritable: false },
+              {
+                pubkey: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+                isSigner: false,
+                isWritable: false,
+              },
+              {
+                pubkey: web3.SystemProgram.programId,
+                isSigner: false,
+                isWritable: false,
+              },
+              {
+                pubkey: MAIN_ADDRESSESS_CONFIG.SPL_TOKEN_PROGRAM_ID,
+                isSigner: false,
+                isWritable: false,
+              },
+              {
+                pubkey: web3.SYSVAR_RENT_PUBKEY,
+                isSigner: false,
+                isWritable: false,
+              },
+            ],
+            programId: ASSOCIATED_TOKEN_PROGRAM_ID,
+            data: Buffer.from([]),
+          });
+
+          const tx = new web3.Transaction().add(createATAIx);
+          tx.feePayer = wallet.adapter.publicKey;
+          const { blockhash } = await connection.getLatestBlockhash();
+          tx.recentBlockhash = blockhash;
+
+          const signedTx = await anchorWallet.signTransaction(tx);
+          const txid = await connection.sendRawTransaction(
+            signedTx.serialize()
+          );
+
+          // Wait for transaction confirmation
+          await connection.confirmTransaction(txid);
+          console.log(`  ✅ ATA created: ${txid}`);
+        } catch (e) {
+          console.log(`  ⚠️ Error creating ATA: ${e.message}`);
+          console.log(
+            `  ⚠️ Proceeding anyway, the contract will derive the ATA when needed`
+          );
+        }
+      } else {
+        console.log(`  ✅ ATA already exists`);
+      }
+
+      // Check wallet account type (must be a system account)
+      const walletInfo = await connection.getAccountInfo(uplineWallet);
+      if (
+        !walletInfo ||
+        walletInfo.owner.toString() !== web3.SystemProgram.programId.toString()
+      ) {
+        console.log(
+          `  ⚠️ WARNING: Wallet ${uplineWallet.toString()} is not a system account!`
+        );
+        console.log(
+          `  ⚠️ Owner: ${walletInfo ? walletInfo.owner.toString() : "unknown"}`
+        );
+        console.log(
+          `  ⚠️ The payment may fail for this upline. Consider resolving this.`
+        );
+      }
+
+      console.log("🔍 DEBUG: Upline info:", uplineInfo);
+
       triosInfo.push({
         pda: uplinePDA,
-        wallet: uplineData.wallet,
-        ata: uplineData.tokenAta,
-        depth: parseInt(uplineData.depth.toString()),
+        wallet: uplineWallet,
+        ata: uplineTokenAccount,
+        depth: parseInt(uplineInfo.upline.depth.toString()),
       });
     } catch (e) {
       console.log(`  ❌ Error analyzing upline: ${e.message}`);
@@ -317,12 +434,14 @@ export async function handleTransactionError(
   connection: Connection
 ) {
   try {
-    console.log(`  ⚠️ Transaction error occurred: ${error.message}`);
+    console.log(`  ⚠️ Transaction error occurred:`);
+    console.log(error.toString());
+    console.dir(error, { depth: null });
 
     // Log any transaction logs if available
-    if (error.logs && Array.isArray(error.logs)) {
+    if (error?.logs && Array.isArray(error.logs)) {
       console.log("  Transaction logs:");
-      error.logs.forEach((log: string, index: number) => {
+      error?.logs?.forEach((log: string, index: number) => {
         console.log(`    ${index}: ${log}`);
       });
     }
@@ -350,15 +469,6 @@ export async function getNeededDerivedPDA(
 ): Promise<DerivedPDAResponse> {
   const cacheService = CacheService.getInstance();
   const cacheKey = wallet.adapter.publicKey.toString();
-  const cachedResult = cacheService.get<DerivedPDAResponse>(
-    "derived_pda",
-    cacheKey
-  );
-
-  if (cachedResult) {
-    console.log("🔍 DEBUG: Using cached PDA values for wallet:", cacheKey);
-    return cachedResult;
-  }
 
   // PDA for user
   const [userAccount] = PublicKey.findProgramAddressSync(
@@ -541,6 +651,7 @@ export async function setVersionedTransaction(
     console.log("✅ TRANSACTION CONFIRMED!");
 
     // Check user account state
+    console.log("🔍 DEBUG: Checking user account state...", userAccount);
     const userInfo = await program.account.userAccount.fetch(userAccount);
 
     console.log("\n📋 REGISTRATION CONFIRMATION:");
@@ -553,8 +664,11 @@ export async function setVersionedTransaction(
     if (userInfo.ownerWallet) {
       console.log("\n📋 NEW FIELDS:");
       console.log("👤 Owner Wallet: " + userInfo.ownerWallet.toString());
-      console.log("💰 Owner Token ATA: " + userInfo.ownerTokenAta.toString());
-
+      const userATA = await anchor.utils.token.associatedAddress({
+        mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+        owner: userInfo.ownerWallet,
+      });
+      console.log("💰 Owner Token ATA: " + userATA.toString());
       // Check if owner_wallet matches user's wallet
       if (userInfo.ownerWallet.equals(wallet.adapter.publicKey)) {
         console.log("✅ New fields were correctly filled");
@@ -579,12 +693,13 @@ export async function setVersionedTransaction(
 
     // If slot 3 was filled and matrix completed, check recursion processing
     if (
-      newReferrerInfo.chain.filledSlots === 0 &&
+      newReferrerInfo.chain.filledSlots === 2 &&
       remainingAccounts.length > 0
     ) {
       console.log("\n🔄 CHECKING RECURSION RESULTS:");
 
       let uplineReverseCount = 0;
+
       for (let i = 0; i < remainingAccounts.length; i += 3) {
         if (i >= remainingAccounts.length) break;
 
@@ -607,9 +722,14 @@ export async function setVersionedTransaction(
             console.log(
               `  👤 Owner Wallet in account: ${uplineInfo.ownerWallet.toString()}`
             );
-            console.log(
-              `  💰 Owner Token ATA in account: ${uplineInfo.ownerTokenAta.toString()}`
-            );
+
+            // Derivar ATA para verificação
+            const derivedATA = await anchor.utils.token.associatedAddress({
+              mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+              owner: uplineInfo.ownerWallet,
+            });
+
+            console.log(`  💰 derived ATA: ${derivedATA.toString()}`);
 
             if (!uplineInfo.ownerWallet.equals(uplineWallet)) {
               console.log(
@@ -647,22 +767,21 @@ export async function setVersionedTransaction(
           }
 
           // Check SOL balance of wallet stored in account
-          const walletToCheck = uplineInfo.ownerWallet || uplineWallet;
-          const walletBalance = await connection.getBalance(walletToCheck);
+
+          const walletBalance = await connection.getBalance(uplineWallet);
           console.log(
-            `  💰 SOL balance of wallet ${walletToCheck.toString()}: ${
+            `  💰 SOL balance of wallet ${uplineWallet.toString()}: ${
               walletBalance / 1e9
             } SOL`
           );
 
           // Check token balance of ATA stored in account
           try {
-            const ataToCheck = uplineInfo.ownerTokenAta || uplineATA;
             const tokenBalance = await connection.getTokenAccountBalance(
-              ataToCheck
+              uplineATA
             );
             console.log(
-              `  🪙 Token balance in ATA ${ataToCheck.toString()}: ${
+              `  🪙 Token balance in ATA ${uplineATA.toString()}: ${
                 tokenBalance.value.uiAmount
               }`
             );
@@ -695,7 +814,44 @@ export async function setVersionedTransaction(
         MAIN_ADDRESSESS_CONFIG.LOOKUP_TABLE_ADDRESS.toString()
     );
   } catch (e) {
-    console.log("❌ ERROR PROCESSING TRANSACTION:");
+    console.log("❌ ERROR PROCESSING TRANSACTION:", e);
+
+    // Análise detalhada do erro para tamanho de transação
+    if (e.toString().includes("too large")) {
+      console.log("\n📏 ERRO DE TAMANHO DE TRANSAÇÃO:");
+      console.log(`  Total de contas na transação:`);
+      console.log(
+        `  - Contas padrão: ~25 (estado, usuário, referenciador, etc.)`
+      );
+      console.log(
+        `  - Contas de upline: ${remainingAccounts.length} (${
+          remainingAccounts.length / 3
+        } trios de upline)`
+      );
+      console.log(`  - Total: ~${25 + remainingAccounts.length} contas`);
+
+      // Calcular quantas uplines podemos processar baseado no limite
+      // Ajustado para o MAX_UPLINE_DEPTH de 6
+      const maxAccountsInTx = 40; // Aproximado baseado no limite de 1232 bytes
+      const maxUplines = Math.floor((maxAccountsInTx - 25) / 3);
+      console.log(
+        `\n⚠️ SUGESTÃO: Tente reduzir o número de uplines para ${maxUplines} ou menos.`
+      );
+    }
+
+    if (e.logs) {
+      console.log("\n📋 LOGS DE ERRO DETALHADOS:");
+      const relevantLogs = e.logs.filter(
+        (log) =>
+          log.includes("Program log:") ||
+          log.includes("Error") ||
+          log.includes("error")
+      );
+
+      if (relevantLogs.length > 0) {
+        relevantLogs.forEach((log, i) => console.log(`  ${i}: ${log}`));
+      }
+    }
     // Use the new error handler instead of trying to close WSOL
     await handleTransactionError(e, wallet, connection);
   }
