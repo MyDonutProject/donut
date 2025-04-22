@@ -688,7 +688,6 @@ export async function setVersionedTransaction(
     const newReferrerInfo = await program.account.userAccount.fetch(
       referrerAccount
     );
-    console.log("\n📋 REFERRER STATE AFTER REGISTRATION:");
     console.log("📊 Filled slots: " + newReferrerInfo.chain.filledSlots + "/3");
 
     // If slot 3 was filled and matrix completed, check recursion processing
