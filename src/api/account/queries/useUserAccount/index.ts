@@ -22,7 +22,7 @@ export function useUserAccount() {
     UseUserAccountQueryKeyProps
   >({
     queryKey,
-    retry: 2,
+    retry: 1,
     queryFn: (context) =>
       fetchUserAccount({ ...context, wallet: wallet, program }),
     enabled: !!wallet && typeof window !== "undefined",

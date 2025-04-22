@@ -567,12 +567,12 @@ export async function setVersionedTransaction(
   const registerInstructions = [];
 
   const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-    units: 1000000, // Increase limit for complex transactions
+    units: 1500000, // Increase limit for complex transactions
   });
 
   // Also add a priority instruction
   const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
-    microLamports: 5000, // Increase transaction priority
+    microLamports: 10000, // Increase transaction priority
   });
 
   registerInstructions.push(modifyComputeUnits);
@@ -818,29 +818,17 @@ export async function setVersionedTransaction(
 
     // Análise detalhada do erro para tamanho de transação
     if (e.toString().includes("too large")) {
-      console.log("\n📏 ERRO DE TAMANHO DE TRANSAÇÃO:");
-      console.log(`  Total de contas na transação:`);
-      console.log(
-        `  - Contas padrão: ~25 (estado, usuário, referenciador, etc.)`
-      );
-      console.log(
-        `  - Contas de upline: ${remainingAccounts.length} (${
-          remainingAccounts.length / 3
-        } trios de upline)`
-      );
-      console.log(`  - Total: ~${25 + remainingAccounts.length} contas`);
-
       // Calcular quantas uplines podemos processar baseado no limite
       // Ajustado para o MAX_UPLINE_DEPTH de 6
       const maxAccountsInTx = 40; // Aproximado baseado no limite de 1232 bytes
       const maxUplines = Math.floor((maxAccountsInTx - 25) / 3);
       console.log(
-        `\n⚠️ SUGESTÃO: Tente reduzir o número de uplines para ${maxUplines} ou menos.`
+        `\n⚠️ SUGESTÃO: try reduce uplines to ${maxUplines} or less.`
       );
     }
 
     if (e.logs) {
-      console.log("\n📋 LOGS DE ERRO DETALHADOS:");
+      console.log("\n📋 DETAILED ERROR LOGS:");
       const relevantLogs = e.logs.filter(
         (log) =>
           log.includes("Program log:") ||

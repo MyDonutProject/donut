@@ -1,6 +1,7 @@
 export interface Account {
   isRegistered: boolean;
   referrer: string;
+  ownerWallet: any;
   upline: {
     id: string;
     depth: string;
