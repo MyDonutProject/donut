@@ -27,15 +27,7 @@ export function useArmang() {
       phantomImage.style.borderRadius = "12px";
       phantomImage.style.overflow = "hidden";
 
-      el.appendChild(phantomImage);
-
-      const svg = el.getElementsByTagName("svg")?.[0] as SVGElement;
-
-      if (!svg) {
-        return;
-      }
-
-      svg.remove();
+      // el.appendChild(phantomImage);
 
       // Create wrapper link
       const wrapper = document.createElement("a");
@@ -46,22 +38,57 @@ export function useArmang() {
       wrapper.style.flexDirection = "column";
       wrapper.style.alignItems = "center";
       wrapper.style.gap = "12px";
+      wrapper.style.width = "100%";
 
       // Move the original content into the wrapper
       const originalContent = el.innerHTML;
       wrapper.innerHTML = originalContent;
 
-      // Create text element
-      const text = document.createElement("p");
-      text.textContent = "Click here to add Phantom";
-      text.style.margin = "0";
-      text.style.color = "#fff";
-      text.style.fontSize = "14px";
-      text.style.fontWeight = "500";
-      text.style.opacity = "0.8";
+      // Create button element
+      const button = document.createElement("button");
+      button.style.width = "100%";
+      button.style.display = "flex";
+      button.style.justifyContent = "center";
+      button.style.alignItems = "center";
+      button.style.gap = "8px";
+      button.style.backgroundColor = "#9886E5";
+      button.style.color = "#fff";
+      button.style.border = "none";
+      button.style.borderRadius = "8px";
+      button.style.padding = "12px";
+      button.style.fontSize = "14px";
+      button.style.fontWeight = "700";
+      button.style.cursor = "pointer";
+      button.style.transition = "all 0.2s ease-in-out";
+      button.style.marginTop = "24px";
 
-      // Add text to wrapper
-      wrapper.appendChild(text);
+      // Create icon
+      const icon = document.createElement("img");
+      icon.src = "/donut/providers/phantom.svg";
+      icon.style.width = "16px";
+      icon.style.height = "16px";
+      icon.style.objectFit = "contain";
+
+      // Create text span
+      const text = document.createElement("span");
+      text.textContent = "Download Phantom";
+
+      // Add icon and text to button
+      button.appendChild(icon);
+      button.appendChild(text);
+
+      // Add hover effect
+      button.onmouseover = () => {
+        button.style.transform = "scale(1.02)";
+        button.style.opacity = "0.9";
+      };
+      button.onmouseout = () => {
+        button.style.transform = "scale(1)";
+        button.style.opacity = "1";
+      };
+
+      // Add button to wrapper
+      wrapper.appendChild(button);
 
       // Replace original content with wrapped version
       el.innerHTML = "";
