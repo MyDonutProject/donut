@@ -1,28 +1,22 @@
-import useTranslation from 'next-translate/useTranslation';
-import ProfileDrawerContent from './Content';
-import { ModalsKey } from '@/enums/modalsKey';
-import useAccount from '@/hooks/account/useAccount';
-import { useModal } from '@/hooks/modal';
-import { PageDrawer } from '@/components/core/PageDrawer';
+import { PageDrawer } from "@/components/core/PageDrawer";
+import { ModalsKey } from "@/enums/modalsKey";
+import { useModal } from "@/hooks/modal";
+import useTranslation from "next-translate/useTranslation";
+import ProfileDrawerContent from "./Content";
 
 export default function ProfileDrawer() {
-  const { t } = useTranslation('common');
-    const { isOpen, onClose } = useModal(ModalsKey.ProfileDetails);
-  const { isConnected } = useAccount();
+  const { t } = useTranslation("common");
+  const { isOpen, onClose } = useModal(ModalsKey.ProfileDetails);
 
   function handleClose() {
     onClose();
-  }
-
-  if (!isConnected) {
-    return null;
   }
 
   return (
     <PageDrawer
       isOpen={isOpen}
       onClose={handleClose}
-      title={t('profile_label')}
+      title={t("profile_label")}
     >
       <ProfileDrawerContent />
     </PageDrawer>

@@ -110,5 +110,10 @@
   "no_data_title": "Aucun donut",
   "no_data_found": "Aucun donut trouvé",
   "reserved_donuts": "Beignets réservés",
-  "reserved_solanas": "Solanas réservés"
+  "reserved_solanas": "Solanas réservés",
+  "is_comming": "⏳ Juste un éclat de confiserie. Le donut arrive.",
+  "all_rights_reserved": "Copyright © {{year}} Donut. Tous droits réservés.",
+  "terms_of_use": "Conditions d'utilisation",
+  "privacy_policy": "Politique de confidentialité",
+  "cookie_policy": "Politique de cookies"
 }

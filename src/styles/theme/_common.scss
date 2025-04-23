@@ -96,6 +96,7 @@ $spacing-unit: 8px;
 
   & input {
     border-radius: 80px;
+    min-height: calc($box-height * 1.5);
     height: calc($box-height * 1.5);
     border: 1px solid $primary-contrast-text;
     padding: 32px !important;
@@ -108,7 +109,7 @@ $spacing-unit: 8px;
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -142,7 +143,7 @@ $spacing-unit: 8px;
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;

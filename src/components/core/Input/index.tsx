@@ -191,107 +191,6 @@ function InputComponent<T extends FieldValues>(
     );
   }
 
-  if (useTextArea) {
-    return (
-      <div
-        className={`${styles.container} ${
-          !!type ? styles[`container--${type}`] : ""
-        } ${className ? className : ""}`}
-      >
-        <div
-          className={`${styles.container__relative} ${
-            !!type ? styles[`container__relative--${type}`] : ""
-          }`}
-        >
-          <div
-            className={`${styles.container__formated_value} ${
-              !isEditing && useTextArea
-                ? styles["container__formated_value--hidden"]
-                : ""
-            }`}
-            onClick={() => toggleIsEditing()}
-            dangerouslySetInnerHTML={{
-              //@ts-ignore
-              __html:
-                !props?.value || String(props?.value)?.length == 0
-                  ? props?.placeholder
-                  : props?.value,
-            }}
-          />
-          <textarea
-            readOnly={readOnly}
-            className={`${styles.container__input} ${
-              isEditing && useTextArea ? styles["container__input--hidden"] : ""
-            } ${styles["container__input--text-area"]} ${
-              hasPaddingRight ? styles["container__input--figure--right"] : ""
-            } ${
-              hasPaddingLeft ? styles["container__input--padding-left"] : ""
-            } ${
-              isContainerColor
-                ? styles["container__input--container-color"]
-                : ""
-            } ${isCardColor ? styles["container__input--card-color"] : ""} ${
-              isError && openTooltip ? styles["container__input--error"] : ""
-            } ${
-              !!type ? styles[`container__input--${type}`] : ""
-            } ${className}`}
-            ref={ref}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            spellCheck={false}
-            key={`text-area-${isEditing}`}
-            name={name}
-            rows={5}
-            type={getType()}
-            style={{
-              //@ts-ignore
-              "--position":
-                type == "range"
-                  ? `${(Number(props?.value ?? 0) / Number(props?.max)) * 100}%`
-                  : undefined,
-            }}
-            {...props}
-            {...(register &&
-              name &&
-              register?.(name, {
-                ...registerOptions,
-                onBlur: (e) => {
-                  registerOptions?.onBlur?.(e);
-                  handleBlur(e);
-                },
-              }))}
-            autoFocus={true}
-          />
-          {icon && !showSpinner && (
-            <i
-              className={`${styles.container__figure} ${
-                hasPaddingRight ? styles["container__figure--right"] : ""
-              } ${icon}`}
-            />
-          )}
-          {customIcon && !showSpinner && customIcon}
-          {isError &&
-            openTooltip &&
-            !!errorMessage &&
-            (Array.isArray(errorMessage) ? (
-              errorMessage.map((error, i) => (
-                <span
-                  className={styles["container__input-error"]}
-                  key={`error-message-${i}`}
-                >
-                  *{error}
-                </span>
-              ))
-            ) : (
-              <span className={styles["container__input-error"]}>
-                *{errorMessage}
-              </span>
-            ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className={`${styles.container} ${
@@ -301,7 +200,7 @@ function InputComponent<T extends FieldValues>(
       <div
         className={`${styles.container__relative} ${
           !!type ? styles[`container__relative--${type}`] : ""
-        }`}
+        } ${className}`}
       >
         <input
           readOnly={readOnly}
@@ -313,7 +212,7 @@ function InputComponent<T extends FieldValues>(
             isContainerColor ? styles["container__input--container-color"] : ""
           } ${isCardColor ? styles["container__input--card-color"] : ""} ${
             isError && openTooltip ? styles["container__input--error"] : ""
-          } ${!!type ? styles[`container__input--${type}`] : ""} ${className}`}
+          } ${!!type ? styles[`container__input--${type}`] : ""}`}
           ref={ref ?? inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}

@@ -4,8 +4,10 @@ import { StaggerAnimation } from "@/components/core/Animation/Stagger";
 import { Image } from "@/components/core/Image";
 import TransText from "next-translate/Trans";
 import { useMemo } from "react";
+import HomeContractAddress from "./Address";
 import BuyHere from "./BuyHere";
 import CommunityDriven from "./CommunityDriven";
+import ConnectWalletButton from "./ConnectWalletButton";
 import HomeSection from "./Section";
 import Table from "./Table";
 
@@ -44,10 +46,10 @@ export default function Home() {
               }}
             />
           </h1>
-          {/* <HomeContractAddress /> */}
+          <HomeContractAddress />
           <BuyHere />
           <CommunityDriven />
-          {/* <ConnectWalletButton /> */}
+          <ConnectWalletButton />
         </StaggerAnimation>
       </div>
       <HomeSection />

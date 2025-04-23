@@ -1,10 +1,10 @@
-import { ModalsKey } from '@/enums/modalsKey';
-import { MouseEvent } from 'react';
-import { useRouter } from 'next/router';
+import { ModalsKey } from "@/enums/modalsKey";
+import { useRouter } from "next/router";
+import { MouseEvent } from "react";
 
 export function useModal(key: ModalsKey) {
   const { push, pathname, asPath } = useRouter();
-  const hash = asPath.split?.('#')?.[1];
+  const hash = asPath?.includes(`#${key}`) ? `#${key}` : null;
   const isOpen: boolean = hash === `#${key}`;
 
   function onClose() {

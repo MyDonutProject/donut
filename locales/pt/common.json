@@ -111,5 +111,10 @@
   "no_data_title": "Não há dados",
   "no_data_found": "Não há dados para exibir",
   "reserved_donuts": "Donuts reservados",
-  "reserved_solanas": "Solanas reservadas"
+  "reserved_solanas": "Solanas reservadas",
+  "is_comming": "⏳ Apenas um toque de confeito. Donut está chegando.",
+  "all_rights_reserved": "Copyright © {{year}} Donut. Todos os direitos reservados.",
+  "terms_of_use": "Termos de uso",
+  "privacy_policy": "Política de privacidade",
+  "cookie_policy": "Política de cookies"
 }

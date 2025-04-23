@@ -10,7 +10,6 @@ import Header from "./Header";
 import LanguageModal from "./Language/Modal";
 
 export default function MainLayout({ children }: PropsWithChildren) {
-  // useContractInteraction();
   useUserAccount();
   const { address } = useAccount();
   const { query } = useRouter();

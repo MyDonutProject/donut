@@ -5,7 +5,6 @@ import { formatLargeString } from "@/utils/formatLargeString";
 import { Tooltip } from "@mui/material";
 import { getCookie } from "cookies-next/client";
 import useTranslation from "next-translate/useTranslation";
-import LanguageButton from "../Language/Button";
 import HeaderButton from "./Button";
 import HeaderMenu from "./Menu";
 import styles from "./styles.module.scss";
@@ -16,7 +15,6 @@ function Header() {
 
   const sponsorCode = getCookie("sponsor");
   const formattedSponsorCode = formatLargeString(sponsorCode);
-  console.log("sponsorCode", sponsorCode);
 
   return (
     <div
@@ -27,9 +25,18 @@ function Header() {
       <span className={styles.container__wrapper}>
         <Link href={"/"}>
           <img
-            className={styles.container__logo}
+            className={`${styles.container__logo} desktop-only`}
             alt="Logo"
-            src="/donut/logo/logo.png"
+            src={
+              isHomePage ? "/donut/logo/logo.png" : "/donut/logo/logo-dark.avif"
+            }
+          />
+          <img
+            className={`${styles.container__logo} mobile-only`}
+            alt="Logo"
+            src={
+              isHomePage ? "/donut/logo/logo.png" : "/donut/logo/logo-dark.avif"
+            }
           />
         </Link>
         <HeaderMenu />
@@ -47,9 +54,6 @@ function Header() {
             </Tooltip>
           )}
           <HeaderButton />
-          <div className="desktop-only">
-            <LanguageButton />
-          </div>
         </div>
       </span>
     </div>

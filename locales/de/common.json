@@ -111,5 +111,10 @@
   "no_data_title": "Keine Donuts",
   "no_data_found": "Keine Donuts gefunden",
   "reserved_donuts": "Reservierte Donuts",
-  "reserved_solanas": "Reservierte Solanas"
+  "reserved_solanas": "Reservierte Solanas",
+  "is_comming": "⏳ Nur ein Spritzer entfernt. Donut ist unterwegs.",
+  "all_rights_reserved": "Alle Rechte vorbehalten © {{year}} Donut. Alle Rechte vorbehalten.",
+  "terms_of_use": "Nutzungsbedingungen",
+  "privacy_policy": "Datenschutzrichtlinie",
+  "cookie_policy": "Cookie-Richtlinie"
 }

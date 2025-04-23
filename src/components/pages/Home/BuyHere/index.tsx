@@ -12,13 +12,16 @@ export default function BuyHere() {
       className={styles.container}
     >
       <h2 className={styles.container__title}>{t("buy_here")}</h2>
-      <Image
-        src="/donut/assets/m3m3.png"
-        alt="buy-here"
-        className={styles.container__image}
-        fetchPriority="low"
-        loading="lazy"
-      />
+      <div className={styles.container__image__wrapper}>
+        <Image
+          src="/donut/assets/meteora.svg"
+          alt="buy-here"
+          className={styles.container__image}
+          fetchPriority="low"
+          loading="lazy"
+        />
+        <h2 className={styles.container__image__label}>Meteora</h2>
+      </div>
     </a>
   );
 }
