@@ -605,6 +605,10 @@ export async function setVersionedTransaction(
     systemProgram: SystemProgram.programId,
     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
     rent: web3.SYSVAR_RENT_PUBKEY,
+    aVault: MAIN_ADDRESSESS_CONFIG.A_VAULT,
+    aTokenVault: MAIN_ADDRESSESS_CONFIG.A_TOKEN_VAULT,
+    aVaultLp: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP,
+    aVaultLpMint: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP_MINT,
   };
 
   const registerIx = await program.methods

@@ -44,6 +44,10 @@
         { "name": "wsolMint", "isMut": false, "isSigner": false },
         { "name": "pythSolUsdPrice", "isMut": false, "isSigner": false },
         { "name": "pool", "isMut": true, "isSigner": false },
+        { "name": "aVault", "isMut": true, "isSigner": false },
+        { "name": "aTokenVault", "isMut": true, "isSigner": false },
+        { "name": "aVaultLp", "isMut": true, "isSigner": false },
+        { "name": "aVaultLpMint", "isMut": true, "isSigner": false },
         { "name": "bVault", "isMut": true, "isSigner": false },
         { "name": "bTokenVault", "isMut": true, "isSigner": false },
         { "name": "bVaultLpMint", "isMut": true, "isSigner": false },
@@ -131,55 +135,12 @@
   ],
   "events": [
     {
-      "name": "UserRegistered",
+      "name": "SlotFilled",
       "fields": [
-        { "name": "user", "type": "publicKey", "index": false },
-        {
-          "name": "referrer",
-          "type": { "option": "publicKey" },
-          "index": false
-        },
-        { "name": "uplineId", "type": "u32", "index": false },
-        { "name": "depth", "type": "u8", "index": false }
-      ]
-    },
-    {
-      "name": "ChainCompleted",
-      "fields": [
-        { "name": "owner", "type": "publicKey", "index": false },
-        { "name": "chainId", "type": "u32", "index": false },
-        { "name": "slot0", "type": "publicKey", "index": false },
-        { "name": "slot1", "type": "publicKey", "index": false },
-        { "name": "slot2", "type": "publicKey", "index": false }
-      ]
-    },
-    {
-      "name": "ChainSlotFilled",
-      "fields": [
-        { "name": "owner", "type": "publicKey", "index": false },
+        { "name": "slotIdx", "type": "u8", "index": false },
         { "name": "chainId", "type": "u32", "index": false },
         { "name": "user", "type": "publicKey", "index": false },
-        { "name": "slotIndex", "type": "u8", "index": false }
-      ]
-    },
-    {
-      "name": "SlotAction",
-      "fields": [
-        { "name": "slot", "type": "u8", "index": false },
-        { "name": "user", "type": "publicKey", "index": false },
-        { "name": "referrer", "type": "publicKey", "index": false },
-        { "name": "action", "type": "string", "index": false },
-        { "name": "amount", "type": "u64", "index": false }
-      ]
-    },
-    {
-      "name": "TokenAction",
-      "fields": [
-        { "name": "slot", "type": "u8", "index": false },
-        { "name": "user", "type": "publicKey", "index": false },
-        { "name": "referrer", "type": "publicKey", "index": false },
-        { "name": "action", "type": "string", "index": false },
-        { "name": "amount", "type": "u64", "index": false }
+        { "name": "owner", "type": "publicKey", "index": false }
       ]
     }
   ],
