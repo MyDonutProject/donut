@@ -4,12 +4,12 @@ import { useTypewriter } from "../../../../hooks/useTypewriter";
 import styles from "./styles.module.scss";
 
 export default function Phrases() {
-  const { t } = useTranslation("common");
+  const { t, lang } = useTranslation("common");
 
   const items = useMemo(
     () =>
       Array.from({ length: 9 }, (_, index) => `${t(`${index}_vantage_label`)}`),
-    []
+    [lang]
   );
 
   const { currentText, isTyping } = useTypewriter({

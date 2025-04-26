@@ -1,17 +1,23 @@
 import useAccount from "@/hooks/account/useAccount";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import useTranslation from "next-translate/useTranslation";
 import styles from "./styles.module.scss";
 
 export default function ConnectWalletButton() {
   const { t } = useTranslation("common");
   const { isConnected } = useAccount();
+  const { setVisible } = useWalletModal();
+
+  const handleConnect = () => {
+    setVisible(true);
+  };
 
   if (isConnected) {
     return null;
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={handleConnect}>
       <i className={`${styles.container__icon} fa-solid fa-wallet`} />
       <div className={styles.container__column}>
         <div className={styles.container__column__row}>
@@ -19,16 +25,12 @@ export default function ConnectWalletButton() {
             {t("connect_wallet")}
           </h3>
           <img
-            src={"/donut/providers/metamask.png"}
-            className={styles.container__column__row__icon}
-          />
-          <img
             src={"/donut/providers/phantom.png"}
             className={styles.container__column__row__icon}
           />
         </div>
         <p className={styles.container__column__description}>
-          {t("connect_wallet_description")}
+          {t("seo:title")}
         </p>
       </div>
       <i
