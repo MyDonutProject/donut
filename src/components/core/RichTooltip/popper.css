@@ -1,0 +1,9 @@
+.MuiPaper-root,
+.MuiPopover-paper {
+  background-image: none !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  overflow: unset;
+  overflow-y: auto;
+  max-height: 90vh;
+}

@@ -7,7 +7,6 @@ import Layout from "../Layout";
 import NotificationToasty from "../Notifications/Toasty";
 import ProfileDrawer from "../Profile/Drawer";
 import Header from "./Header";
-import LanguageModal from "./Language/Modal";
 
 export default function MainLayout({ children }: PropsWithChildren) {
   useUserAccount();
@@ -22,8 +21,6 @@ export default function MainLayout({ children }: PropsWithChildren) {
     if (query?.sponsor) {
       setCookie("sponsor", query?.sponsor);
     }
-
-    console.log("🔍 DEBUG: Query:", query);
   }
 
   useEffect(handleSetSponsor, [address]);
@@ -31,7 +28,6 @@ export default function MainLayout({ children }: PropsWithChildren) {
   return (
     <>
       <NotificationToasty />
-      <LanguageModal />
       <Header />
       <ProfileDrawer />
       <Layout>{children}</Layout>

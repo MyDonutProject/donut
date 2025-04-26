@@ -1,22 +1,22 @@
 .container {
   width: 100%;
   min-height: 100dvh;
-  height: 100%;
+  height: max-content;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: max-content;
   overflow: unset;
   position: relative;
-
-  @include media-tablet {
-    min-height: calc(100dvh + 180px);
-  }
 
   &__content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 60px;
+    width: 100%;
+    height: 110%;
+    min-height: max-content;
+    gap: 80px;
 
     @include media-tablet {
       gap: 30px;
@@ -29,8 +29,7 @@
     left: 50%;
     top: -40px;
     width: 100dvw;
-    min-height: 100dvh;
-    height: 100%;
+    height: calc(100% + 50px);
     transform: translate(-50%, 0%);
 
     background: linear-gradient(
@@ -39,10 +38,6 @@
       $primary-color 100%
     );
     z-index: -1;
-
-    @include media-tablet {
-      height: 100%;
-    }
   }
 
   &__title {
@@ -63,7 +58,7 @@
     }
 
     @include media-tablet {
-      font-size: 30px;
+      font-size: 50px;
 
       & strong {
         font-size: 70px;
@@ -87,7 +82,7 @@
       filter: blur(2px);
 
       @include media-tablet {
-        top: 200px;
+        top: 150px;
       }
     }
 
@@ -116,6 +111,11 @@
       max-width: min(350px, 50dvw);
       top: min(5dvw, 50%);
       transform: rotate(-25deg) translateY(-min(5dvw, 50%));
+
+      @include media-tablet {
+        max-width: min(350px, 30dvw);
+        right: calc(-20dvw + min(350px, 20dvw));
+      }
     }
   }
 }

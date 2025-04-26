@@ -8,6 +8,7 @@ import HomeContractAddress from "./Address";
 import BuyHere from "./BuyHere";
 import CommunityDriven from "./CommunityDriven";
 import ConnectWalletButton from "./ConnectWalletButton";
+import Phrases from "./Phrases";
 import HomeSection from "./Section";
 import Table from "./Table";
 
@@ -54,6 +55,7 @@ export default function Home() {
       </div>
       <HomeSection />
       <Table />
+      <Phrases />
     </>
   );
 }
