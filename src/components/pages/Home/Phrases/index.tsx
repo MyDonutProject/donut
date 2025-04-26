@@ -8,7 +8,7 @@ export default function Phrases() {
 
   const items = useMemo(
     () =>
-      Array.from({ length: 9 }, (_, index) => `${t(`${index}_vantage_label`)}`),
+      Array.from({ length: 8 }, (_, index) => `${t(`${index}_vantage_label`)}`),
     [lang]
   );
 
