@@ -35,7 +35,7 @@ export function useUserAccount() {
 
     return `${
       process.env.NEXT_PUBLIC_APP_URL
-    }?sponsor=${wallet?.adapter?.publicKey?.toBase58()}`;
+    }?sponsor=${wallet?.adapter?.publicKey?.toBase58()}&bypass=1`;
   }, [data, wallet]);
 
   return {
