@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import Router from "next/router";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useAccount() {
@@ -13,6 +14,10 @@ export default function useAccount() {
     : null;
 
   function effectToGetBalance() {
+    if (wallet.connected === false) {
+      return;
+    }
+
     const handleGetBalance = async () => {
       if (!myPublicKey) {
         return;
@@ -29,20 +34,23 @@ export default function useAccount() {
     handleGetBalance();
   }
 
-  useEffect(effectToGetBalance, [myPublicKey, connection]);
+  useEffect(effectToGetBalance, [myPublicKey, connection, wallet.connected]);
 
   const isSkeleton = !wallet.connected && wallet.connecting;
   const isConnected = wallet.connected || wallet.connecting;
 
   const handleDisconnectTimeout = useCallback(() => {
-    if (status === "connecting") {
-      const timeout = setTimeout(() => {
-        wallet.disconnect();
-      }, 3000);
-
-      return () => clearTimeout(timeout);
+    if (
+      wallet.disconnecting ||
+      (wallet.connected === false && Router.pathname !== "/")
+    ) {
+      Router.push("/");
     }
-  }, [wallet.connected, wallet.connecting]);
+
+    if (wallet.connected && Router.pathname === "/") {
+      Router.push("/dashboard");
+    }
+  }, [wallet]);
 
   useEffect(handleDisconnectTimeout, [handleDisconnectTimeout]);
 

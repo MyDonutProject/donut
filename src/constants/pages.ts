@@ -16,9 +16,9 @@ export default <PageProps[]>[
     path: "/rewards",
     icon: "fa-duotone fa-star",
   },
-  {
-    label: "affiliates_label",
-    path: "/affiliates",
-    icon: "fa-duotone fa-share-nodes",
-  },
+  // {
+  //   label: "affiliates_label",
+  //   path: "/affiliates",
+  //   icon: "fa-duotone fa-share-nodes",
+  // },
 ];

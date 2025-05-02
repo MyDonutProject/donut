@@ -12,6 +12,7 @@ let initialState: HermesStateProps = {
   price: null,
   priceHistory: [],
   decimalPrice: new Decimal(0, { scale: 8 }),
+  equivalence: new Decimal(0, { scale: 8 }),
 };
 
 export default function reducer(
@@ -22,14 +23,23 @@ export default function reducer(
     case HermesActions.SetPrice: {
       const price: PriceUpdate = (action as SetPricePayload).payload;
 
+      const decimalPrice = Decimal.fromSubunits(
+        price?.parsed?.[0]?.price?.price ?? "0",
+        { scale: 8 }
+      );
+
+      const equivalence = new Decimal(10, { scale: decimalPrice.scale }).divide(
+        decimalPrice.copyWith({
+          options: { scale: decimalPrice.scale },
+        })
+      );
+
       return {
         ...state,
         ...{
           price: price,
-          decimalPrice: Decimal.fromSubunits(
-            price?.parsed?.[0]?.price?.price ?? "0",
-            { scale: 8 }
-          ),
+          decimalPrice,
+          equivalence,
         },
       };
     }

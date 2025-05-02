@@ -1,8 +1,7 @@
-import styles from './styles.module.scss';
-import ProfileDrawerContentNavigation from './Navigation/Common';
-import ProfileDrawerContentNavigationSettings from './Navigation/Settings';
-import LogoutButton from '@/components/MainLayout/Header/LogoutButton';
-import { StaggerAnimation } from '@/components/core/Animation/Stagger';
+import LogoutButton from "@/components/MainLayout/Header/LogoutButton";
+import { StaggerAnimation } from "@/components/core/Animation/Stagger";
+import ProfileDrawerContentNavigation from "./Navigation/Common";
+import styles from "./styles.module.scss";
 
 export default function ProfileDrawerContent() {
   return (
@@ -14,7 +13,7 @@ export default function ProfileDrawerContent() {
         className={styles.container__content}
       >
         <ProfileDrawerContentNavigation />
-        <ProfileDrawerContentNavigationSettings />
+        {/* <ProfileDrawerContentNavigationSettings /> */}
         <LogoutButton />
       </StaggerAnimation>
     </div>

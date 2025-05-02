@@ -5,6 +5,7 @@ export type HermesStateProps = {
   price: PriceUpdate;
   priceHistory: PriceUpdate[];
   decimalPrice: Decimal;
+  equivalence: Decimal;
 };
 
 export enum HermesActions {
