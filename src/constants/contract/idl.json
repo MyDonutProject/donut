@@ -17,7 +17,6 @@
         { "name": "state", "isMut": true, "isSigner": false },
         { "name": "userWallet", "isMut": true, "isSigner": true },
         { "name": "user", "isMut": true, "isSigner": false },
-        { "name": "pythSolUsdPrice", "isMut": false, "isSigner": false },
         { "name": "pool", "isMut": true, "isSigner": false },
         { "name": "userSourceToken", "isMut": true, "isSigner": false },
         { "name": "bVault", "isMut": true, "isSigner": false },
@@ -42,12 +41,7 @@
         { "name": "user", "isMut": true, "isSigner": false },
         { "name": "userWsolAccount", "isMut": true, "isSigner": false },
         { "name": "wsolMint", "isMut": false, "isSigner": false },
-        { "name": "pythSolUsdPrice", "isMut": false, "isSigner": false },
         { "name": "pool", "isMut": true, "isSigner": false },
-        { "name": "aVault", "isMut": true, "isSigner": false },
-        { "name": "aTokenVault", "isMut": true, "isSigner": false },
-        { "name": "aVaultLp", "isMut": true, "isSigner": false },
-        { "name": "aVaultLpMint", "isMut": true, "isSigner": false },
         { "name": "bVault", "isMut": true, "isSigner": false },
         { "name": "bTokenVault", "isMut": true, "isSigner": false },
         { "name": "bVaultLpMint", "isMut": true, "isSigner": false },
@@ -75,8 +69,7 @@
         "fields": [
           { "name": "owner", "type": "publicKey" },
           { "name": "nextUplineId", "type": "u32" },
-          { "name": "nextChainId", "type": "u32" },
-          { "name": "minimumDepositUsd", "type": "u32" }
+          { "name": "nextChainId", "type": "u32" }
         ]
       }
     },
@@ -194,94 +187,84 @@
     },
     {
       "code": 6011,
-      "name": "PythPriceFetchFailed",
-      "msg": "Failed to fetch price from Pyth"
-    },
-    {
-      "code": 6012,
-      "name": "DonutsCalculationFailed",
-      "msg": "Failed to calculate DONUTS equivalent"
-    },
-    {
-      "code": 6013,
       "name": "DepositToPoolFailed",
       "msg": "Failed to process deposit to pool"
     },
     {
-      "code": 6014,
+      "code": 6012,
       "name": "SolReserveFailed",
       "msg": "Failed to process SOL reserve"
     },
     {
-      "code": 6015,
+      "code": 6013,
       "name": "ReferrerPaymentFailed",
       "msg": "Failed to process referrer payment"
     },
     {
-      "code": 6016,
+      "code": 6014,
       "name": "WrapSolFailed",
       "msg": "Failed to wrap SOL to WSOL"
     },
     {
-      "code": 6017,
+      "code": 6015,
       "name": "UnwrapSolFailed",
       "msg": "Failed to unwrap WSOL to SOL"
     },
-    { "code": 6018, "name": "TokenMintFailed", "msg": "Failed to mint tokens" },
+    { "code": 6016, "name": "TokenMintFailed", "msg": "Failed to mint tokens" },
     {
-      "code": 6019,
+      "code": 6017,
       "name": "TokenTransferFailed",
       "msg": "Failed to transfer tokens"
     },
     {
-      "code": 6020,
+      "code": 6018,
       "name": "InvalidPoolAddress",
       "msg": "Invalid pool address"
     },
     {
-      "code": 6021,
+      "code": 6019,
       "name": "InvalidVaultAddress",
       "msg": "Invalid vault address"
     },
     {
-      "code": 6022,
+      "code": 6020,
       "name": "InvalidTokenMintAddress",
       "msg": "Invalid token mint address"
     },
     {
-      "code": 6023,
-      "name": "InvalidOracleAddress",
-      "msg": "Invalid oracle address"
-    },
-    {
-      "code": 6024,
+      "code": 6021,
       "name": "InvalidTokenAccount",
       "msg": "Invalid token account"
     },
     {
-      "code": 6025,
+      "code": 6022,
       "name": "InvalidWalletForATA",
       "msg": "Invalid wallet for ATA"
     },
     {
-      "code": 6026,
+      "code": 6023,
       "name": "UplineEntryCreationFailed",
       "msg": "Failed to create upline entry"
     },
     {
-      "code": 6027,
+      "code": 6024,
       "name": "MissingUplineAccount",
       "msg": "Missing required account for upline"
     },
     {
-      "code": 6028,
+      "code": 6025,
       "name": "PaymentWalletInvalid",
       "msg": "Payment wallet is not a system account"
     },
     {
-      "code": 6029,
+      "code": 6026,
       "name": "TokenAccountInvalid",
       "msg": "Token account is not a valid ATA"
+    },
+    {
+      "code": 6027,
+      "name": "MissingVaultAAccounts",
+      "msg": "Missing vault A accounts"
     }
   ]
 }

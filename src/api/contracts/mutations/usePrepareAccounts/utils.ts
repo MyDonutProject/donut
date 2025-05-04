@@ -578,6 +578,31 @@ export async function setVersionedTransaction(
   registerInstructions.push(modifyComputeUnits);
   registerInstructions.push(setPriority);
 
+  const vaultAAccounts = [
+    {
+      pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP,
+      isWritable: true,
+      isSigner: false,
+    },
+    {
+      pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP_MINT,
+      isWritable: true,
+      isSigner: false,
+    },
+    {
+      pubkey: MAIN_ADDRESSESS_CONFIG.A_TOKEN_VAULT,
+      isWritable: true,
+      isSigner: false,
+    },
+    {
+      pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT,
+      isWritable: true,
+      isSigner: false,
+    },
+  ];
+
+  const allRemainingAccounts = [...vaultAAccounts, ...remainingAccounts];
+
   // Create main program instruction
   console.log("  🔍 Creating register_with_sol_deposit instruction...");
   const accounts = {
@@ -587,8 +612,8 @@ export async function setVersionedTransaction(
     referrerWallet: MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
     user: userAccount,
     userWsolAccount: userWsolAccount,
+    // pythSolUsdPrice: MAIN_ADDRESSESS_CONFIG.PYTH_SOL_USD,
     wsolMint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
-    pythSolUsdPrice: MAIN_ADDRESSESS_CONFIG.PYTH_SOL_USD,
     pool: MAIN_ADDRESSESS_CONFIG.POOL_ADDRESS,
     bVault: MAIN_ADDRESSESS_CONFIG.B_VAULT,
     bTokenVault: MAIN_ADDRESSESS_CONFIG.B_TOKEN_VAULT,
@@ -605,16 +630,12 @@ export async function setVersionedTransaction(
     systemProgram: SystemProgram.programId,
     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
     rent: web3.SYSVAR_RENT_PUBKEY,
-    aVault: MAIN_ADDRESSESS_CONFIG.A_VAULT,
-    aTokenVault: MAIN_ADDRESSESS_CONFIG.A_TOKEN_VAULT,
-    aVaultLp: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP,
-    aVaultLpMint: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP_MINT,
   };
 
   const registerIx = await program.methods
     .registerWithSolDeposit(depositAmount)
     .accounts(accounts)
-    .remainingAccounts(remainingAccounts)
+    .remainingAccounts(allRemainingAccounts)
     .instruction();
 
   // Add program instruction to array

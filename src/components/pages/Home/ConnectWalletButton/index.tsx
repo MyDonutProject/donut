@@ -1,18 +1,21 @@
 import useAccount from "@/hooks/account/useAccount";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import useTranslation from "next-translate/useTranslation";
+import { useRouter } from "next/router";
 import styles from "./styles.module.scss";
 
 export default function ConnectWalletButton() {
   const { t } = useTranslation("common");
   const { isConnected } = useAccount();
   const { setVisible } = useWalletModal();
+  const { query } = useRouter();
+  const bypass = query.bypass as string;
 
   const handleConnect = () => {
     setVisible(true);
   };
 
-  if (isConnected) {
+  if (isConnected || !bypass) {
     return null;
   }
 

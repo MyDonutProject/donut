@@ -54,6 +54,7 @@ export async function fetchPrepareAccounts({
     console.log("💰 Deposit amount: " + amount + " SOL");
 
     const lookupTableAccount = await getLookupTableAccount();
+
     console.log("🔍 DEBUG: Lookup table account:", lookupTableAccount);
 
     if (!lookupTableAccount) {
