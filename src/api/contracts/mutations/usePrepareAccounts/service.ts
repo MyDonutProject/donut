@@ -94,6 +94,7 @@ export async function fetchPrepareAccounts({
       ],
       MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
     );
+
     console.log("🔍 DEBUG: Referrer account:", referrerAccount.toString());
 
     let referrerInfo;
@@ -241,6 +242,7 @@ export async function fetchPrepareAccounts({
       return;
     }
     const nextSlotIndex = referrerInfo.chain.filledSlots;
+
     console.log("🔍 DEBUG: Next slot index:", nextSlotIndex);
 
     if (nextSlotIndex >= 3) {
@@ -317,6 +319,7 @@ export async function fetchPrepareAccounts({
     await setupVaultTokenAccount(connection, wallet, anchorWallet);
 
     console.log("🔍 DEBUG: Setting up referrer token account");
+
     await setupReferrerTokenAccount(
       MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
       connection,

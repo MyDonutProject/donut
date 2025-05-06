@@ -5,60 +5,230 @@
     {
       "name": "initialize",
       "accounts": [
-        { "name": "state", "isMut": true, "isSigner": true },
-        { "name": "owner", "isMut": true, "isSigner": true },
-        { "name": "systemProgram", "isMut": false, "isSigner": false }
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
       ],
       "args": []
     },
     {
       "name": "registerWithoutReferrer",
       "accounts": [
-        { "name": "state", "isMut": true, "isSigner": false },
-        { "name": "userWallet", "isMut": true, "isSigner": true },
-        { "name": "user", "isMut": true, "isSigner": false },
-        { "name": "pool", "isMut": true, "isSigner": false },
-        { "name": "userSourceToken", "isMut": true, "isSigner": false },
-        { "name": "bVault", "isMut": true, "isSigner": false },
-        { "name": "bTokenVault", "isMut": true, "isSigner": false },
-        { "name": "bVaultLpMint", "isMut": true, "isSigner": false },
-        { "name": "bVaultLp", "isMut": true, "isSigner": false },
-        { "name": "vaultProgram", "isMut": false, "isSigner": false },
-        { "name": "tokenMint", "isMut": false, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false },
-        { "name": "associatedTokenProgram", "isMut": false, "isSigner": false }
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userWallet",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userSourceToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bVaultLpMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bVaultLp",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
       ],
-      "args": [{ "name": "depositAmount", "type": "u64" }]
+      "args": [
+        {
+          "name": "depositAmount",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "registerWithSolDeposit",
       "accounts": [
-        { "name": "state", "isMut": true, "isSigner": false },
-        { "name": "userWallet", "isMut": true, "isSigner": true },
-        { "name": "referrer", "isMut": true, "isSigner": false },
-        { "name": "referrerWallet", "isMut": true, "isSigner": false },
-        { "name": "user", "isMut": true, "isSigner": false },
-        { "name": "userWsolAccount", "isMut": true, "isSigner": false },
-        { "name": "wsolMint", "isMut": false, "isSigner": false },
-        { "name": "pool", "isMut": true, "isSigner": false },
-        { "name": "bVault", "isMut": true, "isSigner": false },
-        { "name": "bTokenVault", "isMut": true, "isSigner": false },
-        { "name": "bVaultLpMint", "isMut": true, "isSigner": false },
-        { "name": "bVaultLp", "isMut": true, "isSigner": false },
-        { "name": "vaultProgram", "isMut": false, "isSigner": false },
-        { "name": "programSolVault", "isMut": true, "isSigner": false },
-        { "name": "tokenMint", "isMut": true, "isSigner": false },
-        { "name": "programTokenVault", "isMut": true, "isSigner": false },
-        { "name": "referrerTokenAccount", "isMut": true, "isSigner": false },
-        { "name": "tokenMintAuthority", "isMut": false, "isSigner": false },
-        { "name": "vaultAuthority", "isMut": false, "isSigner": false },
-        { "name": "tokenProgram", "isMut": false, "isSigner": false },
-        { "name": "systemProgram", "isMut": false, "isSigner": false },
-        { "name": "associatedTokenProgram", "isMut": false, "isSigner": false },
-        { "name": "rent", "isMut": false, "isSigner": false }
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userWallet",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "referrer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "referrerWallet",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userWsolAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "wsolMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bVaultLpMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bVaultLp",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programSolVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "programTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "referrerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMintAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
       ],
-      "args": [{ "name": "depositAmount", "type": "u64" }]
+      "args": [
+        {
+          "name": "depositAmount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -67,9 +237,18 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "owner", "type": "publicKey" },
-          { "name": "nextUplineId", "type": "u32" },
-          { "name": "nextChainId", "type": "u32" }
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "nextUplineId",
+            "type": "u32"
+          },
+          {
+            "name": "nextChainId",
+            "type": "u32"
+          }
         ]
       }
     },
@@ -78,13 +257,40 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "isRegistered", "type": "bool" },
-          { "name": "referrer", "type": { "option": "publicKey" } },
-          { "name": "ownerWallet", "type": "publicKey" },
-          { "name": "upline", "type": { "defined": "ReferralUpline" } },
-          { "name": "chain", "type": { "defined": "ReferralChain" } },
-          { "name": "reservedSol", "type": "u64" },
-          { "name": "reservedTokens", "type": "u64" }
+          {
+            "name": "isRegistered",
+            "type": "bool"
+          },
+          {
+            "name": "referrer",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "ownerWallet",
+            "type": "publicKey"
+          },
+          {
+            "name": "upline",
+            "type": {
+              "defined": "ReferralUpline"
+            }
+          },
+          {
+            "name": "chain",
+            "type": {
+              "defined": "ReferralChain"
+            }
+          },
+          {
+            "name": "reservedSol",
+            "type": "u64"
+          },
+          {
+            "name": "reservedTokens",
+            "type": "u64"
+          }
         ]
       }
     }
@@ -95,8 +301,14 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "pda", "type": "publicKey" },
-          { "name": "wallet", "type": "publicKey" }
+          {
+            "name": "pda",
+            "type": "publicKey"
+          },
+          {
+            "name": "wallet",
+            "type": "publicKey"
+          }
         ]
       }
     },
@@ -105,9 +317,22 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "id", "type": "u32" },
-          { "name": "depth", "type": "u8" },
-          { "name": "upline", "type": { "vec": { "defined": "UplineEntry" } } }
+          {
+            "name": "id",
+            "type": "u32"
+          },
+          {
+            "name": "depth",
+            "type": "u8"
+          },
+          {
+            "name": "upline",
+            "type": {
+              "vec": {
+                "defined": "UplineEntry"
+              }
+            }
+          }
         ]
       }
     },
@@ -116,12 +341,25 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "id", "type": "u32" },
+          {
+            "name": "id",
+            "type": "u32"
+          },
           {
             "name": "slots",
-            "type": { "array": [{ "option": "publicKey" }, 3] }
+            "type": {
+              "array": [
+                {
+                  "option": "publicKey"
+                },
+                3
+              ]
+            }
           },
-          { "name": "filledSlots", "type": "u8" }
+          {
+            "name": "filledSlots",
+            "type": "u8"
+          }
         ]
       }
     }
@@ -130,10 +368,26 @@
     {
       "name": "SlotFilled",
       "fields": [
-        { "name": "slotIdx", "type": "u8", "index": false },
-        { "name": "chainId", "type": "u32", "index": false },
-        { "name": "user", "type": "publicKey", "index": false },
-        { "name": "owner", "type": "publicKey", "index": false }
+        {
+          "name": "slotIdx",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "chainId",
+          "type": "u32",
+          "index": false
+        },
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        }
       ]
     }
   ],
@@ -153,8 +407,16 @@
       "name": "InvalidUplineDepth",
       "msg": "Invalid upline depth"
     },
-    { "code": 6003, "name": "NotAuthorized", "msg": "Not authorized" },
-    { "code": 6004, "name": "ChainFull", "msg": "Chain is already full" },
+    {
+      "code": 6003,
+      "name": "NotAuthorized",
+      "msg": "Not authorized"
+    },
+    {
+      "code": 6004,
+      "name": "ChainFull",
+      "msg": "Chain is already full"
+    },
     {
       "code": 6005,
       "name": "InvalidSlotOwner",
@@ -210,7 +472,11 @@
       "name": "UnwrapSolFailed",
       "msg": "Failed to unwrap WSOL to SOL"
     },
-    { "code": 6016, "name": "TokenMintFailed", "msg": "Failed to mint tokens" },
+    {
+      "code": 6016,
+      "name": "TokenMintFailed",
+      "msg": "Failed to mint tokens"
+    },
     {
       "code": 6017,
       "name": "TokenTransferFailed",
@@ -265,6 +531,27 @@
       "code": 6027,
       "name": "MissingVaultAAccounts",
       "msg": "Missing vault A accounts"
+    },
+    {
+      "code": 6028,
+      "name": "PriceFeedReadFailed",
+      "msg": "Failed to read price feed"
+    },
+    {
+      "code": 6029,
+      "name": "PriceFeedTooOld",
+      "msg": "Price feed too old"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidChainlinkProgram",
+      "msg": "Invalid Chainlink program"
+    },
+    {
+      "code": 6031,
+      "name": "InvalidPriceFeed",
+      "msg": "Invalid price feed"
     }
-  ]
+  ],
+  "address": "Fx5gHHhqzn8vhYoFUTvYn6fzN7jxubohD9VyNTR6fdPD"
 }

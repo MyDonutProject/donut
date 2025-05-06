@@ -142,11 +142,11 @@ export async function prepareUplinesForRecursion(
   const triosInfo = [];
 
   console.log(
-    `\n🔄 PREPARING ${uplinePDAs.length} UPLINES (MAX 10) FOR RECURSION`
+    `\n🔄 PREPARING ${uplinePDAs.length} UPLINES (MAX 6) FOR RECURSION`
   );
 
   // Collect upline information
-  for (let i = 0; i < Math.min(uplinePDAs.length, 10); i++) {
+  for (let i = 0; i < Math.min(uplinePDAs.length, 6); i++) {
     const uplinePDA = uplinePDAs[i];
     console.log(`  Analyzing upline ${i + 1}: ${uplinePDA.toString()}`);
 
@@ -196,26 +196,8 @@ export async function prepareUplinesForRecursion(
         console.log(
           `  ⚠️ UplineEntry structure missing or incomplete (possible base user)`
         );
-
-        // Check if it's the base user (no referrer)
-        if (!uplineInfo.referrer) {
-          // Get program state owner
-          const stateInfo = await program.account.programState.fetch(
-            MAIN_ADDRESSESS_CONFIG.STATE_ADDRESS
-          );
-
-          console.log(
-            `  🔑 Confirmed: Upline is the base user (owner: ${stateInfo.owner})`
-          );
-          uplineWallet = stateInfo.owner;
-        } else {
-          // It's not the base user, but the structure is incomplete - use referrer as fallback
-          uplineWallet = uplineInfo.referrer;
-          console.log(
-            `  🔄 Using referrer as wallet: ${uplineWallet.toString()}`
-          );
-        }
       }
+
       const uplineTokenAccount = await anchor.utils.token.associatedAddress({
         mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
         owner: uplineWallet,
@@ -227,86 +209,14 @@ export async function prepareUplinesForRecursion(
 
       // Check if ATA exists and create if necessary
       const ataInfo = await connection.getAccountInfo(uplineTokenAccount);
+
       if (!ataInfo) {
-        console.log(`  ⚠️ ATA does not exist, creating...`);
-
-        try {
-          // Criar ATA
-          const createATAIx = new web3.TransactionInstruction({
-            keys: [
-              {
-                pubkey: wallet.adapter.publicKey,
-                isSigner: true,
-                isWritable: true,
-              },
-              { pubkey: uplineTokenAccount, isSigner: false, isWritable: true },
-              { pubkey: uplineWallet, isSigner: false, isWritable: false },
-              {
-                pubkey: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-                isSigner: false,
-                isWritable: false,
-              },
-              {
-                pubkey: web3.SystemProgram.programId,
-                isSigner: false,
-                isWritable: false,
-              },
-              {
-                pubkey: MAIN_ADDRESSESS_CONFIG.SPL_TOKEN_PROGRAM_ID,
-                isSigner: false,
-                isWritable: false,
-              },
-              {
-                pubkey: web3.SYSVAR_RENT_PUBKEY,
-                isSigner: false,
-                isWritable: false,
-              },
-            ],
-            programId: ASSOCIATED_TOKEN_PROGRAM_ID,
-            data: Buffer.from([]),
-          });
-
-          const tx = new web3.Transaction().add(createATAIx);
-          tx.feePayer = wallet.adapter.publicKey;
-          const { blockhash } = await connection.getLatestBlockhash();
-          tx.recentBlockhash = blockhash;
-
-          const signedTx = await anchorWallet.signTransaction(tx);
-          const txid = await connection.sendRawTransaction(
-            signedTx.serialize()
-          );
-
-          // Wait for transaction confirmation
-          await connection.confirmTransaction(txid);
-          console.log(`  ✅ ATA created: ${txid}`);
-        } catch (e) {
-          console.log(`  ⚠️ Error creating ATA: ${e.message}`);
-          console.log(
-            `  ⚠️ Proceeding anyway, the contract will derive the ATA when needed`
-          );
-        }
+        console.log(
+          `  ⚠️ ATA does not exist, will be derived on-chain by the contract`
+        );
       } else {
         console.log(`  ✅ ATA already exists`);
       }
-
-      // Check wallet account type (must be a system account)
-      const walletInfo = await connection.getAccountInfo(uplineWallet);
-      if (
-        !walletInfo ||
-        walletInfo.owner.toString() !== web3.SystemProgram.programId.toString()
-      ) {
-        console.log(
-          `  ⚠️ WARNING: Wallet ${uplineWallet.toString()} is not a system account!`
-        );
-        console.log(
-          `  ⚠️ Owner: ${walletInfo ? walletInfo.owner.toString() : "unknown"}`
-        );
-        console.log(
-          `  ⚠️ The payment may fail for this upline. Consider resolving this.`
-        );
-      }
-
-      console.log("🔍 DEBUG: Upline info:", uplineInfo);
 
       triosInfo.push({
         pda: uplinePDA,
@@ -601,7 +511,24 @@ export async function setVersionedTransaction(
     },
   ];
 
-  const allRemainingAccounts = [...vaultAAccounts, ...remainingAccounts];
+  const chainlinkAccounts = [
+    {
+      pubkey: MAIN_ADDRESSESS_CONFIG.SOL_USD_FEED,
+      isWritable: false,
+      isSigner: false,
+    },
+    {
+      pubkey: MAIN_ADDRESSESS_CONFIG.CHAINLINK_PROGRAM,
+      isWritable: false,
+      isSigner: false,
+    },
+  ];
+
+  const allRemainingAccounts = [
+    ...vaultAAccounts,
+    ...chainlinkAccounts,
+    ...remainingAccounts,
+  ];
 
   // Create main program instruction
   console.log("  🔍 Creating register_with_sol_deposit instruction...");
@@ -612,7 +539,6 @@ export async function setVersionedTransaction(
     referrerWallet: MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
     user: userAccount,
     userWsolAccount: userWsolAccount,
-    // pythSolUsdPrice: MAIN_ADDRESSESS_CONFIG.PYTH_SOL_USD,
     wsolMint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
     pool: MAIN_ADDRESSESS_CONFIG.POOL_ADDRESS,
     bVault: MAIN_ADDRESSESS_CONFIG.B_VAULT,

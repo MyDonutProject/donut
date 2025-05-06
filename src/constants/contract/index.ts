@@ -35,4 +35,8 @@ export const MAIN_ADDRESSESS_CONFIG = {
   A_VAULT_LP_MINT: new PublicKey(
     process.env.NEXT_PUBLIC_A_VAULT_LP_MINT as string
   ),
+  CHAINLINK_PROGRAM: new PublicKey(
+    process.env.NEXT_PUBLIC_CHAINLINK_PROGRAM as string
+  ),
+  SOL_USD_FEED: new PublicKey(process.env.NEXT_PUBLIC_SOL_USD_FEED as string),
 };
