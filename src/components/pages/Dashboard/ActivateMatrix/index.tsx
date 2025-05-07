@@ -35,7 +35,7 @@ export default function ActivateMatrix() {
 
   function onSubmit(data: { amount: number }) {
     mutate({
-      amount: "0.1",
+      amount: Number(data.amount * 1.01).toString(),
       connection: connection,
       program: program,
       wallet,
