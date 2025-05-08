@@ -3,7 +3,6 @@ import Link from "@/components/core/Link";
 import useIsHomePage from "@/hooks/layout/useIsHomePage";
 import { formatLargeString } from "@/utils/formatLargeString";
 import { Tooltip } from "@mui/material";
-import { getCookie } from "cookies-next/client";
 import useTranslation from "next-translate/useTranslation";
 import HeaderButton from "./Button";
 import HeaderMenu from "./Menu";
@@ -13,7 +12,8 @@ function Header() {
   const { isHomePage } = useIsHomePage();
   const { t } = useTranslation("common");
 
-  const sponsorCode = getCookie("sponsor");
+  const sponsorCode =
+    typeof window !== "undefined" ? localStorage.getItem("sponsor") : null;
   const formattedSponsorCode = formatLargeString(sponsorCode);
 
   return (

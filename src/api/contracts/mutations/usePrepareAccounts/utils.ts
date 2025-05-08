@@ -434,6 +434,7 @@ export async function getNeededDerivedPDA(
     mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
     owner: wallet.adapter.publicKey,
   });
+
   console.log("🔍 DEBUG: User wsol account:", userWsolAccount.toString());
 
   const result = {
