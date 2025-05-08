@@ -379,6 +379,9 @@ export async function getNeededDerivedPDA(
 ): Promise<DerivedPDAResponse> {
   const cacheService = CacheService.getInstance();
   const cacheKey = wallet.adapter.publicKey.toString();
+  const referrerAddress = localStorage.getItem("sponsor")
+    ? new PublicKey(localStorage.getItem("sponsor") as string)
+    : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
 
   // PDA for user
   const [userAccount] = PublicKey.findProgramAddressSync(
@@ -386,10 +389,7 @@ export async function getNeededDerivedPDA(
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   );
   const [referrerAccount] = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("user_account"),
-      MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS.toBuffer(),
-    ],
+    [Buffer.from("user_account"), referrerAddress.toBuffer()],
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   );
 
@@ -422,7 +422,7 @@ export async function getNeededDerivedPDA(
   // Create ATA for referrer
   const referrerTokenAccount = await anchor.utils.token.associatedAddress({
     mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-    owner: MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
+    owner: referrerAddress,
   });
 
   console.log(
@@ -473,6 +473,10 @@ export async function setVersionedTransaction(
     userWsolAccount,
     userAccount,
   } = await getNeededDerivedPDA(wallet);
+  const referrerAddress = localStorage.getItem("sponsor")
+    ? new PublicKey(localStorage.getItem("sponsor") as string)
+    : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
+
   console.log("\n📤 PREPARING VERSIONED TRANSACTION WITH ALT...");
   const registerInstructions = [];
 
@@ -536,7 +540,7 @@ export async function setVersionedTransaction(
     state: MAIN_ADDRESSESS_CONFIG.STATE_ADDRESS,
     userWallet: wallet.adapter.publicKey,
     referrer: referrerAccount,
-    referrerWallet: MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
+    referrerWallet: referrerAddress,
     user: userAccount,
     userWsolAccount: userWsolAccount,
     wsolMint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,

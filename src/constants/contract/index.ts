@@ -1,10 +1,9 @@
 import { PublicKey } from "@solana/web3.js";
-import { getCookie, hasCookie } from "cookies-next/client";
 
 export const MAIN_ADDRESSESS_CONFIG = {
-  REFERRER_ADDRESS: hasCookie("sponsor")
-    ? new PublicKey(getCookie("sponsor") as string)
-    : new PublicKey(process.env.NEXT_PUBLIC_REFERRER_ADDRESS as string),
+  REFERRER_ADDRESS: new PublicKey(
+    process.env.NEXT_PUBLIC_REFERRER_ADDRESS as string
+  ),
   MATRIX_PROGRAM_ID: new PublicKey(
     process.env.NEXT_PUBLIC_MATRIX_PROGRAM_ID as string
   ),

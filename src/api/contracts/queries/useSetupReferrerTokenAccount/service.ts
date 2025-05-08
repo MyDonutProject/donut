@@ -25,7 +25,10 @@ export async function fetchSetupReferrerTokenAccount({
     const myPublicKey = new PublicKey(address);
     console.log("Created PublicKey from address:", myPublicKey.toBase58());
 
-    const mainReferrerAddress = MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
+    const mainReferrerAddress = localStorage.getItem("sponsor")
+      ? new PublicKey(localStorage.getItem("sponsor") as string)
+      : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
+
     const referrerAddress = outterReferrerAddress
       ? new PublicKey(outterReferrerAddress)
       : mainReferrerAddress;

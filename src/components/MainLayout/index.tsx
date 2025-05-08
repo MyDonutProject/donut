@@ -1,6 +1,5 @@
 import { useUserAccount } from "@/api/account";
 import useAccount from "@/hooks/account/useAccount";
-import { setCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { PropsWithChildren, useEffect } from "react";
 import Layout from "../Layout";
@@ -19,7 +18,7 @@ export default function MainLayout({ children }: PropsWithChildren) {
     }
 
     if (query?.sponsor) {
-      setCookie("sponsor", query?.sponsor);
+      localStorage.setItem("sponsor", String(query?.sponsor));
     }
   }
 

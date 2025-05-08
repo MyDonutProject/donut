@@ -46,11 +46,13 @@ export async function fetchPrepareAccounts({
       wallet.adapter.publicKey.toString()
     );
 
+    const referrerAddress = localStorage.getItem("sponsor")
+      ? new PublicKey(localStorage.getItem("sponsor") as string)
+      : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
+
     console.log("📋 BASIC INFORMATION:");
     console.log("🧑‍💻 New user: " + wallet.adapter.publicKey.toString());
-    console.log(
-      "🧑‍🤝‍🧑 Referrer: " + MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS.toString()
-    );
+    console.log("🧑‍🤝‍🧑 Referrer: " + referrerAddress.toString());
     console.log("💰 Deposit amount: " + amount + " SOL");
 
     const lookupTableAccount = await getLookupTableAccount();
@@ -88,10 +90,7 @@ export async function fetchPrepareAccounts({
     }
 
     const [referrerAccount] = PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("user_account"),
-        MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS.toBuffer(),
-      ],
+      [Buffer.from("user_account"), referrerAddress.toBuffer()],
       MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
     );
 
@@ -321,7 +320,7 @@ export async function fetchPrepareAccounts({
     console.log("🔍 DEBUG: Setting up referrer token account");
 
     await setupReferrerTokenAccount(
-      MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS,
+      referrerAddress,
       connection,
       wallet,
       anchorWallet
