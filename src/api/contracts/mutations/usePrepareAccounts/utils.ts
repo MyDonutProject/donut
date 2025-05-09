@@ -1,6 +1,9 @@
 import { MAIN_ADDRESSESS_CONFIG } from "@/constants/contract";
+import { Decimal } from "@/lib/Decimal";
 import { CacheService, DerivedPDAResponse } from "@/services/cache-service";
 import { ErrorService } from "@/services/error-service";
+import { NotificationsService } from "@/services/NotificationService";
+import { store } from "@/store";
 import * as anchor from "@project-serum/anchor";
 import { Idl, Program, web3 } from "@project-serum/anchor";
 import { Connection } from "@reown/appkit-adapter-solana/react";
@@ -59,6 +62,11 @@ export async function setupReferrerTokenAccount(
       referrerTokenAccount
     );
 
+    console.log(
+      "🔍 DEBUG: Referrer token tokenAccountInfo:",
+      tokenAccountInfo.toString()
+    );
+
     if (!tokenAccountInfo) {
       const createATAIx = Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -101,6 +109,9 @@ export async function setupUserWsolAccount(
   const { userWsolAccount } = await getNeededDerivedPDA(wallet);
 
   const userWsolInfo = await connection.getAccountInfo(userWsolAccount);
+
+  console.log("🔍 DEBUG: User wsol info:", userWsolInfo.toString());
+
   if (userWsolInfo) {
     return;
   }
@@ -319,9 +330,11 @@ export async function setupVaultTokenAccount(
 
       try {
         const signedTx = await anchorWallet.signTransaction(tx);
-        const txid = await connection.sendRawTransaction(signedTx.serialize());
+        const txid = await connection.sendRawTransaction(signedTx.serialize(), {
+          skipPreflight: true,
+          maxRetries: 5,
+        });
         await connection.confirmTransaction(txid, "confirmed");
-        console.log(`  ✅ Program token vault ATA created: ${txid}`);
       } catch (e) {
         ErrorService.onError(e);
 
@@ -797,5 +810,289 @@ export async function setVersionedTransaction(
     }
     // Use the new error handler instead of trying to close WSOL
     await handleTransactionError(e, wallet, connection);
+  }
+}
+
+export async function registerWithSolDepositV3({
+  amount,
+  connection,
+  program,
+  wallet,
+  anchorWallet,
+  notificationService,
+  lookupTableAccount,
+}: {
+  amount: string | number;
+  connection: Connection;
+  program: Program<Idl>;
+  wallet: Wallet;
+  anchorWallet: AnchorWallet;
+  notificationService: NotificationsService<typeof store>;
+  lookupTableAccount: AddressLookupTableAccount;
+}) {
+  try {
+    console.log(
+      "🚀 REGISTERING USER WITH REFERRER, CHAINLINK ORACLE AND ALT 🚀"
+    );
+
+    // Get referrer from localStorage or default
+    const referrerAddress = localStorage.getItem("sponsor")
+      ? new PublicKey(localStorage.getItem("sponsor") as string)
+      : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
+
+    console.log("📋 BASIC INFORMATION:");
+    console.log("🧑‍💻 New user: " + wallet.adapter.publicKey.toString());
+    console.log("🧑‍🤝‍🧑 Referrer: " + referrerAddress.toString());
+    console.log("💰 Deposit amount: " + amount + " SOL");
+
+    // Convert amount to lamports
+    const FIXED_DEPOSIT_AMOUNT =
+      typeof amount === "string"
+        ? new anchor.BN(new Decimal(amount, { scale: 9 }).subunits)
+        : new anchor.BN(amount);
+
+    // Check balance
+    const balance = await connection.getBalance(wallet.adapter.publicKey);
+    if (balance < FIXED_DEPOSIT_AMOUNT.toNumber() + 30000000) {
+      console.error("❌ ERROR: Insufficient balance!");
+      notificationService.error({
+        title: "error_preparing_accounts_title",
+        message: "error_preparing_accounts_description",
+      });
+      return null;
+    }
+
+    // Get referrer account
+    const [referrerAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user_account"), referrerAddress.toBuffer()],
+      MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
+    );
+    console.log("📄 REFERRER PDA: " + referrerAccount.toString());
+
+    // Check referrer
+    let referrerInfo;
+    try {
+      referrerInfo = await program.account.userAccount.fetch(referrerAccount);
+      if (!referrerInfo.isRegistered) {
+        console.error("❌ ERROR: Referrer is not registered!");
+        return null;
+      }
+
+      console.log("✅ Referrer verified");
+      console.log("🔢 Depth: " + referrerInfo.upline.depth.toString());
+      console.log("📊 Filled slots: " + referrerInfo.chain.filledSlots + "/3");
+
+      if (referrerInfo.ownerWallet) {
+        console.log(
+          "✅ Referenciador tem campo owner_wallet: " +
+            referrerInfo.ownerWallet.toString()
+        );
+      }
+
+      const nextSlotIndex = referrerInfo.chain.filledSlots;
+      if (nextSlotIndex >= 3) {
+        console.log("⚠️ WARNING: Referrer's matrix is already full!");
+        return null;
+      }
+    } catch (e) {
+      console.error("❌ Error checking referrer:", e);
+      return null;
+    }
+
+    // Check user account
+    const [userAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("user_account"), wallet.adapter.publicKey.toBuffer()],
+      MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
+    );
+
+    try {
+      const userInfo = await program.account.userAccount.fetch(userAccount);
+      if (userInfo.isRegistered) {
+        console.log("⚠️ You are already registered in the system!");
+        return null;
+      }
+    } catch (e) {
+      console.log("✅ PROCEEDING WITH REGISTRATION...");
+    }
+
+    // Get needed PDAs
+    const {
+      tokenMintAuthority,
+      vaultAuthority,
+      programSolVault,
+      programTokenVault,
+      referrerTokenAccount,
+      userWsolAccount,
+    } = await getNeededDerivedPDA(wallet);
+
+    // Setup accounts
+    await setupVaultTokenAccount(connection, wallet, anchorWallet);
+    await setupReferrerTokenAccount(
+      referrerAddress,
+      connection,
+      wallet,
+      anchorWallet
+    );
+
+    // Prepare uplines for recursion if needed
+    let remainingAccounts = [];
+    const isSlot3 = referrerInfo.chain.filledSlots === 2;
+
+    if (isSlot3 && referrerInfo.upline && referrerInfo.upline.upline) {
+      console.log("\n🔄 Preparing uplines for recursion (slot 3)");
+      try {
+        const uplines = referrerInfo.upline.upline.map((entry) => entry.pda);
+        if (uplines.length > 0) {
+          remainingAccounts = await prepareUplinesForRecursion(
+            uplines,
+            program,
+            connection,
+            wallet,
+            anchorWallet
+          );
+        }
+      } catch (e) {
+        console.log(`❌ Error preparing recursion: ${e.message}`);
+        return null;
+      }
+    }
+
+    // Prepare versioned transaction
+    console.log("\n📤 PREPARING VERSIONED TRANSACTION WITH ALT...");
+
+    // Set compute unit limit and priority
+    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 1_400_000,
+    });
+
+    const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    });
+
+    // Setup vault A and Chainlink accounts
+    const vaultAAccounts = [
+      {
+        pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP,
+        isWritable: true,
+        isSigner: false,
+      },
+      {
+        pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT_LP_MINT,
+        isWritable: true,
+        isSigner: false,
+      },
+      {
+        pubkey: MAIN_ADDRESSESS_CONFIG.A_TOKEN_VAULT,
+        isWritable: true,
+        isSigner: false,
+      },
+      {
+        pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT,
+        isWritable: true,
+        isSigner: false,
+      },
+    ];
+
+    const chainlinkAccounts = [
+      {
+        pubkey: MAIN_ADDRESSESS_CONFIG.SOL_USD_FEED,
+        isWritable: false,
+        isSigner: false,
+      },
+      {
+        pubkey: MAIN_ADDRESSESS_CONFIG.CHAINLINK_PROGRAM,
+        isWritable: false,
+        isSigner: false,
+      },
+    ];
+
+    const allRemainingAccounts = [
+      ...vaultAAccounts,
+      ...chainlinkAccounts,
+      ...remainingAccounts,
+    ];
+
+    // Create register instruction
+    const registerIx = await program.methods
+      .registerWithSolDeposit(FIXED_DEPOSIT_AMOUNT)
+      .accounts({
+        state: MAIN_ADDRESSESS_CONFIG.STATE_ADDRESS,
+        userWallet: wallet.adapter.publicKey,
+        referrer: referrerAccount,
+        referrerWallet: referrerAddress,
+        user: userAccount,
+        userWsolAccount: userWsolAccount,
+        wsolMint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
+        pool: MAIN_ADDRESSESS_CONFIG.POOL_ADDRESS,
+        bVault: MAIN_ADDRESSESS_CONFIG.B_VAULT,
+        bTokenVault: MAIN_ADDRESSESS_CONFIG.B_TOKEN_VAULT,
+        bVaultLpMint: MAIN_ADDRESSESS_CONFIG.B_VAULT_LP_MINT,
+        bVaultLp: MAIN_ADDRESSESS_CONFIG.B_VAULT_LP,
+        vaultProgram: MAIN_ADDRESSESS_CONFIG.VAULT_PROGRAM,
+        programSolVault: programSolVault,
+        tokenMint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+        programTokenVault: programTokenVault,
+        referrerTokenAccount: referrerTokenAccount,
+        tokenMintAuthority: tokenMintAuthority,
+        vaultAuthority: vaultAuthority,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        rent: web3.SYSVAR_RENT_PUBKEY,
+      })
+      .remainingAccounts(allRemainingAccounts)
+      .instruction();
+
+    // Create versioned transaction
+    const { blockhash } = await connection.getLatestBlockhash();
+
+    const messageV0 = new TransactionMessage({
+      payerKey: wallet.adapter.publicKey,
+      recentBlockhash: blockhash,
+      instructions: [modifyComputeUnits, setPriority, registerIx],
+    }).compileToV0Message([lookupTableAccount]);
+
+    const transaction = new VersionedTransaction(messageV0);
+
+    // Sign transaction
+    const signedTx = await anchorWallet.signTransaction(transaction);
+
+    // Send transaction
+    console.log("\n📤 SENDING VERSIONED TRANSACTION...");
+    const txid = await connection.sendRawTransaction(signedTx.serialize(), {
+      skipPreflight: true,
+      maxRetries: 5,
+    });
+
+    console.log("✅ Transaction sent: " + txid);
+    console.log(
+      `🔍 Explorer link: https://solscan.io/tx/${txid}?cluster=devnet`
+    );
+
+    // Wait for confirmation
+    await connection.confirmTransaction(txid, "confirmed");
+    console.log("✅ Transaction confirmed!");
+
+    // Verify results
+    const userInfo = await program.account.userAccount.fetch(userAccount);
+    console.log("\n📋 REGISTRATION CONFIRMATION:");
+    console.log("✅ User registered: " + userInfo.isRegistered);
+    console.log("🧑‍🤝‍🧑 Referrer: " + userInfo.referrer.toString());
+    console.log("🔢 Depth: " + userInfo.upline.depth.toString());
+    console.log("📊 Filled slots: " + userInfo.chain.filledSlots + "/3");
+
+    return txid;
+  } catch (error) {
+    console.error("❌ ERROR DURING REGISTRATION:", error);
+
+    if (error.logs) {
+      console.log("\n📋 DETAILED ERROR LOGS:");
+      error.logs.forEach((log: string, i: number) =>
+        console.log(`${i}: ${log}`)
+      );
+    }
+
+    await handleTransactionError(error, wallet, connection);
+    throw error;
   }
 }
