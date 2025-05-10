@@ -8,7 +8,6 @@ import * as anchor from "@project-serum/anchor";
 import { Idl, Program, web3 } from "@project-serum/anchor";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
-  Token,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { AnchorWallet, Wallet } from "@solana/wallet-adapter-react";
@@ -46,6 +45,10 @@ async function prepareUplinesForRecursion(
     try {
       // Get data directly from the account
       const uplineInfo = await program.account.userAccount.fetch(uplinePDA);
+      if (!uplineInfo.isRegistered) {
+        console.log(`  ❌ Upline não está registrado! Ignorando.`);
+        continue;
+      }
 
       let uplineWallet;
 
@@ -100,6 +103,15 @@ async function prepareUplinesForRecursion(
       console.log(
         `  💰 ATA derived for wallet: ${uplineTokenAccount.toString()}`
       );
+
+      const ataInfo = await connection.getAccountInfo(uplineTokenAccount);
+      if (!ataInfo) {
+        console.log(
+          `  ⚠️ ATA doesn't exist, will be derived on-chain by the contract`
+        );
+      } else {
+        console.log(`  ✅ ATA already exists`);
+      }
 
       // Add to the trio info for sorting later
       triosInfo.push({
@@ -191,52 +203,41 @@ export async function getNeededDerivedPDA(
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   );
 
-  console.log("🔍 DEBUG: User account:", userAccount.toString());
-
   // PDA for minting authority
   const [tokenMintAuthority] = PublicKey.findProgramAddressSync(
     [Buffer.from("token_mint_authority")],
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   );
-  console.log("🔍 DEBUG: Token mint authority:", tokenMintAuthority.toString());
 
   // PDA for vault authority
   const [vaultAuthority] = PublicKey.findProgramAddressSync(
     [Buffer.from("token_vault_authority")],
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   );
-  console.log("🔍 DEBUG: Vault authority:", vaultAuthority.toString());
 
   // PDA for program_sol_vault
   const [programSolVault] = PublicKey.findProgramAddressSync(
     [Buffer.from("program_sol_vault")],
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   );
-  console.log("🔍 DEBUG: Program sol vault:", programSolVault.toString());
 
   // Calculate token vault address
   const programTokenVault = await anchor.utils.token.associatedAddress({
     mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
     owner: vaultAuthority,
   });
-  console.log("🔍 DEBUG: Program token vault:", programTokenVault.toString());
 
   // Create ATA for referrer
   const referrerTokenAccount = await anchor.utils.token.associatedAddress({
     mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
     owner: referrerAddress,
   });
-  console.log(
-    "🔍 DEBUG: Referrer token account:",
-    referrerTokenAccount.toString()
-  );
 
   // Get user's WSOL ATA
   const userWsolAccount = await anchor.utils.token.associatedAddress({
     mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
     owner: wallet.adapter.publicKey,
   });
-  console.log("🔍 DEBUG: User wsol account:", userWsolAccount.toString());
 
   const result = {
     tokenMintAuthority,
@@ -253,115 +254,6 @@ export async function getNeededDerivedPDA(
   cacheService.set<DerivedPDAResponse>("derived_pda", cacheKey, result);
 
   return result;
-}
-
-/**
- * Sets up the token account for the referrer
- */
-async function setupReferrerTokenAccount(
-  referrerAddress: PublicKey,
-  connection: Connection,
-  wallet: Wallet,
-  anchorWallet: AnchorWallet
-) {
-  // Calculate ATA address for referrer
-  const { referrerTokenAccount } = await getNeededDerivedPDA(wallet);
-
-  // Check if ATA already exists
-  try {
-    const tokenAccountInfo = await connection.getAccountInfo(
-      referrerTokenAccount
-    );
-
-    console.log(
-      "🔍 DEBUG: Referrer token account info:",
-      tokenAccountInfo ? "exists" : "does not exist"
-    );
-
-    if (!tokenAccountInfo) {
-      const createATAIx = Token.createAssociatedTokenAccountInstruction(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-        referrerTokenAccount,
-        referrerAddress,
-        wallet.adapter.publicKey
-      );
-
-      const tx = new web3.Transaction().add(createATAIx);
-      tx.feePayer = wallet.adapter.publicKey;
-      const { blockhash } = await connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
-
-      try {
-        const signedTx = await anchorWallet.signTransaction(tx);
-        const txid = await connection.sendRawTransaction(signedTx.serialize());
-        await connection.confirmTransaction(txid, "confirmed");
-        console.log(`  ✅ Referrer ATA created: ${txid}`);
-      } catch (e) {
-        ErrorService.onError(e);
-        // Check again if ATA was created despite error
-        await connection.getAccountInfo(referrerTokenAccount);
-      }
-    }
-
-    return referrerTokenAccount;
-  } catch (e) {
-    ErrorService.onError(e);
-    return referrerTokenAccount;
-  }
-}
-
-/**
- * Sets up the vault token account
- */
-async function setupVaultTokenAccount(
-  connection: Connection,
-  wallet: Wallet,
-  anchorWallet: AnchorWallet
-) {
-  const { programTokenVault, vaultAuthority } = await getNeededDerivedPDA(
-    wallet
-  );
-
-  // Check if ATA already exists
-  try {
-    const vaultAccountInfo = await connection.getAccountInfo(programTokenVault);
-
-    if (!vaultAccountInfo) {
-      const createATAIx = Token.createAssociatedTokenAccountInstruction(
-        MAIN_ADDRESSESS_CONFIG.ASSOCIATED_TOKEN_PROGRAM_ID,
-        MAIN_ADDRESSESS_CONFIG.SPL_TOKEN_PROGRAM_ID,
-        MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-        programTokenVault,
-        vaultAuthority,
-        wallet.adapter.publicKey
-      );
-
-      const tx = new web3.Transaction().add(createATAIx);
-      tx.feePayer = wallet.adapter.publicKey;
-      const { blockhash } = await connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
-
-      try {
-        const signedTx = await anchorWallet.signTransaction(tx);
-        const txid = await connection.sendRawTransaction(signedTx.serialize(), {
-          skipPreflight: true,
-          maxRetries: 5,
-        });
-        await connection.confirmTransaction(txid, "confirmed");
-      } catch (e) {
-        ErrorService.onError(e);
-        // Check again if ATA was created despite error
-        await connection.getAccountInfo(programTokenVault);
-      }
-    }
-
-    return programTokenVault;
-  } catch (e) {
-    ErrorService.onError(e);
-    return programTokenVault;
-  }
 }
 
 /**
@@ -394,6 +286,14 @@ export async function registerWithSolDepositV3({
       ? new PublicKey(localStorage.getItem("sponsor") as string)
       : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS;
 
+    if (!referrerAddress) {
+      console.error("❌ ERROR: Referrer address not provided!");
+      console.error(
+        "Please provide the referrer address as the third argument."
+      );
+      return;
+    }
+
     console.log("📋 BASIC INFORMATION:");
     console.log("🧑‍💻 New user: " + wallet.adapter.publicKey.toString());
     console.log("🧑‍🤝‍🧑 Referrer: " + referrerAddress.toString());
@@ -410,8 +310,8 @@ export async function registerWithSolDepositV3({
     if (balance < FIXED_DEPOSIT_AMOUNT.toNumber() + 30000000) {
       console.error("❌ ERROR: Insufficient balance!");
       notificationService.error({
-        title: "error_preparing_accounts_title",
-        message: "error_preparing_accounts_description",
+        title: "error_insufficient_balance_title",
+        message: "error_insufficient_balance_description",
       });
       return null;
     }
@@ -479,13 +379,10 @@ export async function registerWithSolDepositV3({
       userWsolAccount,
     } = await getNeededDerivedPDA(wallet);
 
-    // Setup accounts
-    await setupVaultTokenAccount(connection, wallet, anchorWallet);
-    await setupReferrerTokenAccount(
-      referrerAddress,
-      connection,
-      wallet,
-      anchorWallet
+    // Log WSOL ATA info
+    console.log("🔍 DEBUG: User WSOL account:", userWsolAccount.toString());
+    console.log(
+      "⚠ Se a ATA do WSOL não existir, será criada on-chain pelo programa"
     );
 
     // Prepare uplines for recursion if needed

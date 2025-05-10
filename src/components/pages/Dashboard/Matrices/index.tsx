@@ -11,6 +11,8 @@ export default function DashboardMatrices() {
   const { data: userAccount } = useUserAccount();
   const { address } = useAccount();
 
+  console.log("userAccount", userAccount);
+
   const Slots = useMemo(
     () =>
       userAccount?.chain.slots.map((slot, index) => (
