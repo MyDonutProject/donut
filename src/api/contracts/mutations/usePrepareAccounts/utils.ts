@@ -406,15 +406,15 @@ export async function registerWithSolDepositV3({
         : new anchor.BN(amount);
 
     // Check balance
-    const balance = await connection.getBalance(wallet.adapter.publicKey);
-    if (balance < FIXED_DEPOSIT_AMOUNT.toNumber() + 30000000) {
-      console.error("❌ ERROR: Insufficient balance!");
-      notificationService.error({
-        title: "error_preparing_accounts_title",
-        message: "error_preparing_accounts_description",
-      });
-      return null;
-    }
+    // const balance = await connection.getBalance(wallet.adapter.publicKey);
+    // if (balance < FIXED_DEPOSIT_AMOUNT.toNumber() + 30000000) {
+    //   console.error("❌ ERROR: Insufficient balance!");
+    //   notificationService.error({
+    //     title: "error_preparing_accounts_title",
+    //     message: "error_preparing_accounts_description",
+    //   });
+    //   return null;
+    // }
 
     // Get referrer account
     const [referrerAccount] = PublicKey.findProgramAddressSync(
