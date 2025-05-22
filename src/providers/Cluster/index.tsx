@@ -23,8 +23,7 @@ export enum ClusterNetwork {
 export const defaultClusters: Cluster[] = [
   {
     name: "quicknode-devnet",
-    endpoint:
-      "https://weathered-quiet-theorem.solana-devnet.quiknode.pro/198997b67cb51804baeb34ed2257274aa2b2d8c0",
+    endpoint: process.env.NEXT_PUBLIC_DEDICATED_NODE,
     network: ClusterNetwork.Devnet,
   },
   {

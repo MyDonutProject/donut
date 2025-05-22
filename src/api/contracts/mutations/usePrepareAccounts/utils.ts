@@ -22,6 +22,15 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 
+// Minimum deposit amount in USD (10 dollars in base units - 8 decimals)
+const MINIMUM_USD_DEPOSIT = 10_00000000; // 10 USD with 8 decimals (Chainlink format)
+
+// Maximum price feed staleness (24 hours in seconds)
+const MAX_PRICE_FEED_AGE = 86400;
+
+// Default SOL price in case of stale feed ($100 USD per SOL)
+const DEFAULT_SOL_PRICE = 100_00000000; // $100 with 8 decimals
+
 /**
  * Prepares uplines for recursion by creating the correct account structure
  */
@@ -56,13 +65,13 @@ async function prepareUplinesForRecursion(
         );
       } else if (
         uplineInfo.upline &&
-        uplineInfo.upline.upline &&
-        Array.isArray(uplineInfo.upline.upline) &&
-        uplineInfo.upline.upline.length > 0
+        (uplineInfo.upline as any).upline &&
+        Array.isArray((uplineInfo.upline as any).upline) &&
+        (uplineInfo.upline as any).upline.length > 0
       ) {
         // Find the entry corresponding to this specific upline
         let foundEntry = null;
-        for (const entry of uplineInfo.upline.upline) {
+        for (const entry of (uplineInfo.upline as any).upline) {
           if (entry.pda && entry.pda.equals(uplinePDA)) {
             foundEntry = entry;
             console.log(`  ✅ Entry found in UplineEntry structure`);
@@ -81,7 +90,7 @@ async function prepareUplinesForRecursion(
           console.log(
             `  ⚠️ Specific entry not found, using first entry of structure`
           );
-          uplineWallet = uplineInfo.upline.upline[0].wallet;
+          uplineWallet = (uplineInfo.upline as any).upline[0].wallet;
           console.log(`    Wallet: ${uplineWallet.toString()}`);
         }
       } else {
@@ -106,7 +115,7 @@ async function prepareUplinesForRecursion(
         pda: uplinePDA,
         wallet: uplineWallet,
         ata: uplineTokenAccount,
-        depth: parseInt(uplineInfo.upline.depth.toString()),
+        depth: parseInt((uplineInfo.upline as any).depth.toString()),
       });
     } catch (e) {
       console.log(`  ❌ Error analyzing upline: ${e.message}`);
@@ -402,19 +411,8 @@ export async function registerWithSolDepositV3({
     // Convert amount to lamports
     const FIXED_DEPOSIT_AMOUNT =
       typeof amount === "string"
-        ? new anchor.BN(new Decimal(amount, { scale: 9 }).subunits)
+        ? new anchor.BN(String(new Decimal(amount, { scale: 9 }).subunits))
         : new anchor.BN(amount);
-
-    // Check balance
-    // const balance = await connection.getBalance(wallet.adapter.publicKey);
-    // if (balance < FIXED_DEPOSIT_AMOUNT.toNumber() + 30000000) {
-    //   console.error("❌ ERROR: Insufficient balance!");
-    //   notificationService.error({
-    //     title: "error_preparing_accounts_title",
-    //     message: "error_preparing_accounts_description",
-    //   });
-    //   return null;
-    // }
 
     // Get referrer account
     const [referrerAccount] = PublicKey.findProgramAddressSync(
@@ -539,11 +537,6 @@ export async function registerWithSolDepositV3({
         isWritable: true,
         isSigner: false,
       },
-      {
-        pubkey: MAIN_ADDRESSESS_CONFIG.A_VAULT,
-        isWritable: true,
-        isSigner: false,
-      },
     ];
 
     const chainlinkAccounts = [
@@ -631,8 +624,10 @@ export async function registerWithSolDepositV3({
     console.log("\n📋 REGISTRATION CONFIRMATION:");
     console.log("✅ User registered: " + userInfo.isRegistered);
     console.log("🧑‍🤝‍🧑 Referrer: " + userInfo.referrer.toString());
-    console.log("🔢 Depth: " + userInfo.upline.depth.toString());
-    console.log("📊 Filled slots: " + userInfo.chain.filledSlots + "/3");
+    console.log("🔢 Depth: " + (userInfo.upline as any).depth.toString());
+    console.log(
+      "📊 Filled slots: " + (userInfo.chain as any).filledSlots + "/3"
+    );
 
     return txid;
   } catch (error) {

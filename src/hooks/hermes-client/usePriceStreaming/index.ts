@@ -1,57 +1,56 @@
 import { getStore } from "@/store";
 import { setPrice } from "@/store/hermes/actions";
-import { HermesClient, PriceUpdate } from "@pythnetwork/hermes-client";
-import { useCallback, useEffect, useRef } from "react";
+import { Chainlink } from "dev3-sdk";
+import { useCallback, useEffect } from "react";
+
+const solSdk = Chainlink.instance(
+  process.env.NEXT_PUBLIC_JSON_RPC,
+  Chainlink.PriceFeeds.ETH
+);
+
+// Minimum deposit amount in USD (10 dollars in base units - 8 decimals)
+
+// Maximum price feed staleness (24 hours in seconds)
+const MAX_PRICE_FEED_AGE = 86400;
+
+// Default SOL price in case of stale feed ($100 USD per SOL)
+const DEFAULT_SOL_PRICE = 100_00000000; // $100 with 8 decimals
 
 export function usePriceStreaming(): void {
-  const connection: HermesClient = new HermesClient(
-    process.env.NEXT_PUBLIC_HERMES_URL,
-    {
-      timeout: 5000,
-    }
-  );
-
-  const lastDispatchTime = useRef<number>(0);
   const throttleInterval = 5000; // 5 seconds in milliseconds
 
   const handlePriceStreaming = useCallback(() => {
     const handleSubscribe = async () => {
-      const priceFeeds = await connection.getPriceFeeds({
-        query: "sol/usd",
-        assetType: "crypto",
-      });
+      const priceFeed = await solSdk
+        .getFromOracle(solSdk.feeds.SOL_USD)
+        .then((res) => ({
+          price: res.answer.toString(),
+          startedAt: new Date(
+            Number(res.startedAt.toString()) * 1000
+          ).toISOString(),
+        }));
 
-      const priceFeed = priceFeeds.find(
-        (price) => price?.attributes?.generic_symbol === "SOLUSD"
-      );
-
-      if (!priceFeed) {
+      if (!priceFeed?.price) {
         return;
       }
 
-      const eventSource = await connection.getPriceUpdatesStream(
-        [priceFeed.id],
-        {
-          ignoreInvalidPriceIds: true,
+      const interval = setInterval(() => {
+        if (
+          Date.now() - new Date(priceFeed.startedAt).getTime() >
+          MAX_PRICE_FEED_AGE * 1000
+        ) {
+          getStore().dispatch(setPrice(DEFAULT_SOL_PRICE.toString()));
+          return;
         }
-      );
 
-      eventSource.onmessage = (data: MessageEvent<PriceUpdate>) => {
-        const currentTime = Date.now();
-        if (currentTime - lastDispatchTime.current >= throttleInterval) {
-          const parsedPriceUpdate: PriceUpdate =
-            typeof data?.data === "string"
-              ? JSON.parse(data?.data)
-              : data?.data;
+        getStore().dispatch(setPrice(priceFeed?.price));
+      }, throttleInterval);
 
-          getStore().dispatch(setPrice(parsedPriceUpdate));
-          lastDispatchTime.current = currentTime;
-        }
-      };
+      return () => clearInterval(interval);
     };
 
     handleSubscribe();
-  }, [connection]);
+  }, []);
 
   useEffect(handlePriceStreaming, [handlePriceStreaming]);
 }

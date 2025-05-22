@@ -1,5 +1,4 @@
 import { Decimal } from "@/lib/Decimal";
-import { PriceUpdate } from "@pythnetwork/hermes-client";
 import {
   HermesActions,
   HermesStatePayload,
@@ -21,12 +20,9 @@ export default function reducer(
 ): HermesStateProps {
   switch (action.type) {
     case HermesActions.SetPrice: {
-      const price: PriceUpdate = (action as SetPricePayload).payload;
+      const price: string = (action as SetPricePayload).payload;
 
-      const decimalPrice = Decimal.fromSubunits(
-        price?.parsed?.[0]?.price?.price ?? "0",
-        { scale: 8 }
-      );
+      const decimalPrice = Decimal.fromSubunits(price ?? "0", { scale: 8 });
 
       const equivalence = new Decimal(10, { scale: decimalPrice.scale }).divide(
         decimalPrice.copyWith({
@@ -37,15 +33,14 @@ export default function reducer(
       return {
         ...state,
         ...{
-          price: price,
+          price: decimalPrice,
           decimalPrice,
           equivalence,
         },
       };
     }
     case HermesActions.SetPriceHistory: {
-      const priceHistory: PriceUpdate[] = (action as SetPriceHistoryPayload)
-        .payload;
+      const priceHistory: string[] = (action as SetPriceHistoryPayload).payload;
 
       return { ...state, ...{ priceHistory: priceHistory } };
     }
