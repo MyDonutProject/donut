@@ -14,6 +14,7 @@ export function useUserBalance() {
 
   const queryKey: UseUserBalanceQueryKeyProps = [BalanceQueryKeys.Balance];
 
+  //@ts-ignore
   const { data, isFetching, error, refetch, ...query } = useQuery<
     UserBalance,
     AxiosError<GenericError>,

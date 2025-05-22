@@ -27,8 +27,8 @@ export async function fetchUserBalance({
         isRegistered: userInfo.isRegistered,
         reservedSol: userInfo.reservedSol,
         reservedTokens: userInfo.reservedTokens,
-        formattedSol: userInfo.reservedSol / 1e9,
-        formattedTokens: userInfo.reservedTokens / 1e9,
+        formattedSol: (userInfo as any)?.reservedSol / 1e9,
+        formattedTokens: (userInfo as any)?.reservedTokens / 1e9,
       };
     } catch (error) {
       console.error("[fetchUserAccount] Outer error:", error);
