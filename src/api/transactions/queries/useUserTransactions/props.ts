@@ -1,5 +1,7 @@
-import { TransactionQueryKeys } from "../../queryKeys";
+import { PaginatedRequest } from "@/models/pagination"
+import { TransactionQueryKeys } from "../../queryKeys"
 
 export type UseUserTransactionsQueryKeyProps = [
-  TransactionQueryKeys.Transaction
-];
+  TransactionQueryKeys.Transaction,
+  PaginatedRequest & { address: string }
+]

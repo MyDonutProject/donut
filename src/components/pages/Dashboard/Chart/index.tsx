@@ -1,49 +1,42 @@
-import { ErrorCard } from '@/components/core/ErrorCard';
-import styles from './styles.module.scss';
-import useTranslation from 'next-translate/useTranslation';
-import { useBinanceKlines, useBinanceTicker } from '@/api/binance/queries';
-import useDateFilter from '@/hooks/date-filter/useDateFilter';
-import { AreaChart } from '@/components/core/AreaChart';
-import { AreaData, WhitespaceData } from 'lightweight-charts';
-import DashboardChartHeader from './Header';
+import { ErrorCard } from "@/components/core/ErrorCard"
+import styles from "./styles.module.scss"
+import useTranslation from "next-translate/useTranslation"
+import useDateFilter from "@/hooks/date-filter/useDateFilter"
+import { AreaChart } from "@/components/core/AreaChart"
+import { AreaData, WhitespaceData } from "lightweight-charts"
+import DashboardChartHeader from "./Header"
+import { useBinanceKlines } from "@/api/binance"
 
 export default function DashboardChart() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common")
 
-  const { startDate, endDate } = useDateFilter();
-  const {
-    isPending: isTickerPending,
-    error: tickerError,
-    refetch: refetchTicker,
-  } = useBinanceTicker({ symbol: 'SOLUSDT' });
+  const { startDate, endDate } = useDateFilter()
+  //
   const {
     chartData,
     isPending: isKlinesPending,
     error: klinesError,
     refetch: refetchKlines,
   } = useBinanceKlines({
-    symbol: 'SOLUSDT',
-    interval: '1h',
+    symbol: "SOLUSDT",
+    interval: "1h",
     startTime: startDate.getTime(),
     endTime: endDate.getTime(),
-    timeZone: '-3',
+    timeZone: "-3",
     limit: 500,
-  });
+  })
 
-  const error = tickerError || klinesError;
-  const isPending = isTickerPending || isKlinesPending;
+  const error = klinesError
+  const isPending = isKlinesPending
 
   function handleRefetch() {
-    if (tickerError) {
-      refetchTicker();
-    }
     if (klinesError) {
-      refetchKlines();
+      refetchKlines()
     }
   }
 
   if (error) {
-    return <ErrorCard error={error} refetch={handleRefetch} />;
+    return <ErrorCard error={error} refetch={handleRefetch} />
   }
 
   return (
@@ -56,5 +49,5 @@ export default function DashboardChart() {
         />
       </div>
     </div>
-  );
+  )
 }

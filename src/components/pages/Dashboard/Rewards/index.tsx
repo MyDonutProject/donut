@@ -1,13 +1,17 @@
-import { useUserBalance } from "@/api/balance";
-import { ModalHeader } from "@/components/core/Modal/Header";
-import { Decimal } from "@/lib/Decimal";
-import useTranslation from "next-translate/useTranslation";
-import RewardsCard from "./Card";
-import styles from "./styles.module.scss";
+import { useUserBalance } from "@/api/balance"
+import { ModalHeader } from "@/components/core/Modal/Header"
+import { Decimal } from "@/lib/Decimal"
+import useTranslation from "next-translate/useTranslation"
+import RewardsCard from "./Card"
+import styles from "./styles.module.scss"
+import { useUserWalletTracker } from "@/api/wallet"
 
 export default function DashboardRewards() {
-  const { t } = useTranslation("common");
-  const { data: userBalance } = useUserBalance();
+  const { t } = useTranslation("common")
+  const {
+    data: userWalletTracker,
+    isPending: isPendingWalletTracker,
+  } = useUserWalletTracker()
 
   return (
     <div className={styles.container}>
@@ -20,26 +24,36 @@ export default function DashboardRewards() {
         <RewardsCard
           title={t("reserved_donuts")}
           value={
-            userBalance?.reservedTokens !== null
-              ? Decimal.fromSubunits(userBalance?.reservedTokens?.toString(), {
-                  scale: 9,
-                }).toNumberString()
-              : null
+            isPendingWalletTracker
+              ? null
+              : !!userWalletTracker?.totalDonutReward
+              ? Decimal.fromSubunits(
+                  userWalletTracker?.totalDonutReward?.toString(),
+                  {
+                    scale: 9,
+                  }
+                ).toNumberString()
+              : "0"
           }
           image={"/donut/assets/donut.png"}
         />
         <RewardsCard
           title={t("reserved_solanas")}
           value={
-            userBalance?.reservedSol !== null
-              ? Decimal.fromSubunits(userBalance?.reservedSol?.toString(), {
-                  scale: 9,
-                }).toNumberString()
-              : null
+            isPendingWalletTracker
+              ? null
+              : !!userWalletTracker?.totalSolReward
+              ? Decimal.fromSubunits(
+                  userWalletTracker?.totalSolReward?.toString(),
+                  {
+                    scale: 9,
+                  }
+                ).toNumberString()
+              : "0"
           }
           image={"/donut/sol/sol.png"}
         />
       </div>
     </div>
-  );
+  )
 }

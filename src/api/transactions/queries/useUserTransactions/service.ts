@@ -1,11 +1,11 @@
 // Core functions for tracking Solana token transactions
 // Using @solana/wallet-adapter-react and @project-serum/anchor
 
-import { FetchUserTransactionsRequestDto } from "@/dto/transactions/fetch-user-transactions-input.dto";
-import { Connection, PublicKey } from "@solana/web3.js";
-import { QueryFunctionContext } from "@tanstack/react-query";
-import { UseUserTransactionsQueryKeyProps } from "./props";
-import { fetchWalletSignatures } from "./utils";
+import { QueryFunctionContext } from "@tanstack/react-query"
+import { UseUserTransactionsQueryKeyProps } from "./props"
+import { PaginatedResponse } from "@/models/pagination"
+import baseAPI from "@/api"
+import { Transaction } from "@/models/transactions"
 
 /**
  * Main function to fetch all token transactions for a wallet
@@ -15,22 +15,25 @@ import { fetchWalletSignatures } from "./utils";
  * @returns {Promise<Array>} Array of processed token transactions
  */
 export const fetchUserTransactions = async ({
-  connection,
-  wallet,
-  limit = 20,
-}: QueryFunctionContext<UseUserTransactionsQueryKeyProps> &
-  FetchUserTransactionsRequestDto) => {
+  queryKey,
+}: QueryFunctionContext<UseUserTransactionsQueryKeyProps>): Promise<
+  PaginatedResponse<Transaction>
+> => {
+  const { page, limit, address } = queryKey[1]
   try {
-    // Step 1: Fetch signatures
-    const signatures = await fetchWalletSignatures(
-      connection,
-      wallet.adapter.publicKey,
-      limit
-    );
+    const response = await baseAPI.get<
+      PaginatedResponse<Transaction>
+    >(`/transactions`, {
+      params: {
+        page,
+        limit,
+        address,
+      },
+    })
 
-    return signatures;
+    return response.data
   } catch (error) {
-    console.error("Error fetching token transactions:", error);
-    throw error;
+    console.error("Error fetching token transactions:", error)
+    throw error
   }
-};
+}

@@ -1,29 +1,50 @@
-import styles from './styles.module.scss';
-import MatrixCard from '../Card';
-import useTranslation from 'next-translate/useTranslation';
+import styles from "./styles.module.scss"
+import MatrixCard from "../Card"
+import useTranslation from "next-translate/useTranslation"
+import { useUserMatrices } from "@/api/matrices"
+import { ErrorCard } from "@/components/core/ErrorCard"
+import { useMemo } from "react"
+import MatrixCardSkeleton from "../Card/Skeleton"
 
 export default function Cards() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common")
+  const {
+    data: userMatrices,
+    isPending,
+    error,
+    refetch,
+  } = useUserMatrices()
 
-  const slots = [
-    {
-      title: 'Slot 1',
-      address: '12398...alkjshd8',
-    },
-    {
-      title: 'Slot 2',
-      address: '12398...alkjshd8',
-    },
-    {
-      title: 'Slot 3',
-    },
-  ];
+  const Matrices = useMemo(
+    () =>
+      userMatrices?.data?.map((matrix, index) => (
+        <MatrixCard
+          title={t("matrix_label", { slot: index + 1 })}
+          slots={[...(matrix?.slots ?? []), null, null, null].slice(
+            0,
+            3
+          )}
+          status={matrix?.status}
+        />
+      )),
+    [userMatrices?.data]
+  )
+
+  const Skeleton = useMemo(
+    () =>
+      Array.from({ length: 3 }).map((_, index) => (
+        <MatrixCardSkeleton key={`skeleton-${index}`} />
+      )),
+    []
+  )
+
+  if (error) {
+    return <ErrorCard error={error} refetch={refetch} />
+  }
 
   return (
     <div className={styles.container}>
-      <MatrixCard title="Matrix 3" slots={slots} status="pending" />
-      <MatrixCard title="Matrix 2" slots={slots} status="completed" />
-      <MatrixCard title="Matrix 1" slots={slots} status="completed" />
+      {isPending ? Skeleton : Matrices}
     </div>
-  );
+  )
 }

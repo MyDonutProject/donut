@@ -1,75 +1,66 @@
-import { GenericError } from "@/models/generic-error";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { ParsedTransactionWithMeta } from "@solana/web3.js";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { useEffect, useMemo } from "react";
-import { TransactionQueryKeys } from "../../queryKeys";
-import { getDonuts, getSolanas } from "./helpers";
-import { UseUserTransactionsQueryKeyProps } from "./props";
-import { fetchUserTransactions } from "./service";
+import { GenericError } from "@/models/generic-error"
+import {
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react"
+import { ParsedTransactionWithMeta } from "@solana/web3.js"
+import { useQuery } from "@tanstack/react-query"
+import { AxiosError } from "axios"
+import { useEffect, useMemo, useState } from "react"
+import { TransactionQueryKeys } from "../../queryKeys"
+import { UseUserTransactionsQueryKeyProps } from "./props"
+import { fetchUserTransactions } from "./service"
+import {
+  PaginatedRequest,
+  PaginatedResponse,
+} from "@/models/pagination"
+import { Transaction } from "@/models/transactions"
+import { usePaginatedQuery } from "@/hooks/usePaginatedQuery"
 
 export function useUserTransactions() {
-  const { wallet } = useWallet();
-  const { connection } = useConnection();
+  const [page, setPage] = useState<number>(1)
+  const { wallet } = useWallet()
+
+  const filter: PaginatedRequest & { address: string } = {
+    page,
+    limit: 10,
+    address: wallet?.adapter?.publicKey?.toBase58() ?? "",
+  }
 
   const queryKey: UseUserTransactionsQueryKeyProps = [
     TransactionQueryKeys.Transaction,
-  ];
+    filter,
+  ]
 
   const { data, isFetching, error, refetch, ...query } = useQuery<
-    ParsedTransactionWithMeta[],
+    PaginatedResponse<Transaction>,
     AxiosError<GenericError>,
-    ParsedTransactionWithMeta[],
+    PaginatedResponse<Transaction>,
     UseUserTransactionsQueryKeyProps
   >({
     queryKey,
     refetchOnWindowFocus: true,
     staleTime: 3000,
     refetchOnMount: "always",
-    queryFn: (context) =>
-      fetchUserTransactions({
-        ...context,
-        wallet,
-        connection,
-      }),
+    queryFn: fetchUserTransactions,
     enabled: !!wallet && typeof window !== "undefined",
-  });
+  })
 
-  const parsedDonuts = getDonuts(data, wallet);
-  const parsedSolanas = getSolanas(data, wallet);
-
-  const sumDonuts = useMemo(() => {
-    return (
-      parsedDonuts?.reduce(
-        (acc, curr) => acc + Number(curr.uiTokenAmount?.amount),
-        0
-      ) ?? 0
-    );
-  }, [parsedDonuts]);
-
-  const sumSolanas = useMemo(() => {
-    return (
-      parsedSolanas?.reduce(
-        (acc, curr) => acc + Number(curr.uiTokenAmount?.amount ?? 0),
-        0
-      ) ?? 0
-    );
-  }, [parsedSolanas]);
-
-  useEffect(() => {
-    refetch();
-  }, [wallet]);
+  const paginatedCallbacks = usePaginatedQuery({
+    data,
+    page,
+    setPage,
+    queryParams: {
+      address: wallet?.adapter?.publicKey?.toBase58() ?? "",
+    },
+  })
 
   return {
     data,
     isFetching,
     error,
     refetch,
-    parsedDonuts,
-    parsedSolanas,
-    sumDonuts,
-    sumSolanas,
     ...query,
-  };
+    ...paginatedCallbacks,
+  }
 }

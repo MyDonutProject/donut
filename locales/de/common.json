@@ -115,5 +115,8 @@
   "all_rights_reserved": "Alle Rechte vorbehalten © {{year}} Donut. Alle Rechte vorbehalten.",
   "terms_of_use": "Nutzungsbedingungen",
   "privacy_policy": "Datenschutzrichtlinie",
-  "cookie_policy": "Cookie-Richtlinie"
+  "cookie_policy": "Cookie-Richtlinie",
+  "error_title": "Oops!",
+  "error_description": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+  "error_button": "Erneut versuchen"
 }

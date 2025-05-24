@@ -1,4 +1,4 @@
-import { PageProps } from "@/types/navigation";
+import { PageProps } from "@/types/navigation"
 
 export default <PageProps[]>[
   {
@@ -6,11 +6,11 @@ export default <PageProps[]>[
     path: "/dashboard",
     icon: "fa-duotone fa-home",
   },
-  // {
-  //   label: 'matrix_label',
-  //   path: '/matrix',
-  //   icon: 'fa-duotone fa-grid',
-  // },
+  {
+    label: "matrix_label",
+    path: "/matrix",
+    icon: "fa-duotone fa-grid",
+  },
   {
     label: "rewards_label",
     path: "/rewards",
@@ -21,4 +21,4 @@ export default <PageProps[]>[
   //   path: "/affiliates",
   //   icon: "fa-duotone fa-share-nodes",
   // },
-];
+]
