@@ -22,34 +22,20 @@ export default function DashboardRewards() {
       />
       <div className={styles.container__content}>
         <RewardsCard
-          title={t("reserved_donuts")}
+          title={t("minted_donuts")}
           value={
             isPendingWalletTracker
               ? null
-              : !!userWalletTracker?.totalDonutReward
-              ? Decimal.fromSubunits(
-                  userWalletTracker?.totalDonutReward?.toString(),
-                  {
-                    scale: 9,
-                  }
-                ).toNumberString()
-              : "0"
+              : userWalletTracker?.totalDonutReward?.toNumberString()
           }
           image={"/donut/assets/donut.png"}
         />
         <RewardsCard
-          title={t("reserved_solanas")}
+          title={t("earned_sol")}
           value={
             isPendingWalletTracker
               ? null
-              : !!userWalletTracker?.totalSolReward
-              ? Decimal.fromSubunits(
-                  userWalletTracker?.totalSolReward?.toString(),
-                  {
-                    scale: 9,
-                  }
-                ).toNumberString()
-              : "0"
+              : userWalletTracker?.totalSolReward?.toNumberString()
           }
           image={"/donut/sol/sol.png"}
         />
