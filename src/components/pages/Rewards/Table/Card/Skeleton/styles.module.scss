@@ -1,0 +1,40 @@
+.image {
+  @include skeleton;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.title {
+  @include skeleton;
+  width: 100px;
+  height: 14px;
+  font-size: 14px;
+  font-weight: 900;
+  color: $text-primary;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &--primary {
+    color: $primary-color;
+    font-size: 18px;
+    font-weight: 900;
+  }
+}
+
+.value {
+  @include skeleton;
+  width: 100px;
+  height: 14px;
+  font-size: 14px;
+  color: $text-secondary;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  @include skeleton;
+  border-radius: 50%;
+}

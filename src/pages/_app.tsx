@@ -22,7 +22,6 @@ const NotificationToasty = dynamic(
 )
 
 import SponsorModal from "@/components/core/SponsorModal"
-import { usePriceStreaming } from "@/hooks/hermes-client/usePriceStreaming"
 import { ClusterProvider } from "@/providers/Cluster"
 import { SolanaProvider } from "@/providers/Solana"
 import QueryClientProvider from "@/providers/queryClientProvider"
@@ -36,8 +35,6 @@ function MainApp({ Component, ...rest }: any) {
   if (props?.pageProps?.settings) {
     store.dispatch(setSettings(props?.pageProps?.settings))
   }
-
-  usePriceStreaming()
 
   return (
     <main>

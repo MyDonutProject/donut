@@ -1,3 +1,4 @@
+import { Decimal } from "@/lib/Decimal"
 import { BaseEntity } from "../base-entity"
 
 /**
@@ -27,4 +28,12 @@ export class Transaction extends BaseEntity {
    * @description Web URL where the transaction can be viewed on a blockchain explorer
    */
   url: string
+
+  amount?: Decimal
+
+  type?: "credit" | "debit"
+
+  status?: "success" | "failed"
+
+  symbol?: "SOL" | "DNT"
 }

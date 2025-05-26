@@ -17,6 +17,8 @@ import { useForm } from "react-hook-form"
 import { useSelector } from "react-redux"
 import ActivateMatrixSkeleton from "./Skeleton"
 import styles from "./styles.module.scss"
+import Countdown from "./Countdown"
+import { useChainlinkOracle } from "@/api/price/queries"
 
 export default function ActivateMatrix() {
   const { t } = useTranslation("common")
@@ -30,6 +32,11 @@ export default function ActivateMatrix() {
     (state: RootState) => state.hermes.equivalence
   )
 
+  const {
+    isPending: isPendingPrice,
+    isRefetching: isRefetchingPrice,
+  } = useChainlinkOracle()
+
   const { mutate, isPending } = usePrepareAccounts()
   const { wallet } = useWallet()
   const { NotificationsService } = useNotificationService()
@@ -40,9 +47,13 @@ export default function ActivateMatrix() {
 
   function onSubmit(data: { amount: number }) {
     mutate({
-      amount: Number(
-        equivalence.multiply(1.02).toNumber()
-      ).toString(),
+      amount: String(
+        equivalence
+          .copyWith({
+            options: { scale: 9 },
+          })
+          .multiply(1.01).subunits
+      ),
       connection: connection,
       program: program,
       wallet,
@@ -51,6 +62,11 @@ export default function ActivateMatrix() {
       getLookupTableAccount,
     })
   }
+
+  const isLocked =
+    equivalence?.toNumber() === 0 ||
+    isPendingPrice ||
+    isRefetchingPrice
 
   if (isPendingAccount) {
     return <ActivateMatrixSkeleton />
@@ -65,10 +81,11 @@ export default function ActivateMatrix() {
         <h1>{t("activate_matrix_title")}</h1>
         <div className={styles.card__row}>
           <span className={styles.card__row__value}>
+            <Countdown />
             {t("rate_label")}
             <strong>
               1 SOL ={" "}
-              {price?.toNumberString() === "0" ? (
+              {isLocked ? (
                 <i className="fa-solid fa-spinner fa-spin" />
               ) : (
                 price?.toNumberString()
@@ -78,7 +95,7 @@ export default function ActivateMatrix() {
           <span className={styles.card__row__value}>
             <i className="fa-solid fa-wallet" />
             <span>
-              {new Decimal(balance, { scale: 8 }).toNumberString()}
+              {new Decimal(balance, { scale: 9 }).toNumberString()}
             </span>
           </span>
         </div>
@@ -86,13 +103,17 @@ export default function ActivateMatrix() {
           isLoading={isPendingAccount}
           register={register}
           name="amount"
-          value={equivalence.multiply(1.02).toNumberString()}
+          value={equivalence
+            .copyWith({
+              options: { scale: 9 },
+            })
+            .multiply(1.01)
+            .toNumber()
+            .toString()}
           readOnly
-          hideLock={equivalence?.toNumber() === 0}
+          hideLock={isLocked}
           rightIcon={
-            equivalence?.toNumber() === 0
-              ? "fa-solid fa-spinner fa-spin"
-              : undefined
+            isLocked ? "fa-solid fa-spinner fa-spin" : undefined
           }
           className={styles.card__input}
           customIcon={
@@ -116,9 +137,9 @@ export default function ActivateMatrix() {
           </div>
         </div>
         <Button
-          disabled={isPending || equivalence?.toNumber() === 0}
+          // disabled={isPending || isLocked}
           isloading={isPending}
-          isSecondary={isPending || equivalence?.toNumber() === 0}
+          isSecondary={isPending || isLocked}
         >
           <span>{t("activate_matrix_button")}</span>
         </Button>

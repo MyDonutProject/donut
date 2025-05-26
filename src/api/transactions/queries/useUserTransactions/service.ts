@@ -6,6 +6,8 @@ import { UseUserTransactionsQueryKeyProps } from "./props"
 import { PaginatedResponse } from "@/models/pagination"
 import baseAPI from "@/api"
 import { Transaction } from "@/models/transactions"
+import { extractUserTransactions } from "./helper.ts"
+import { Connection } from "@solana/web3.js"
 
 /**
  * Main function to fetch all token transactions for a wallet
@@ -16,9 +18,10 @@ import { Transaction } from "@/models/transactions"
  */
 export const fetchUserTransactions = async ({
   queryKey,
-}: QueryFunctionContext<UseUserTransactionsQueryKeyProps>): Promise<
-  PaginatedResponse<Transaction>
-> => {
+  connection,
+}: QueryFunctionContext<UseUserTransactionsQueryKeyProps> & {
+  connection: Connection
+}): Promise<PaginatedResponse<Transaction>> => {
   const { page, limit, address } = queryKey[1]
   try {
     const response = await baseAPI.get<
@@ -31,7 +34,16 @@ export const fetchUserTransactions = async ({
       },
     })
 
-    return response.data
+    const data = await extractUserTransactions(
+      response.data.data,
+      address,
+      connection
+    )
+
+    return {
+      ...response.data,
+      data,
+    }
   } catch (error) {
     console.error("Error fetching token transactions:", error)
     throw error

@@ -17,8 +17,8 @@ import {
 import { AnchorWallet, Wallet } from "@solana/wallet-adapter-react"
 import {
   AddressLookupTableAccount,
-  ComputeBudgetProgram,
   Connection,
+  LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
   TransactionMessage,
@@ -33,6 +33,26 @@ const MAX_PRICE_FEED_AGE = 86400
 
 // Default SOL price in case of stale feed ($100 USD per SOL)
 const DEFAULT_SOL_PRICE = 100_00000000 // $100 with 8 decimals
+
+/**
+ * Formats a SOL amount for display while ensuring it matches the transaction value
+ * @param amount The amount in SOL to format
+ * @returns The formatted amount as a string with 9 decimals precision
+ */
+export function formatSolAmount(amount: string | number): string {
+  const bnAmount =
+    typeof amount === "string"
+      ? new anchor.BN(
+          amount.toString().replace(".", "").replace(",", "")
+        ).mul(new anchor.BN(LAMPORTS_PER_SOL))
+      : new anchor.BN(
+          amount.toString().replace(".", "").replace(",", "")
+        ).mul(new anchor.BN(LAMPORTS_PER_SOL))
+
+  // Convert back to SOL with proper decimal places
+  const decimalAmount = new Decimal(bnAmount.toString(), { scale: 9 })
+  return decimalAmount.toNumberString()
+}
 
 /**
  * Prepares uplines for recursion by creating the correct account structure
@@ -448,13 +468,10 @@ export async function registerWithSolDepositV3({
     console.log("🧑‍💻 New user: " + wallet.adapter.publicKey.toString())
     console.log("🧑‍🤝‍🧑 Referrer: " + referrerAddress.toString())
     console.log("💰 Deposit amount: " + amount + " SOL")
-
     // Convert amount to lamports
     const FIXED_DEPOSIT_AMOUNT =
       typeof amount === "string"
-        ? new anchor.BN(
-            String(new Decimal(amount, { scale: 9 }).subunits)
-          )
+        ? new anchor.BN(amount)
         : new anchor.BN(amount)
 
     // Get referrer account
@@ -570,14 +587,14 @@ export async function registerWithSolDepositV3({
     console.log("\n📤 PREPARING VERSIONED TRANSACTION WITH ALT...")
 
     // Set compute unit limit and priority
-    const modifyComputeUnits =
-      ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1_400_000,
-      })
+    // const modifyComputeUnits =
+    //   ComputeBudgetProgram.setComputeUnitLimit({
+    //     units: 1_400_000,
+    //   })
 
-    const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
-    })
+    // const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
+    //   microLamports: 5000,
+    // })
 
     // Setup vault A and Chainlink accounts
     const vaultAAccounts = [
@@ -654,7 +671,7 @@ export async function registerWithSolDepositV3({
     const messageV0 = new TransactionMessage({
       payerKey: wallet.adapter.publicKey,
       recentBlockhash: blockhash,
-      instructions: [modifyComputeUnits, setPriority, registerIx],
+      instructions: [registerIx],
     }).compileToV0Message([lookupTableAccount])
 
     const transaction = new VersionedTransaction(messageV0)

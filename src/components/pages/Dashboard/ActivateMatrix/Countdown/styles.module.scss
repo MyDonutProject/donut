@@ -1,0 +1,28 @@
+.container {
+  padding: 8px;
+  position: relative;
+  border: 1px solid $warning-color;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: $warning-color;
+    opacity: 0.1;
+    z-index: 0;
+  }
+
+  &__label {
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 1;
+    position: relative;
+    color: $warning-color;
+  }
+}

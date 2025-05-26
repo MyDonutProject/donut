@@ -26,7 +26,8 @@ export default function DashboardRewards() {
           value={
             isPendingWalletTracker
               ? null
-              : userWalletTracker?.totalDonutReward?.toNumberString()
+              : userWalletTracker?.totalDonutReward?.toNumberString() ||
+                "0"
           }
           image={"/donut/assets/donut.png"}
         />
@@ -35,7 +36,8 @@ export default function DashboardRewards() {
           value={
             isPendingWalletTracker
               ? null
-              : userWalletTracker?.totalSolReward?.toNumberString()
+              : userWalletTracker?.totalSolReward?.toNumberString() ||
+                "0"
           }
           image={"/donut/sol/sol.png"}
         />

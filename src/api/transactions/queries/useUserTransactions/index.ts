@@ -3,10 +3,9 @@ import {
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react"
-import { ParsedTransactionWithMeta } from "@solana/web3.js"
 import { useQuery } from "@tanstack/react-query"
 import { AxiosError } from "axios"
-import { useEffect, useMemo, useState } from "react"
+import { useState } from "react"
 import { TransactionQueryKeys } from "../../queryKeys"
 import { UseUserTransactionsQueryKeyProps } from "./props"
 import { fetchUserTransactions } from "./service"
@@ -18,6 +17,7 @@ import { Transaction } from "@/models/transactions"
 import { usePaginatedQuery } from "@/hooks/usePaginatedQuery"
 
 export function useUserTransactions() {
+  const { connection } = useConnection()
   const [page, setPage] = useState<number>(1)
   const { wallet } = useWallet()
 
@@ -39,10 +39,7 @@ export function useUserTransactions() {
     UseUserTransactionsQueryKeyProps
   >({
     queryKey,
-    refetchOnWindowFocus: true,
-    staleTime: 3000,
-    refetchOnMount: "always",
-    queryFn: fetchUserTransactions,
+    queryFn: (meta) => fetchUserTransactions({ ...meta, connection }),
     enabled: !!wallet && typeof window !== "undefined",
   })
 

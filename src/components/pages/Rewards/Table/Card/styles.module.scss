@@ -47,11 +47,19 @@
         font-size: 18px;
         font-weight: 900;
       }
+
+      @include media-tablet {
+        font-size: 14px;
+      }
     }
 
     &__value {
       font-size: 14px;
       color: $text-secondary;
+
+      @include media-tablet {
+        font-size: 12px;
+      }
     }
   }
 }

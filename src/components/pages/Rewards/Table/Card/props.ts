@@ -1,9 +1,7 @@
+import { Transaction } from "@/models/transactions"
+
 export interface CardProps {
-  item: {
-    symbol: string;
-    amount: number;
-    conversion: number;
-    createdAt: Date;
-    locked: boolean;
-  };
+  item: Transaction
+  locked?: boolean
+  isLoading?: boolean
 }

@@ -1,27 +1,32 @@
-import { StaggerAnimation } from "@/components/core/Animation/Stagger";
-import pages from "@/constants/pages";
-import useAccount from "@/hooks/account/useAccount";
-import { useIsMobile } from "@/hooks/useIsMobile";
-import { useRouter } from "next/router";
-import { useMemo } from "react";
-import HeaderMenuItem from "./Item";
-import styles from "./styles.module.scss";
+import { StaggerAnimation } from "@/components/core/Animation/Stagger"
+import pages from "@/constants/pages"
+import useAccount from "@/hooks/account/useAccount"
+import { useIsMobile } from "@/hooks/useIsMobile"
+import { useRouter } from "next/router"
+import { useMemo } from "react"
+import HeaderMenuItem from "./Item"
+import styles from "./styles.module.scss"
+import { useUserAccount } from "@/api/account"
 
 export default function HeaderMenu() {
-  const { isConnected } = useAccount();
-  const { pathname } = useRouter();
-  const isMobile = useIsMobile();
+  const { isConnected } = useAccount()
+  const { data } = useUserAccount()
+  const { pathname } = useRouter()
+  const isMobile = useIsMobile()
 
   const Items = useMemo(
     () =>
       pages.map((page) => (
-        <HeaderMenuItem item={page} isActive={pathname.includes(page.path)} />
+        <HeaderMenuItem
+          item={page}
+          isActive={pathname.includes(page.path)}
+        />
       )),
     [pathname]
-  );
+  )
 
-  if (!isConnected || isMobile) {
-    return null;
+  if (!isConnected || isMobile || data?.isRegistered !== true) {
+    return null
   }
 
   return (
@@ -33,5 +38,5 @@ export default function HeaderMenu() {
     >
       {Items}
     </StaggerAnimation>
-  );
+  )
 }
