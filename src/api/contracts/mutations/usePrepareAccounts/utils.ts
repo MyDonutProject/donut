@@ -17,6 +17,7 @@ import {
 import { AnchorWallet, Wallet } from "@solana/wallet-adapter-react"
 import {
   AddressLookupTableAccount,
+  ComputeBudgetProgram,
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
@@ -587,14 +588,14 @@ export async function registerWithSolDepositV3({
     console.log("\n📤 PREPARING VERSIONED TRANSACTION WITH ALT...")
 
     // Set compute unit limit and priority
-    // const modifyComputeUnits =
-    //   ComputeBudgetProgram.setComputeUnitLimit({
-    //     units: 1_400_000,
-    //   })
+    const modifyComputeUnits =
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      })
 
-    // const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
-    //   microLamports: 5000,
-    // })
+    const setPriority = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    })
 
     // Setup vault A and Chainlink accounts
     const vaultAAccounts = [
@@ -671,7 +672,7 @@ export async function registerWithSolDepositV3({
     const messageV0 = new TransactionMessage({
       payerKey: wallet.adapter.publicKey,
       recentBlockhash: blockhash,
-      instructions: [registerIx],
+      instructions: [modifyComputeUnits, setPriority, registerIx],
     }).compileToV0Message([lookupTableAccount])
 
     const transaction = new VersionedTransaction(messageV0)
