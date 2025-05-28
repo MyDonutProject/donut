@@ -678,7 +678,17 @@ export async function registerWithSolDepositV3({
     const transaction = new VersionedTransaction(messageV0)
 
     // Sign transaction
-    const signedTx = await anchorWallet.signTransaction(transaction)
+    const solanaPhantom = window?.phantom?.solana
+
+    let signedTx
+
+    if (solanaPhantom?.isSolana) {
+      signedTx = await solanaPhantom.signAndSendTransaction(
+        transaction
+      )
+    } else {
+      signedTx = await anchorWallet.signTransaction(transaction)
+    }
 
     // Send transaction
     console.log("\n📤 SENDING VERSIONED TRANSACTION...")
