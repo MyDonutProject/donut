@@ -13,10 +13,10 @@ export const getServerSideProps: GetServerSideProps = async (
   const { voucher } = context.params as { voucher: string }
 
   const data: Nullable<ReferralVoucher> = await baseAPI.get(
-    "/wallet-vouchers/by-voucher",
+    "/wallet-vouchers",
     {
       params: {
-        voucher,
+        code: voucher,
       },
     }
   )
