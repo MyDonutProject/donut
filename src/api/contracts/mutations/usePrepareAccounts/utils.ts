@@ -1,14 +1,11 @@
 import { MAIN_ADDRESSESS_CONFIG } from "@/constants/contract"
 import { Decimal } from "@/lib/Decimal"
-import {
-  CacheService,
-  DerivedPDAResponse,
-} from "@/services/cache-service"
+import { DerivedPDAResponse } from "@/services/cache-service"
 import { ErrorService } from "@/services/error-service"
 import { NotificationsService } from "@/services/NotificationService"
 import { store } from "@/store"
 import * as anchor from "@project-serum/anchor"
-import { Idl, Program, web3 } from "@project-serum/anchor"
+import { Idl, Program, utils, web3 } from "@project-serum/anchor"
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   Token,
@@ -22,6 +19,7 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
+  TransactionInstruction,
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js"
@@ -217,11 +215,35 @@ async function prepareUplinesForRecursion(
 export async function getNeededDerivedPDA(
   wallet: Wallet
 ): Promise<DerivedPDAResponse> {
-  const cacheService = CacheService.getInstance()
-  const cacheKey = wallet.adapter.publicKey.toString()
   const referrerAddress = localStorage.getItem("sponsor")
     ? new PublicKey(localStorage.getItem("sponsor") as string)
     : MAIN_ADDRESSESS_CONFIG.REFERRER_ADDRESS
+
+  const [tokenMintAuthority] = PublicKey.findProgramAddressSync(
+    [Buffer.from("token_mint_authority")],
+    MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
+  )
+
+  const [vaultAuthority] = PublicKey.findProgramAddressSync(
+    [Buffer.from("token_vault_authority")],
+    MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
+  )
+
+  const [programSolVault] = PublicKey.findProgramAddressSync(
+    [Buffer.from("program_sol_vault")],
+    MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
+  )
+  const programTokenVault =
+    await anchor.utils.token.associatedAddress({
+      mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+      owner: vaultAuthority,
+    })
+
+  const referrerTokenAccount =
+    await anchor.utils.token.associatedAddress({
+      mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
+      owner: referrerAddress,
+    })
 
   // PDA for user
   const [userAccount] = PublicKey.findProgramAddressSync(
@@ -231,71 +253,13 @@ export async function getNeededDerivedPDA(
     ],
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   )
+
   const [referrerAccount] = PublicKey.findProgramAddressSync(
     [Buffer.from("user_account"), referrerAddress.toBuffer()],
     MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
   )
 
-  console.log("🔍 DEBUG: User account:", userAccount.toString())
-
-  // PDA for minting authority
-  const [tokenMintAuthority] = PublicKey.findProgramAddressSync(
-    [Buffer.from("token_mint_authority")],
-    MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
-  )
-  console.log(
-    "🔍 DEBUG: Token mint authority:",
-    tokenMintAuthority.toString()
-  )
-
-  // PDA for vault authority
-  const [vaultAuthority] = PublicKey.findProgramAddressSync(
-    [Buffer.from("token_vault_authority")],
-    MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
-  )
-  console.log("🔍 DEBUG: Vault authority:", vaultAuthority.toString())
-
-  // PDA for program_sol_vault
-  const [programSolVault] = PublicKey.findProgramAddressSync(
-    [Buffer.from("program_sol_vault")],
-    MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID
-  )
-  console.log(
-    "🔍 DEBUG: Program sol vault:",
-    programSolVault.toString()
-  )
-
-  // Calculate token vault address
-  const programTokenVault =
-    await anchor.utils.token.associatedAddress({
-      mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-      owner: vaultAuthority,
-    })
-  console.log(
-    "🔍 DEBUG: Program token vault:",
-    programTokenVault.toString()
-  )
-
-  // Create ATA for referrer
-  const referrerTokenAccount =
-    await anchor.utils.token.associatedAddress({
-      mint: MAIN_ADDRESSESS_CONFIG.TOKEN_MINT,
-      owner: referrerAddress,
-    })
-  console.log(
-    "🔍 DEBUG: Referrer token account:",
-    referrerTokenAccount.toString()
-  )
-
   // Get user's WSOL ATA
-  const userWsolAccount = await anchor.utils.token.associatedAddress({
-    mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
-    owner: wallet.adapter.publicKey,
-  })
-  console.log(
-    "🔍 DEBUG: User wsol account:",
-    userWsolAccount.toString()
-  )
 
   const result = {
     tokenMintAuthority,
@@ -303,19 +267,27 @@ export async function getNeededDerivedPDA(
     programSolVault,
     programTokenVault,
     referrerTokenAccount,
-    userWsolAccount,
     userAccount,
     referrerAccount,
   }
 
-  // Cache the result for 60 seconds
-  cacheService.set<DerivedPDAResponse>(
-    "derived_pda",
-    cacheKey,
-    result
+  return result
+}
+
+export async function getUserWsolAccount(wallet: Wallet) {
+  // Derivar ATA para o novo usuário (para WSOL)
+  const userWsolAccount = await utils.token.associatedAddress({
+    mint: MAIN_ADDRESSESS_CONFIG.WSOL_MINT,
+    owner: wallet.adapter.publicKey,
+  })
+  console.log(
+    "🔑 USER_WSOL_ACCOUNT (ATA): " + userWsolAccount.toString()
   )
 
-  return result
+  return {
+    userWsolAccount,
+    needsWsol: true,
+  }
 }
 
 /**
@@ -467,8 +439,13 @@ export async function registerWithSolDepositV3({
 
     console.log("📋 BASIC INFORMATION:")
     console.log("🧑‍💻 New user: " + wallet.adapter.publicKey.toString())
+    console.log(
+      "💰 Balance: ",
+      connection.getBalance(wallet.adapter.publicKey)
+    )
     console.log("🧑‍🤝‍🧑 Referrer: " + referrerAddress.toString())
     console.log("💰 Deposit amount: " + amount + " SOL")
+
     // Convert amount to lamports
     const FIXED_DEPOSIT_AMOUNT =
       typeof amount === "string"
@@ -511,6 +488,30 @@ export async function registerWithSolDepositV3({
         console.log("⚠️ WARNING: Referrer's matrix is already full!")
         return null
       }
+      // 🎯 INFORMAÇÃO OTIMIZADA SOBRE WSOL
+      console.log(
+        "\n💡 Information about WSOL usage (via remaining_accounts):"
+      )
+      if (nextSlotIndex === 0) {
+        console.log(
+          "✅ SLOT 1 (idx 0): WSOL will be passed via remaining_accounts (position 5)"
+        )
+        console.log(
+          "   📍 Deposit will be made in the pool using existing WSOL"
+        )
+      } else if (nextSlotIndex === 1) {
+        console.log("ℹ️ SLOT 2 (idx 1): WSOL will not be needed")
+        console.log(
+          "   📍 SOL will be used directly for reserve + mint of tokens"
+        )
+      } else if (nextSlotIndex === 2) {
+        console.log(
+          "🔄 SLOT 3 (idx 2): WSOL can be used in recursion"
+        )
+        console.log(
+          "   📍 WSOL will be passed via remaining_accounts when needed"
+        )
+      }
     } catch (e) {
       console.error("❌ Error checking referrer:", e)
       return null
@@ -531,7 +532,10 @@ export async function registerWithSolDepositV3({
       )
       if (userInfo.isRegistered) {
         console.log("⚠️ You are already registered in the system!")
-        return null
+        return notificationService.info({
+          title: "Ops!",
+          message: "already_registered",
+        })
       }
     } catch (e) {
       console.log("✅ PROCEEDING WITH REGISTRATION...")
@@ -544,8 +548,9 @@ export async function registerWithSolDepositV3({
       programSolVault,
       programTokenVault,
       referrerTokenAccount,
-      userWsolAccount,
     } = await getNeededDerivedPDA(wallet)
+
+    const { userWsolAccount } = await getUserWsolAccount(wallet)
 
     // Setup accounts
     await setupVaultTokenAccount(connection, wallet, anchorWallet)
@@ -635,6 +640,35 @@ export async function registerWithSolDepositV3({
       ...remainingAccounts,
     ]
 
+    // Verificar se os índices 3 e 4 têm os endereços corretos
+    console.log("\n🔍 VERIFICANDO ORDEM DE REMAINING_ACCOUNTS:")
+    console.log(
+      `  Índice 3 (Feed): ${allRemainingAccounts[3].pubkey.toString()}`
+    )
+    console.log(
+      `  Índice 4 (Programa): ${allRemainingAccounts[4].pubkey.toString()}`
+    )
+    console.log(
+      `  Expected Feed address: ${MAIN_ADDRESSESS_CONFIG.SOL_USD_FEED.toString()}`
+    )
+    console.log(
+      `  Expected Program address: ${MAIN_ADDRESSESS_CONFIG.CHAINLINK_PROGRAM.toString()}`
+    )
+
+    if (
+      !allRemainingAccounts[3].pubkey.equals(
+        MAIN_ADDRESSESS_CONFIG.SOL_USD_FEED
+      ) ||
+      !allRemainingAccounts[4].pubkey.equals(
+        MAIN_ADDRESSESS_CONFIG.CHAINLINK_PROGRAM
+      )
+    ) {
+      console.error(
+        "❌ ERROR: The order of the Chainlink accounts is incorrect!"
+      )
+      return
+    }
+
     // Create register instruction
     const registerIx = await program.methods
       .registerWithSolDeposit(FIXED_DEPOSIT_AMOUNT)
@@ -667,12 +701,30 @@ export async function registerWithSolDepositV3({
       .instruction()
 
     // Create versioned transaction
-    const { blockhash } = await connection.getLatestBlockhash()
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash()
+
+    const ixData = registerIx.data
+    console.log(
+      `🔍 Generated instruction with discriminator: ${Buffer.from(
+        ixData.slice(0, 8)
+      ).toString("hex")}`
+    )
+
+    const manualRegisterInstruction = new TransactionInstruction({
+      keys: registerIx.keys,
+      programId: MAIN_ADDRESSESS_CONFIG.MATRIX_PROGRAM_ID,
+      data: ixData,
+    })
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.adapter.publicKey,
       recentBlockhash: blockhash,
-      instructions: [modifyComputeUnits, setPriority, registerIx],
+      instructions: [
+        modifyComputeUnits,
+        setPriority,
+        manualRegisterInstruction,
+      ],
     }).compileToV0Message([lookupTableAccount])
 
     const transaction = new VersionedTransaction(messageV0)
@@ -706,7 +758,23 @@ export async function registerWithSolDepositV3({
     )
 
     // Wait for confirmation
-    await connection.confirmTransaction(txid, "confirmed")
+    const confirmation = await connection.confirmTransaction(
+      {
+        signature: txid,
+        blockhash: blockhash,
+        lastValidBlockHeight: lastValidBlockHeight,
+      },
+      "confirmed"
+    )
+
+    if (confirmation.value.err) {
+      throw new Error(
+        `Error confirming transaction: ${JSON.stringify(
+          confirmation.value.err
+        )}`
+      )
+    }
+
     console.log("✅ Transaction confirmed!")
 
     // Verify results
@@ -722,6 +790,115 @@ export async function registerWithSolDepositV3({
     console.log(
       "📊 Filled slots: " + (userInfo.chain as any).filledSlots + "/3"
     )
+
+    // Verificar campo owner_wallet
+    if (userInfo.ownerWallet) {
+      console.log("\n📋 CAMPOS DA CONTA:")
+      console.log(
+        "👤 Owner Wallet: " + userInfo.ownerWallet.toString()
+      )
+
+      if (
+        userInfo.ownerWallet &&
+        (userInfo.ownerWallet as PublicKey).equals(
+          wallet.adapter.publicKey
+        )
+      ) {
+        console.log(
+          "✅ O campo owner_wallet foi corretamente preenchido"
+        )
+      } else {
+        console.log(
+          "❌ ALERTA: Owner Wallet não corresponde à carteira do usuário!"
+        )
+      }
+    }
+
+    if (
+      (userInfo.upline as any).upline &&
+      (userInfo.upline as any).upline.length > 0
+    ) {
+      console.log("\n📋 UPLINE INFORMATION:")
+      ;(userInfo.upline as any).upline.forEach(
+        (entry: any, index: number) => {
+          console.log(`  Upline #${index + 1}:`)
+          console.log(`    PDA: ${entry.pda.toString()}`)
+          console.log(`    Wallet: ${entry.wallet.toString()}`)
+        }
+      )
+    }
+
+    // Se estava no slot 3, verificar processamento da recursividade
+    if (isSlot3 && remainingAccounts.length > 0) {
+      console.log("\n🔄 VERIFICANDO RESULTADO DA RECURSIVIDADE:")
+
+      let uplineReverseCount = 0
+      for (let i = 0; i < remainingAccounts.length; i += 3) {
+        if (i >= remainingAccounts.length) break
+
+        try {
+          const uplineAccount = remainingAccounts[i].pubkey
+
+          console.log(
+            `\n  Verificando upline: ${uplineAccount.toString()}`
+          )
+
+          const uplineInfo = await program.account.userAccount.fetch(
+            uplineAccount
+          )
+          console.log(
+            `  Slots preenchidos: ${
+              (uplineInfo.chain as any).filledSlots
+            }/3`
+          )
+
+          // Verificar se o referenciador foi adicionado à matriz do upline
+          for (
+            let j = 0;
+            j < (uplineInfo.chain as any).filledSlots;
+            j++
+          ) {
+            if (
+              (uplineInfo.chain as any).slots[j] &&
+              (uplineInfo.chain as any).slots[j].equals(
+                referrerAccount
+              )
+            ) {
+              console.log(
+                `  ✅ REFERENCIADOR ADICIONADO NO SLOT ${j + 1}!`
+              )
+              uplineReverseCount++
+              break
+            }
+          }
+
+          // Verificar valores reservados
+          if ((uplineInfo.reservedSol as any) > 0) {
+            console.log(
+              `  💰 SOL Reservado: ${
+                (uplineInfo.reservedSol as any) / 1e9
+              } SOL`
+            )
+          }
+
+          if ((uplineInfo.reservedTokens as any) > 0) {
+            console.log(
+              `  🪙 Tokens Reservados: ${
+                (uplineInfo.reservedTokens as any) / 1e9
+              } tokens`
+            )
+          }
+        } catch (e) {
+          console.log(`  Erro ao verificar upline: ${e.message}`)
+        }
+      }
+
+      console.log(
+        `\n  ✅ Recursividade processou ${uplineReverseCount}/${
+          remainingAccounts.length / 3
+        } uplines`
+      )
+    }
 
     return txid
   } catch (error) {

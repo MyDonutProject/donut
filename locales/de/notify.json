@@ -50,5 +50,8 @@
   "error_505": "HTTP-Version nicht unterstützt",
   "error_511": "Netzwerk-Authentifizierung erforderlich",
   "insufficient_funds_for_reserve_operation": "Unzureichende Mittel für Reservierungsvorgang.",
-  "missing_or_invalid_reserve_accounts": "Fehlende oder ungültige Reservekonten."
+  "missing_or_invalid_reserve_accounts": "Fehlende oder ungültige Reservekonten.",
+  "already_registered": "Sie sind bereits im System registriert!",
+  "error_preparing_accounts_title": "Fehler beim Vorbereiten der Konten",
+  "error_preparing_accounts_description": "Fehler beim Vorbereiten der Konten"
 }

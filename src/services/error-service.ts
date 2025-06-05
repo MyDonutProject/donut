@@ -14,20 +14,41 @@ export class ErrorService {
       : error?.response?.data?.message
   }
 
-  static onError(error: AxiosError<GenericError>, title?: string) {
+  static onError(error: any, title?: string) {
     const notificationsService = new NotificationsService(store)
     console.log("📋 DETAILED ERROR LOGS:")
+
     //@ts-ignore
-    error?.logs?.forEach?.((log, index) => {
-      if (index > 1) {
-        return
+    if (error?.logs) {
+      console.log("\n📋 LOGS DE ERRO DETALHADOS:")
+      const relevantLogs = error.logs.filter(
+        (log) =>
+          log.includes("Program log:") ||
+          log.includes("Error") ||
+          log.includes("error")
+      )
+
+      if (relevantLogs.length > 0) {
+        relevantLogs.forEach((log, i) => {
+          console.log(`  ${i}: ${log}`)
+          notificationsService.error({
+            title: title
+              ? title
+              : `error_${error?.response?.data?.statusCode ?? 500}`,
+            message: log,
+          })
+        })
+      } else {
+        error.logs.forEach((log, i) => {
+          console.log(`  ${i}: ${log}`)
+          notificationsService.error({
+            title: title
+              ? title
+              : `error_${error?.response?.data?.statusCode ?? 500}`,
+            message: log,
+          })
+        })
       }
-      notificationsService.error({
-        title: title
-          ? title
-          : `error_${error?.response?.data?.statusCode ?? 500}`,
-        message: log,
-      })
-    })
+    }
   }
 }

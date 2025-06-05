@@ -50,5 +50,8 @@
   "error_505": "HTTP Version Not Supported",
   "error_511": "Network Authentication Required",
   "insufficient_funds_for_reserve_operation": "Insufficient funds for reserve operation.",
-  "missing_or_invalid_reserve_accounts": "Missing or invalid reserve accounts."
+  "missing_or_invalid_reserve_accounts": "Missing or invalid reserve accounts.",
+  "already_registered": "You are already registered in the system!",
+  "error_preparing_accounts_title": "Error preparing accounts",
+  "error_preparing_accounts_description": "Error preparing accounts"
 }
