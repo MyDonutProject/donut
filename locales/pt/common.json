@@ -118,5 +118,6 @@
   "cookie_policy": "Política de cookies",
   "error_title": "Oops!",
   "error_description": "Algo deu errado. Vamos tentar mais uma vez",
-  "error_button": "Tentar novamente"
+  "error_button": "Tentar novamente",
+  "activate_matrix_terms_and_conditions": "Ao ativar a matriz, você concorda com os <1>Termos e Condições</1> e a <2>Política de Privacidade</2>."
 }

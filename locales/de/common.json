@@ -118,5 +118,6 @@
   "cookie_policy": "Cookie-Richtlinie",
   "error_title": "Oops!",
   "error_description": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
-  "error_button": "Erneut versuchen"
+  "error_button": "Erneut versuchen",
+  "activate_matrix_terms_and_conditions": "Durch das Aktivieren der Matrix stimmen Sie den <1>Nutzungsbedingungen</1> und der <2>Datenschutzrichtlinie</2> zu."
 }

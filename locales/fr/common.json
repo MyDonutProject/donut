@@ -117,5 +117,6 @@
   "cookie_policy": "Politique de cookies",
   "error_title": "Oops!",
   "error_description": "Une erreur est survenue. Veuillez réessayer.",
-  "error_button": "Réessayer"
+  "error_button": "Réessayer",
+  "activate_matrix_terms_and_conditions": "En activant la matrice, vous acceptez les <1>Conditions d'utilisation</1> et la <2>Politique de confidentialité</2>."
 }

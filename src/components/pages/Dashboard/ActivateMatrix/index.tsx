@@ -19,6 +19,7 @@ import ActivateMatrixSkeleton from "./Skeleton"
 import styles from "./styles.module.scss"
 import Countdown from "./Countdown"
 import { useChainlinkOracle } from "@/api/price/queries"
+import Trans from "next-translate/Trans"
 
 export default function ActivateMatrix() {
   const { t } = useTranslation("common")
@@ -136,6 +137,27 @@ export default function ActivateMatrix() {
             <span>{0.01} SOL</span>
           </div>
         </div>
+        <p className={styles.card__terms}>
+          <Trans
+            i18nKey="common:activate_matrix_terms_and_conditions"
+            components={{
+              1: (
+                <a
+                  href="https://whitepaper.mydonut.io/about/terms-and-conditions"
+                  target="_blank"
+                  rel="noreferrer"
+                />
+              ),
+              2: (
+                <a
+                  href="https://whitepaper.mydonut.io/privacy-policy"
+                  target="_blank"
+                  rel="noreferrer"
+                />
+              ),
+            }}
+          />
+        </p>
         <Button
           // disabled={isPending || isLocked}
           isloading={isPending}
