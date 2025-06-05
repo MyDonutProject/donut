@@ -118,5 +118,10 @@
   "error_title": "Oops!",
   "error_description": "Une erreur est survenue. Veuillez réessayer.",
   "error_button": "Réessayer",
-  "activate_matrix_terms_and_conditions": "En activant la matrice, vous acceptez les <1>Conditions d'utilisation</1> et la <2>Politique de confidentialité</2>."
+  "activate_matrix_terms_and_conditions": "En activant la matrice, vous acceptez les <1>Conditions d'utilisation</1> et la <2>Politique de confidentialité</2>.",
+  "insufficient_funds_for_reserve_operation": "Fonds insuffisants pour l'opération de réserve.",
+  "missing_or_invalid_reserve_accounts": "Compte de réserve manquant ou invalide.",
+  "already_registered": "Vous êtes déjà enregistré dans le système !",
+  "error_preparing_accounts_title": "Erreur lors de la préparation des comptes",
+  "error_preparing_accounts_description": "Erreur lors de la préparation des comptes"
 }

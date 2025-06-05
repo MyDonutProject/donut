@@ -119,5 +119,10 @@
   "error_title": "Oops!",
   "error_description": "Algo salió mal. Vuelve a intentarlo",
   "error_button": "Intentar de nuevo",
-  "activate_matrix_terms_and_conditions": "Al activar la matriz, acepta los <1>Términos y condiciones</1> y la <2>Política de privacidad</2>."
+  "activate_matrix_terms_and_conditions": "Al activar la matriz, acepta los <1>Términos y condiciones</1> y la <2>Política de privacidad</2>.",
+  "insufficient_funds_for_reserve_operation": "Fondos insuficientes para la operación de reserva.",
+  "missing_or_invalid_reserve_accounts": "Cuenta de reserva faltante o inválida.",
+  "already_registered": "Ya estás registrado en el sistema!",
+  "error_preparing_accounts_title": "Error al preparar cuentas",
+  "error_preparing_accounts_description": "Error al preparar cuentas"
 }

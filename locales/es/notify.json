@@ -48,10 +48,5 @@
   "error_503": "Servicio no disponible",
   "error_504": "Tiempo de espera de la puerta de enlace agotado",
   "error_505": "Versión de HTTP no soportada",
-  "error_511": "Autenticación de red requerida",
-  "insufficient_funds_for_reserve_operation": "Fondos insuficientes para la operación de reserva.",
-  "missing_or_invalid_reserve_accounts": "Cuenta de reserva faltante o inválida.",
-  "already_registered": "Ya estás registrado en el sistema!",
-  "error_preparing_accounts_title": "Error al preparar cuentas",
-  "error_preparing_accounts_description": "Error al preparar cuentas"
+  "error_511": "Autenticación de red requerida"
 }

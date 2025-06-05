@@ -48,10 +48,5 @@
   "error_503": "Serviço Indisponível",
   "error_504": "Tempo Limite da Porta de Entrada",
   "error_505": "Versão HTTP Não Suportada",
-  "error_511": "Autenticação de Rede Necessária",
-  "insufficient_funds_for_reserve_operation": "Saldo insuficiente para reserva de conta.",
-  "missing_or_invalid_reserve_accounts": "Conta de reserva ausente ou inválida.",
-  "already_registered": "Você já está registrado no sistema!",
-  "error_preparing_accounts_title": "Erro ao preparar contas",
-  "error_preparing_accounts_description": "Erro ao preparar contas"
+  "error_511": "Autenticação de Rede Necessária"
 }

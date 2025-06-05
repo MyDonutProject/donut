@@ -127,8 +127,6 @@ export default function RewardsTable() {
     return <ErrorCard error={error} refetch={refetch} />
   }
 
-  console.log({ donuts, solanas })
-
   return (
     <div className={styles.container}>
       <div className={styles.container__row}>

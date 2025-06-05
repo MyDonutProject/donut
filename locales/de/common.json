@@ -119,5 +119,10 @@
   "error_title": "Oops!",
   "error_description": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
   "error_button": "Erneut versuchen",
-  "activate_matrix_terms_and_conditions": "Durch das Aktivieren der Matrix stimmen Sie den <1>Nutzungsbedingungen</1> und der <2>Datenschutzrichtlinie</2> zu."
+  "activate_matrix_terms_and_conditions": "Durch das Aktivieren der Matrix stimmen Sie den <1>Nutzungsbedingungen</1> und der <2>Datenschutzrichtlinie</2> zu.",
+  "insufficient_funds_for_reserve_operation": "Unzureichende Mittel für Reservierungsvorgang.",
+  "missing_or_invalid_reserve_accounts": "Fehlende oder ungültige Reservekonten.",
+  "already_registered": "Sie sind bereits im System registriert!",
+  "error_preparing_accounts_title": "Fehler beim Vorbereiten der Konten",
+  "error_preparing_accounts_description": "Fehler beim Vorbereiten der Konten"
 }

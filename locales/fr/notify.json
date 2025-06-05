@@ -48,10 +48,5 @@
   "error_503": "Service indisponible",
   "error_504": "Délai d'attente de la passerelle dépassé",
   "error_505": "Version HTTP non supportée",
-  "error_511": "Authentification réseau requise",
-  "insufficient_funds_for_reserve_operation": "Fonds insuffisants pour l'opération de réserve.",
-  "missing_or_invalid_reserve_accounts": "Compte de réserve manquant ou invalide.",
-  "already_registered": "Vous êtes déjà enregistré dans le système !",
-  "error_preparing_accounts_title": "Erreur lors de la préparation des comptes",
-  "error_preparing_accounts_description": "Erreur lors de la préparation des comptes"
+  "error_511": "Authentification réseau requise"
 }

@@ -80,11 +80,6 @@ class ChainlinkFeedParser {
           value >= expectedPriceRange.min &&
           value <= expectedPriceRange.max
         ) {
-          console.log(
-            `Found potential price at offset ${i}: ${value} = ${
-              Number(value) / 1e8
-            }`
-          )
           latestAnswer = value
           foundPrice = true
           break
@@ -97,17 +92,11 @@ class ChainlinkFeedParser {
         try {
           const value32 = this.data.readUInt32LE(i)
           if (value32 >= 14000 && value32 <= 16000) {
-            console.log(
-              `Found potential price (cents) at offset ${i}: ${value32}`
-            )
             latestAnswer = BigInt(value32) * BigInt(1000000)
             foundPrice = true
             break
           }
           if (value32 >= 140000000 && value32 <= 160000000) {
-            console.log(
-              `Found potential price (6 decimals) at offset ${i}: ${value32}`
-            )
             latestAnswer = BigInt(value32) * BigInt(100)
             foundPrice = true
             break
@@ -119,9 +108,6 @@ class ChainlinkFeedParser {
     }
 
     if (!foundPrice) {
-      console.log(
-        "Price not found in expected range. All int64 values:"
-      )
       for (let i = 0; i <= this.data.length - 8; i += 8) {
         try {
           const value = this.data.readBigInt64LE(i)
@@ -129,11 +115,6 @@ class ChainlinkFeedParser {
             value > BigInt(0) &&
             value < BigInt("18446744073709551615")
           ) {
-            console.log(
-              `Offset ${i}: ${value} = ${
-                Number(value) / 1e8
-              } (8 dec), ${Number(value) / 1e6} (6 dec)`
-            )
           }
         } catch {
           continue
@@ -268,8 +249,6 @@ export class ChainlinkPriceService {
       const address = feedAddress || this.config.feedAddress
       const feedPublicKey = new PublicKey(address)
 
-      console.log("Fetching price from:", address)
-
       const accountInfo = await this.connection.getAccountInfo(
         feedPublicKey
       )
@@ -278,19 +257,8 @@ export class ChainlinkPriceService {
         throw new Error(`Feed account not found: ${address}`)
       }
 
-      console.log(
-        "Account info received, data length:",
-        accountInfo.data.length
-      )
-
       const parser = new ChainlinkFeedParser(accountInfo.data)
       const feedData = parser.parse()
-
-      console.log("Parsed feed data:", {
-        decimals: feedData.decimals,
-        latestAnswer: feedData.latestAnswer.toString(),
-        latestRoundId: feedData.latestRoundId,
-      })
 
       const price =
         Number(feedData.latestAnswer) /
@@ -323,9 +291,6 @@ export class ChainlinkPriceService {
       if (!accountInfo) {
         throw new Error(`Feed account not found: ${address}`)
       }
-
-      console.log("First 100 bytes of account data:")
-      console.log(accountInfo.data.slice(0, 100).toString("hex"))
 
       return {
         price: 20.0,
@@ -383,19 +348,9 @@ export async function debugChainlinkAccount(
     const accountInfo = await connection.getAccountInfo(feedPublicKey)
 
     if (!accountInfo) {
-      console.log("Account not found")
       return
     }
 
-    console.log("=== Chainlink Account Debug Info ===")
-    console.log("Owner:", accountInfo.owner.toString())
-    console.log("Data length:", accountInfo.data.length)
-    console.log("Lamports:", accountInfo.lamports)
-
-    console.log("\nFirst 200 bytes (hex):")
-    console.log(accountInfo.data.slice(0, 200).toString("hex"))
-
-    console.log("\nLooking for potential price values...")
     for (
       let i = 0;
       i <= Math.min(accountInfo.data.length - 8, 200);
@@ -404,11 +359,6 @@ export async function debugChainlinkAccount(
       try {
         const value = accountInfo.data.readBigInt64LE(i)
         if (value > BigInt(0) && value < BigInt(1000000000000)) {
-          console.log(
-            `Offset ${i}: ${value} (${
-              Number(value) / 1e8
-            } with 8 decimals)`
-          )
         }
       } catch (e) {}
     }

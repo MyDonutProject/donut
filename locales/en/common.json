@@ -119,5 +119,10 @@
   "error_title": "Oops!",
   "error_description": "Something went wrong. Please try again.",
   "error_button": "Try again",
-  "activate_matrix_terms_and_conditions": "By activating the matrix, you agree to the <1>Terms of Use</1> and the <2>Privacy Policy</2>."
+  "activate_matrix_terms_and_conditions": "By activating the matrix, you agree to the <1>Terms of Use</1> and the <2>Privacy Policy</2>.",
+  "insufficient_funds_for_reserve_operation": "Insufficient funds for reserve operation.",
+  "missing_or_invalid_reserve_accounts": "Missing or invalid reserve accounts.",
+  "already_registered": "You are already registered in the system!",
+  "error_preparing_accounts_title": "Error preparing accounts",
+  "error_preparing_accounts_description": "Error preparing accounts"
 }

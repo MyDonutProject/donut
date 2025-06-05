@@ -1,16 +1,16 @@
-import styles from "./styles.module.scss";
+import styles from "./styles.module.scss"
 
-import { StaggerAnimation } from "@/components/core/Animation/Stagger";
-import { Image } from "@/components/core/Image";
-import TransText from "next-translate/Trans";
-import { useMemo } from "react";
-import HomeContractAddress from "./Address";
-import BuyHere from "./BuyHere";
-import CommunityDriven from "./CommunityDriven";
-import ConnectWalletButton from "./ConnectWalletButton";
-import Phrases from "./Phrases";
-import HomeSection from "./Section";
-import Table from "./Table";
+import { StaggerAnimation } from "@/components/core/Animation/Stagger"
+import { Image } from "@/components/core/Image"
+import { useMemo } from "react"
+import HomeContractAddress from "./Address"
+import BuyHere from "./BuyHere"
+import CommunityDriven from "./CommunityDriven"
+import ConnectWalletButton from "./ConnectWalletButton"
+import Phrases from "./Phrases"
+import HomeSection from "./Section"
+import Table from "./Table"
+import Trans from "next-translate/Trans"
 
 export default function Home() {
   const Images = useMemo(
@@ -27,7 +27,7 @@ export default function Home() {
         />
       )),
     []
-  );
+  )
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function Home() {
           className={styles.container__content}
         >
           <h1 className={styles.container__title}>
-            <TransText
+            <Trans
               i18nKey="common:how_to_buy"
               components={{
                 strong: <strong />,
@@ -57,5 +57,5 @@ export default function Home() {
       <Table />
       <Phrases />
     </>
-  );
+  )
 }
