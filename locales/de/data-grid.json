@@ -2,5 +2,8 @@
   "symbol": "Symbol",
   "coin": "Währung",
   "amount": "Menge",
-  "createdAt": "Erstellt am"
+  "createdAt": "Erstellt am",
+  "email": "Email",
+  "wallet": "Wallet",
+  "verified": "Verifiziert"
 }

@@ -1,0 +1,23 @@
+.button {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: $text-primary;
+  font-size: 12px;
+  font-weight: 500;
+
+  &:disabled {
+    pointer-events: none;
+    color: $text-secondary;
+  }
+}
+
+.skeleton {
+  @include skeleton($secondary: true);
+  width: 80px;
+  height: 14px;
+  margin: 0 auto;
+}

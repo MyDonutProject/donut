@@ -14,20 +14,12 @@ export class ErrorService {
       : error?.response?.data?.message
   }
 
-  static onError(
-    error: {
-      name: string
-      error: {
-        message: string
-      }
-    },
-    title?: string
-  ) {
+  static onError(err: any, title?: string) {
     const notificationsService = new NotificationsService(store)
 
     notificationsService.error({
-      title: title ? title : `${error?.name ?? 500}`,
-      message: error.error.message,
+      title: title ? title : `${err?.name ?? 500}`,
+      message: err.error.message,
     })
   }
 }

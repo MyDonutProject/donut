@@ -124,5 +124,17 @@
   "missing_or_invalid_reserve_accounts": "Missing or invalid reserve accounts.",
   "already_registered": "You are already registered in the system!",
   "error_preparing_accounts_title": "Error preparing accounts",
-  "error_preparing_accounts_description": "Error preparing accounts"
+  "error_preparing_accounts_description": "Error preparing accounts",
+  "create_voucher_title": "Create your voucher and earn rewards!",
+  "create": "Create",
+  "view": "View",
+  "email": "Email",
+  "email_description": "Enter your email for two-step verification and creation of your personalized link.",
+  "voucher": "Voucher",
+  "voucher_description": "Enter the voucher to create your personalized link.",
+  "verify_email": "Verify email",
+  "invalid_code": "Invalid code",
+  "invalid_code_description": "The verification code is invalid. Please try again.",
+  "voucher_created_successfully_title": "Voucher created successfully",
+  "voucher_created_successfully_message": "Your voucher has been created successfully. You can now share it with your friends."
 }

@@ -1,0 +1,77 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-content: center;
+  gap: 16px;
+
+  @include media-tablet {
+    gap: 4px;
+  }
+
+  &__input {
+    outline: none;
+    width: 100%;
+    height: $box-height;
+    border-radius: $border-radius;
+    padding: 0 16px;
+    font-size: 14px;
+    color: $text-primary;
+    background-color: $card-color;
+    border: 1px solid $card-color;
+    transition:
+      color 0.25s ease-in-out,
+      border 0.25s ease-in-out;
+    text-align: center;
+
+    &--container-color {
+      background-color: $background-paper;
+    }
+
+    &--default-color {
+      background-color: $background-default;
+    }
+
+    &__skeleton {
+      width: 100%;
+      min-width: $box-height;
+      height: $box-height;
+      border-radius: $border-radius;
+      @include skeleton($secondary: true);
+    }
+
+    @include media-tablet {
+      height: 40px;
+    }
+
+    &::placeholder {
+      transition:
+        color 0.25s ease-in-out,
+        border 0.25s ease-in-out;
+      color: $text-secondary;
+    }
+
+    &:not(:read-only) {
+      &:hover,
+      &:focus {
+        color: $text-primary;
+        border: 1px solid $primary-color;
+      }
+
+      &:hover::placeholder,
+      &:focus::placeholder {
+        color: $text-primary;
+      }
+    }
+
+    &--max-width {
+      width: $box-height;
+    }
+
+    &--container-color {
+      background-color: $background-paper;
+      border: 1px solid $background-paper;
+    }
+  }
+}

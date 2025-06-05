@@ -11,4 +11,5 @@ export enum ModalsKey {
   ProfileDetails = "profile-details",
   Language = "language",
   Sponsor = "sponsor",
+  CreateVoucher = "create-voucher",
 }

@@ -124,5 +124,17 @@
   "missing_or_invalid_reserve_accounts": "Fehlende oder ungültige Reservekonten.",
   "already_registered": "Sie sind bereits im System registriert!",
   "error_preparing_accounts_title": "Fehler beim Vorbereiten der Konten",
-  "error_preparing_accounts_description": "Fehler beim Vorbereiten der Konten"
+  "error_preparing_accounts_description": "Fehler beim Vorbereiten der Konten",
+  "create_voucher_title": "Erstellen Sie Ihren Voucher und verdienen Sie Belohnungen!",
+  "create": "Erstellen",
+  "view": "Ansehen",
+  "email": "Email",
+  "email_description": "Geben Sie Ihre E-Mail-Adresse ein, um die Zwei-Schritt-Verifizierung und die Erstellung Ihres persönlichen Links zu erhalten.",
+  "voucher": "Voucher",
+  "voucher_description": "Geben Sie den Voucher ein, um Ihren persönlichen Link zu erstellen.",
+  "verify_email": "Email bestätigen",
+  "invalid_code": "Ungültiger Code",
+  "invalid_code_description": "Der Bestätigungscode ist ungültig. Bitte versuchen Sie es erneut.",
+  "voucher_created_successfully_title": "Voucher erfolgreich erstellt",
+  "voucher_created_successfully_message": "Ihr Voucher wurde erfolgreich erstellt. Sie können es jetzt mit Ihren Freunden teilen."
 }

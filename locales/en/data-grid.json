@@ -2,5 +2,8 @@
   "symbol": "Symbol",
   "coin": "Coin",
   "amount": "Amount",
-  "createdAt": "Created at"
+  "createdAt": "Created at",
+  "email": "Email",
+  "wallet": "Wallet",
+  "verified": "Verified"
 }

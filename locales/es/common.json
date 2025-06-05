@@ -124,5 +124,17 @@
   "missing_or_invalid_reserve_accounts": "Cuenta de reserva faltante o inválida.",
   "already_registered": "Ya estás registrado en el sistema!",
   "error_preparing_accounts_title": "Error al preparar cuentas",
-  "error_preparing_accounts_description": "Error al preparar cuentas"
+  "error_preparing_accounts_description": "Error al preparar cuentas",
+  "create_voucher_title": "Crea tu voucher y gana recompensas!",
+  "create": "Crear",
+  "view": "Ver",
+  "email": "Email",
+  "email_description": "Ingresa tu email para verificación en dos pasos y creación de tu link personalizado.",
+  "voucher": "Voucher",
+  "voucher_description": "Ingresa el voucher para crear tu link personalizado.",
+  "verify_email": "Verificar email",
+  "invalid_code": "Código inválido",
+  "invalid_code_description": "El código de verificação es inválido. Por favor, tente novamente.",
+  "voucher_created_successfully_title": "Voucher creado con éxito",
+  "voucher_created_successfully_message": "Tu voucher ha sido creado con éxito. Ahora puedes compartirlo con tus amigos."
 }
