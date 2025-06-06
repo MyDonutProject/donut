@@ -9,7 +9,7 @@ import { useFormContext } from "react-hook-form"
 export default function DashboardInviteModalContentRenderValidate() {
   const {
     mfaChallengeByIdQuery: { challenge, isPending, error, refetch },
-  } = useVoucherForm()
+  } = useVoucherForm({ enabled: false })
   const { setValue } = useFormContext<
     | CreateVoucherDto
     | CreateWalletEmailInputDto

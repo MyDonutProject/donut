@@ -5,10 +5,11 @@ import { VerifyWalletEmailInputDto } from "@/dto/wallet-emails/verify-user-email
 
 export async function fetchVerifyWalletEmail({
   challengeId,
+  emailId,
   ...data
 }: VerifyWalletEmailInputDto): Promise<WalletEmail> {
   const response: AxiosResponse<WalletEmail> = await baseAPI.patch(
-    "/wallet-emails",
+    `/emails/verify/${emailId}`,
     data,
     {
       headers: {

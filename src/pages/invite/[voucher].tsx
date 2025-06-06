@@ -3,7 +3,7 @@ import { Nullable } from "@/interfaces/nullable"
 import { ReferralVoucher } from "@/models/referral-vouchers"
 import { GetServerSideProps } from "next"
 
-export function InvitePage() {
+export default function InvitePage() {
   return null
 }
 

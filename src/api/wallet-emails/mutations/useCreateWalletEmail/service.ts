@@ -7,7 +7,7 @@ export async function fetchCreateWalletEmail(
   data: CreateWalletEmailInputDto
 ): Promise<WalletEmail> {
   const response: AxiosResponse<WalletEmail> = await baseAPI.post(
-    "/wallet-emails",
+    "/emails",
     data
   )
 

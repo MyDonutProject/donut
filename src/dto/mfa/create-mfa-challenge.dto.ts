@@ -48,13 +48,5 @@ export class CreateMfaChallengeDto {
    * @optional
    * @description The ID of the email to send verification to (required when using email method)
    */
-  emailId?: bigint
-
-  /**
-   * Phone number identifier for SMS-based verification
-   * @type {bigint}
-   * @optional
-   * @description The ID of the phone number to send verification to (required when using SMS method)
-   */
-  phoneNumberId?: bigint
+  address?: bigint
 }

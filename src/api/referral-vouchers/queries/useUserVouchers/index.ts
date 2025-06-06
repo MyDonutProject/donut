@@ -9,9 +9,9 @@ import {
 } from "./props"
 import { fetchReferralVouchers } from "./service"
 import { useUserAccount } from "@/api/account"
-import { PaginatedResponse } from "@/models/pagination"
 import { useEffect } from "react"
 import { ReferralVoucher } from "@/models/referral-vouchers"
+import { Nullable } from "@/interfaces/nullable"
 
 export function useReferralVouchers(
   options?: UseReferralVouchersQueryProps
@@ -38,9 +38,9 @@ export function useReferralVouchers(
     fetchStatus,
     ...query
   } = useQuery<
-    PaginatedResponse<ReferralVoucher> | null,
+    Nullable<ReferralVoucher>,
     AxiosError<GenericError>,
-    PaginatedResponse<ReferralVoucher> | null,
+    Nullable<ReferralVoucher>,
     UseReferralVouchersQueryKeyProps
   >({
     queryKey,

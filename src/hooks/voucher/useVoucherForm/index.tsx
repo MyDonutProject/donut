@@ -97,12 +97,13 @@ export function useVoucherForm(options?: UseVoucherFormProps) {
   })
 
   function handleExternalOnSuccess(data: Nullable<WalletEmail>) {
-    if (data?.verified === true) {
+    if (!data || data?.verified === true) {
       return
     }
 
     handleCreateMfaChallenge({
-      emailId: data?.id,
+      //@ts-ignore
+      address: wallet?.adapter?.publicKey?.toBase58() ?? "",
       methodId: MultiFactorAuthenticationMethodId.Email,
       reasonId: MultiFactorAuthenticationReasonId.ConfirmEmail,
     }).then((challenge: MultiFactorAuthenticationChallenge) => {
@@ -110,6 +111,8 @@ export function useVoucherForm(options?: UseVoucherFormProps) {
         query: {
           ...query,
           step: VoucherStep.Validate,
+          email: data?.email,
+          emailId: data?.id?.toString(),
           challengeId: challenge?.id?.toString(),
         },
         hash: ModalsKey.CreateVoucher,
@@ -123,13 +126,12 @@ export function useVoucherForm(options?: UseVoucherFormProps) {
   })
 
   const {
-    data: userEmails,
     isPending: isPendingUserEmails,
     error: errorUserEmails,
     refetch: refetchUserEmails,
   } = useUserEmailsQuery
 
-  const isPending: boolean = isPendingUserEmails
+  const isPending: boolean = isPendingUserEmails || isSubmittingMfa
 
   const error: AxiosError<GenericError> | null = errorUserEmails
 
@@ -139,66 +141,79 @@ export function useVoucherForm(options?: UseVoucherFormProps) {
     }
   }
 
-  const onSubmit = useCallback(async (data: any) => {
-    switch (step) {
-      case VoucherStep.Form:
-        const userEmail = await createWalletEmailAsync({
-          address: wallet?.adapter?.publicKey?.toBase58() ?? "",
-          email: data.email,
-        })
-
-        await handleCreateMfaChallenge(
-          {
-            emailId: userEmail?.id,
-            methodId: MultiFactorAuthenticationMethodId.Email,
-            reasonId: MultiFactorAuthenticationReasonId.ConfirmEmail,
-          },
-          (challenge: MultiFactorAuthenticationChallenge) => {
-            push({
-              query: {
-                ...query,
-                step: VoucherStep.Validate,
-                emailId: userEmail?.id?.toString(),
-                challengeId: challenge?.id?.toString(),
-              },
-              hash: ModalsKey.CreateVoucher,
-            })
-          }
-        )
-        break
-      case VoucherStep.Validate:
-        await handleVerifyMfaChallenge(
-          {
-            challengeId: query?.challengeId as any,
-            code: data.code,
-          },
-          handleChallengeVerify
-        )
-        break
-      case VoucherStep.Voucher:
-        createReferralVoucher(
-          {
-            code: data.voucher,
+  const onSubmit = useCallback(
+    async (data: any) => {
+      switch (step) {
+        case VoucherStep.Form:
+          const userEmail = await createWalletEmailAsync({
             address: wallet?.adapter?.publicKey?.toBase58() ?? "",
-          },
-          {
-            onSuccess: () => {
-              NotificationsService.success({
-                title: "voucher_created_successfully_title",
-                message: "voucher_created_successfully_message",
-              })
-              queryClient.invalidateQueries({
-                queryKey: [ReferralVouchersEmailsQueryKeys.Primary],
-              })
-              onClose()
+            email: data.email,
+          })
+
+          await handleCreateMfaChallenge(
+            {
+              //@ts-ignore
+              address: wallet?.adapter?.publicKey?.toBase58() ?? "",
+              methodId: MultiFactorAuthenticationMethodId.Email,
+              reasonId:
+                MultiFactorAuthenticationReasonId.ConfirmEmail,
             },
-          }
-        )
-        break
-      default:
-        break
-    }
-  }, [])
+            (challenge: MultiFactorAuthenticationChallenge) => {
+              push({
+                query: {
+                  ...query,
+                  step: VoucherStep.Validate,
+                  email: userEmail?.email,
+                  emailId: userEmail?.id?.toString(),
+                  challengeId: challenge?.id?.toString(),
+                },
+                hash: ModalsKey.CreateVoucher,
+              })
+            }
+          )
+          break
+        case VoucherStep.Validate:
+          await handleVerifyMfaChallenge(
+            {
+              challengeId: query?.challengeId as any,
+              code: data.code,
+            },
+            handleChallengeVerify
+          )
+          break
+        case VoucherStep.Voucher:
+          createReferralVoucher(
+            {
+              code: data.voucher,
+              address: wallet?.adapter?.publicKey?.toBase58() ?? "",
+            },
+            {
+              onSuccess: () => {
+                NotificationsService.success({
+                  title: "voucher_created_successfully_title",
+                  message: "voucher_created_successfully_message",
+                })
+                queryClient.invalidateQueries({
+                  queryKey: [ReferralVouchersEmailsQueryKeys.Primary],
+                })
+                onClose()
+              },
+            }
+          )
+          break
+        default:
+          break
+      }
+    },
+    [
+      step,
+      wallet,
+      queryClient,
+      NotificationsService,
+      onClose,
+      createReferralVoucher,
+    ]
+  )
 
   return {
     step,

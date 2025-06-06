@@ -7,16 +7,17 @@ import styles from "./styles.module.scss"
 import DashboardInviteCard from "./Card"
 import { useRouter } from "next/router"
 import { ModalsKey } from "@/enums/modalsKey"
+import { useReferralVouchers } from "@/api/referral-vouchers"
 
 export default function DashboardInvite() {
   const { t } = useTranslation("common")
   const { NotificationsService } = useNotificationService()
   const { voucherUrl } = useUserAccount()
   const { push } = useRouter()
-  let hasVoucherUrl = false
+  const { data: userVouchers } = useReferralVouchers()
 
   function handleCopy() {
-    if (!hasVoucherUrl) {
+    if (!userVouchers) {
       push({
         hash: ModalsKey.CreateVoucher,
       })
@@ -29,7 +30,7 @@ export default function DashboardInvite() {
     })
   }
 
-  if (!hasVoucherUrl) {
+  if (!userVouchers) {
     return (
       <DashboardInviteCard title={t("create_voucher_title")}>
         <Button isSecondary useMaxContent onClick={handleCopy}>
@@ -42,7 +43,7 @@ export default function DashboardInvite() {
   return (
     <DashboardInviteCard title={t("invite_title")}>
       <Input
-        value={voucherUrl}
+        value={userVouchers?.url ?? ""}
         readOnly
         hasPaddingLeft={false}
         hideLock

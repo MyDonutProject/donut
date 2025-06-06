@@ -5,7 +5,7 @@ import DashboardInviteModalContentRenderValidate from "./Validate"
 import DashboardInviteModalContentRenderVoucher from "./Voucher"
 
 export default function DashboardInviteModalContentRender() {
-  const { step } = useVoucherForm()
+  const { step } = useVoucherForm({ enabled: false })
 
   switch (step) {
     // switch (step) {

@@ -69,7 +69,7 @@ export function useWalletEmails(options?: UseWalletEmailsQueryProps) {
     externalOnSuccess(data)
   }
 
-  useEffect(handleExternalOnSuccess, [data, enabled])
+  useEffect(handleExternalOnSuccess, [data])
 
   return {
     data,

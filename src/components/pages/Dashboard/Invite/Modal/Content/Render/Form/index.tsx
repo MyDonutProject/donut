@@ -11,7 +11,7 @@ export default function DashboardInviteModalContentRenderForm() {
   const { register } = useFormContext<
     CreateVoucherDto | CreateWalletEmailInputDto
   >()
-  const { isPending } = useVoucherForm()
+  const { isPending } = useVoucherForm({ enabled: false })
 
   return (
     <>

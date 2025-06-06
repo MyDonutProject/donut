@@ -3,9 +3,9 @@
 
 import { QueryFunctionContext } from "@tanstack/react-query"
 import { UseReferralVouchersQueryKeyProps } from "./props"
-import { PaginatedResponse } from "@/models/pagination"
 import baseAPI from "@/api"
 import { ReferralVoucher } from "@/models/referral-vouchers"
+import { Nullable } from "@/interfaces/nullable"
 
 /**
  * Main function to fetch all token transactions for a wallet
@@ -17,13 +17,18 @@ import { ReferralVoucher } from "@/models/referral-vouchers"
 export const fetchReferralVouchers = async ({
   queryKey,
 }: QueryFunctionContext<UseReferralVouchersQueryKeyProps>): Promise<
-  PaginatedResponse<ReferralVoucher>
+  Nullable<ReferralVoucher>
 > => {
   const { address } = queryKey[1]
   try {
-    const response = await baseAPI.get<
-      PaginatedResponse<ReferralVoucher>
-    >(`/wallet-vouchers/${address}`)
+    const response = await baseAPI.get<Nullable<ReferralVoucher>>(
+      `/wallet-vouchers`,
+      {
+        params: {
+          address,
+        },
+      }
+    )
 
     return response.data
   } catch (error) {

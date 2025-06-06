@@ -22,7 +22,7 @@ export const fetchWalletEmails = async ({
   const { address } = queryKey[1]
   try {
     const response = await baseAPI.get<Nullable<WalletEmail>>(
-      `/wallet-emails/${address}`
+      `/emails/${address}`
     )
 
     return response.data
